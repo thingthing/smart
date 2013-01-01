@@ -50,10 +50,18 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   //std::cout << "Before validationGate" << std::endl;
-  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
+  try {
+    this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
+  } catch (...) {
+    std::cerr << "Error during dataassociation" << std::endl;
+  }
   //std::cout << "Before add landmarks" << std::endl;
-  this->addLandmarks(newLandmarks);
-  //std::cout << "After add landmarks" << std::endl;
+  try {
+    this->addLandmarks(newLandmarks);
+  } catch (...) {
+    std::cerr << "Error during addlandmarks" << std::endl;
+  }
+    //std::cout << "After add landmarks" << std::endl;
 
   // this->dispatch("SendCloudEvent", cloud);
   // this->dispatch("SendNewLandmarkEvent", newLandmarks);

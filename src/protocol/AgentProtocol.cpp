@@ -57,7 +57,7 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
             toSend  = _factory.getChunk();
         }
         is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
-        boost::this_thread::sleep(boost::posix_time::millisec(10));
+        boost::this_thread::sleep(boost::posix_time::millisec(50));
     }
     std::cerr << "Send cloud event " << i << " packets with " << cloud.points.size() << " points" << std::endl;
     //Cloud sent we can now restart capture

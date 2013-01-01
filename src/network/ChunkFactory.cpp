@@ -224,11 +224,11 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
 }
 
 void ChunkFactory::setTrueStringFromPoints(float data, std::string &stringPoints) {
-    float default_value = 0;
-    if (data == data)
-        stringPoints += encodeNbIntoString((void*) & (data), sizeof(data));
-    else
-        stringPoints += encodeNbIntoString((void*) & (default_value), sizeof(float));
+    // float default_value = 0;
+    // if (data == data)
+  stringPoints += encodeNbIntoString((void*) & (data), sizeof(data));
+    // else
+    //     stringPoints += encodeNbIntoString((void*) & (default_value), sizeof(float));
     //std::cerr << "data in float "<< data << std::endl;
 }
 /**

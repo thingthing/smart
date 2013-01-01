@@ -11,6 +11,8 @@
 #include <pcl-1.8/pcl/io/oni_grabber.h>
 #include <pcl-1.8/pcl/point_types.h>
 #include <pcl-1.8/pcl/common/projection_matrix.h>
+#include <pcl-1.8/pcl/filters/filter.h>
+#include <pcl-1.8/pcl/filters/voxel_grid.h>
 
 #include "ICapture.hh"
 

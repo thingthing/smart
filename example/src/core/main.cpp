@@ -1,13 +1,13 @@
-// #include <pcl-1.7/pcl/io/openni_grabber.h>
-// #include <pcl-1.7/pcl/visualization/cloud_viewer.h>
+// #include <pcl-1.8/pcl/io/openni_grabber.h>
+// #include <pcl-1.8/pcl/visualization/cloud_viewer.h>
 
-// #include <pcl-1.7/pcl/point_cloud.h>
-// #include <pcl-1.7/pcl/point_types.h>
-// #include <pcl-1.7/pcl/io/openni2_grabber.h>
-// #include <pcl-1.7/pcl/io/pcd_io.h>
-// #include <pcl-1.7/pcl/filters/statistical_outlier_removal.h>
-// #include <pcl-1.7/pcl/filters/voxel_grid.h>
-// #include <pcl-1.7/pcl/common/transforms.h>
+// #include <pcl-1.8/pcl/point_cloud.h>
+// #include <pcl-1.8/pcl/point_types.h>
+// #include <pcl-1.8/pcl/io/openni2_grabber.h>
+// #include <pcl-1.8/pcl/io/pcd_io.h>
+// #include <pcl-1.8/pcl/filters/statistical_outlier_removal.h>
+// #include <pcl-1.8/pcl/filters/voxel_grid.h>
+// #include <pcl-1.8/pcl/common/transforms.h>
 // #include <vector>
 
 // int i = 0;
@@ -85,7 +85,7 @@
 // }
 
 
-
+ 
 #include "Core.h"
 
 int     main(int argc, char **argv)

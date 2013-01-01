@@ -54,7 +54,23 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   std::cerr << "Start capture" << std::endl;
   if (!_cloud->empty())
       _cloud->clear();
-  pcl::copyPointCloud(*cloud, *_cloud);
+  //pcl::copyPointCloud(*cloud, *_cloud);
+  std::vector<int> indices;
+  pcl::removeNaNFromPointCloud(*cloud, *_cloud, indices);
+  pcl::VoxelGrid<pcl::PointXYZRGBA> vox;
+  vox.setInputCloud(_cloud);
+  vox.setLeafSize(0.01f, 0.01f, 0.01f);
+  vox.filter(*_cloud);
+  
+  // pcl::PointCloud<pcl::PointXYZRGBA>::Ptr::iterator it = _cloud->begin();
+  // while (it != _cloud->end()) {
+  //   if ((*it)->x != (*it)->x) {
+  //    it = _cloud->erase(it);
+  //   } else {
+  // ++it;
+  //  }
+  // }
+
   this->dispatch("takeDataEvent");
   boost::this_thread::sleep(boost::posix_time::millisec(10));
 
