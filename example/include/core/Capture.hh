@@ -3,16 +3,17 @@
 
 #include <string>
 
-#include <pcl-1.8/pcl/io/openni2_grabber.h>
-#include <pcl-1.8/pcl/common/common.h>
-#include <pcl-1.8/pcl/impl/point_types.hpp>
-#include <pcl-1.8/pcl/io/pcd_io.h>
-#include <pcl-1.8/pcl/io/openni_grabber.h>
-#include <pcl-1.8/pcl/io/oni_grabber.h>
-#include <pcl-1.8/pcl/point_types.h>
-#include <pcl-1.8/pcl/common/projection_matrix.h>
-#include <pcl-1.8/pcl/filters/filter.h>
-#include <pcl-1.8/pcl/filters/voxel_grid.h>
+#include <pcl/io/openni2_grabber.h>
+#include <pcl/common/common.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/oni_grabber.h>
+#include <pcl/point_types.h>
+#include <pcl/common/projection_matrix.h>
+#include <pcl/filters/filter.h>
+#include <pcl/filters/voxel_grid.h>
+
 
 #include "ICapture.hh"
 
