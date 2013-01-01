@@ -147,7 +147,19 @@ void Movement::updateGyro()
 
 // ================ Movement =======================
 
+# define MAX_SPEED 200
 
+void	Movement::sendMotorSpeed(uint motorNo, short speed)
+{
+unsigned char buf[] = {'r', '\x00', '\x00', 'r', '\x00', '\x00'};
+buf[1] = motorNo * 2;
+buf[4] = motorNo * 2 + 1;
+
+buf[2] = speed & 0xFF;
+buf[5] = (speed >> 8) & 0xFF;
+
+circular_buffer_write(&_txBuffer, (unsigned char *)&buf, 6);
+}
 
 void    Movement::updateMotorsSpeed()
 {
@@ -171,25 +183,31 @@ void    Movement::decreaseMotorSpeed(uint motorNo)
     poll_set.events |= POLLOUT;
 }
 
+# define	FORWARD_SPEED 1570
+# define	BACK_SPEED	1430
 
 void    Movement::goForward()
 {
-
+sendMotorSpeed(0, FORWARD_SPEED);
+sendMotorSpeed(1, BACK_SPEED);
 }
 
 void    Movement::goBack()
 {
-
+sendMotorSpeed(0, BACK_SPEED);
+sendMotorSpeed(1, FORWARD_SPEED);
 }
 
 void    Movement::goLeft()
 {
-
+sendMotorSpeed(0, FORWARD_SPEED);
+sendMotorSpeed(1, FORWARD_SPEED);
 }
 
 void    Movement::goRight()
 {
-
+sendMotorSpeed(0, BACK_SPEED);
+sendMotorSpeed(1, BACK_SPEED);
 }
 
 void    Movement::goUp() { // not implemented

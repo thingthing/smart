@@ -57,7 +57,7 @@ public:
     void processReceivedData(unsigned int size);
     void updateSerial();
     void updateGyro();
-    void    updateMotorsSpeed();
+    void updateMotorsSpeed();
     void sendMotorSpeed(uint motorNo, short speed);
     void increaseMotorSpeed(uint motorNo);
     void decreaseMotorSpeed(uint motorNo);

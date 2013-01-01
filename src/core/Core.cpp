@@ -41,7 +41,7 @@ void        Core::run()
  try {
         while (1)
         {
-            usleep(1000000);
+            usleep(2000000);
             this->update();
         }
     } catch (std::exception &e) {

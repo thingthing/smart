@@ -80,6 +80,32 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
 
 void             Agent::goTowardsGoal()
 {
+  static unsigned int i = 0;
+  ++i;
+  std::cout << i << std::endl;
+      _movement.sendMotorSpeed(0, 1500);
+      _movement.sendMotorSpeed(1, 1500);
+      _movement.updateMotorsSpeed();
+
+  if (i < 3)
+    _movement.goForward();
+  else if (i < 6)
+    _movement.goBack();
+  else if (i <9)
+    _movement.goLeft();
+  else if (i < 12)
+    _movement.goRight();
+  else if (i < 15)
+    {
+      _movement.sendMotorSpeed(0, 1500);
+      _movement.sendMotorSpeed(1, 1500);
+    }
+  else
+    i = 0;
+  if (i < 16)
+      _movement.updateMotorsSpeed();
+  /*
+  // TEST A ALA CON
     std::cout << "Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
     if (_pos.x != _goalPos.x)
@@ -91,6 +117,7 @@ void             Agent::goTowardsGoal()
 
 std::cout << "After Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
+*/
 }
 
 bool            Agent::isAtDestination() const
@@ -103,6 +130,8 @@ bool            Agent::isAtBase() const
     return (_pos.x == 0 && _pos.y == 0 && _pos.z == 0);
 }
 
+
+
 void            Agent::updateState()
 {
     _movement.updateGyro();
@@ -110,13 +139,17 @@ void            Agent::updateState()
         this->lowerBattery(1);
     this->dispatch("SendPacketEvent", this);
     // std::cout << "GoalPos is " << _goalPos << std::endl;
-    if (this->isAtDestination() == false)
-    {
+    //    if (this->isAtDestination() == false)
+    //  {
         std::cout << "Going goTowardsGoal" << std::endl;
         this->goTowardsGoal();
-    } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
-    {
-        this->chargeBattery(1);
-    }
+	//  } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
+	//  {
+	//      this->chargeBattery(1);
+	//  }
     _movement.updateSerial();
+    this->setPitch(_movement.getPitchRollYaw().x);
+    this->setRoll(_movement.getPitchRollYaw().y);
+    this->setYaw(_movement.getPitchRollYaw().z);
+
 }
