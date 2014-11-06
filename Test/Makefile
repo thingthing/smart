@@ -1,8 +1,8 @@
 NAME	=	test
 CXX	=	g++
 RM	=	rm -f
-INCLUDE	=	
-CXXFLAGS	= -I./igloo-igloo.1.1.1/ -I../Include/
+INCLUDE	=	./igloo-igloo.1.1.1/ ../Include/
+CXXFLAGS	= -W -Wall $(foreach dir, $(INCLUDE), -I$(dir))
 
 SRCS	=	main.cpp	\
 		test_landmark_extraction.cpp
