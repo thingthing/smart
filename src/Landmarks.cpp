@@ -152,3 +152,28 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
       totalTimeObserved = landmarkDB[closestLandmark]->totalTimeObserved;
     }
 }
+
+void Landmarks::leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b)
+{
+  double y; //y coordinate
+  double x; //x coordinate
+  double sumY = 0; //sum of y coordinates
+  double sumYY = 0; //sum of y^2 for each coordinate
+  double sumX = 0; //sum of x coordinates
+  double sumXX = 0; //sum of x^2 for each coordinate
+  double sumYX = 0; //sum of y*x for each point
+
+  for(int i = 0; i < arraySize; ++i)
+    {
+      //convert ranges and bearing to coordinates
+      x = (cos((selectPoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[0];
+      y = (sin((selectPoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[1];
+      sumY += y;
+      sumYY += pow(y,2);
+      sumX += x;
+      sumXX += pow(x,2);
+      sumYX += y * x;
+    }
+  b = (sumY * sumXX - sumX * sumYX) / (arraySize * sumXX - pow(sumX, 2));
+  a = (arraySize * sumYX - sumX * sumY) / (arraySize * sumXX - pow(sumX, 2));
+}
