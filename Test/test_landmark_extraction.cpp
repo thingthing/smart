@@ -1,34 +1,15 @@
 #include <igloo/igloo_alt.h>
-//#include <Landmarks.hh>
+#include <Landmarks.hh>
 
 // Add true landmarks class when ready
-class Landmarks
-{
-public:
-  static const int LIFE = 42;
-  class Landmark
-  {
-  public:
-    Landmark() {
-    }
-    
-  public:
-    int	id;
-    int totalTimesObserved;
-    int life;
-    int	a;
-    int	b;
-  };
-
-};
-
 namespace	Result
 {
   int		id = -1;
-  int		life = ::Landmarks::LIFE;
-  int		totalTimesObserved = -1;
-  double	a = -1;
-  double	b = -1;
+  int		life = LIFE;
+  int		totalTimesObserved = 0;
+  double	range = -1;
+  double	bearing = -1;
+  double	pos[2] = {0, 0};
 };
 
 using namespace igloo;
@@ -39,10 +20,12 @@ When(creating_a_landmark)
     {
       Assert::That(lm.id, Is().EqualTo(::Result::id));
       Assert::That(lm.life, Is().EqualTo(::Result::life));
-      Assert::That(lm.totalTimesObserved, Is().EqualTo(::Result::totalTimesObserved));
-      Assert::That(lm.a, Is().EqualTo(::Result::a));
-      Assert::That(lm.b, Is().EqualTo(::Result::b));
+      Assert::That(lm.totalTimeObserved, Is().EqualTo(::Result::totalTimesObserved));
+      Assert::That(lm.range, Is().EqualTo(::Result::range));
+      Assert::That(lm.bearing, Is().EqualTo(::Result::bearing));
+      Assert::That(lm.pos[0], Is().EqualTo(::Result::pos[0]));
+      Assert::That(lm.pos[1], Is().EqualTo(::Result::pos[1]));
     }
-  
+
   ::Landmarks::Landmark	lm;
 };
