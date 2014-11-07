@@ -30,3 +30,13 @@ int Landmarks::getDBSize() const
 {
   return (this->DBSize);
 }
+
+int Landmarks::getSLamId(int id) const
+{
+  for(int i = 0; i < this->EKFLandmarks; ++i)
+    {
+      if(IDtoID[i].first == id)
+	return (IDtoID[i].second);
+    }
+  return (-1);
+}
