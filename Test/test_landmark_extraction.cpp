@@ -78,3 +78,30 @@ When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
   Landmarks *lms;
 };
 
+When(calling_getDBSize_after_construct)
+{
+
+  Then(it_should_be_equal_to_DBSize_value)
+  {
+    Assert::That(lms.getDBSize(), Is().EqualTo(lms.DBSize));
+  }
+  
+  Landmarks lms;
+};
+
+When(calling_getDBSize_after_DBSize_changed)
+{
+
+  void	SetUp()
+  {
+    lms.DBSize += 1;
+  }
+
+  Then(it_should_be_equal_to_DBSize_value)
+  {
+    Assert::That(lms.getDBSize(), Is().EqualTo(lms.DBSize));
+  }
+  
+  Landmarks lms;
+};
+
