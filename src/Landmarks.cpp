@@ -25,6 +25,9 @@ Landmarks::Landmarks(double degrees)
   this->landmarkDB = landmarkCpy;
 }
 
+/**
+ * @TODO: Clean LandmarkDB
+ **/
 Landmarks::~Landmarks()
 {}
 
@@ -79,8 +82,6 @@ double Landmarks::distance(const Landmark &lm1, const Landmark &lm2) const
   return (sqrt(pow(lm1.pos[0] - lm2.pos[0], 2) + pow(lm1.pos[1] - lm2.pos[1], 2)));
 }
 
-#include <iostream>
-
 int Landmarks::addToDB(const Landmark &lm)
 {
   Landmarks::Landmark	*new_elem;
@@ -117,7 +118,7 @@ double Landmarks::distanceToLine(double x, double y, double a, double b)
 
 std::vector<Landmarks::Landmark *> Landmarks::getLandmarkDB() const
 {
-  std::vector<Landmark *> res;
+  std::vector<Landmark *> res(this->DBSize);
 
   for (int i = 0; i < this->DBSize; ++i)
     {
