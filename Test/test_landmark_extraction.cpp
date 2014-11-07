@@ -33,8 +33,8 @@ When(creating_Landmarks)
     Assert::That(lms.DBSize, Is().EqualTo(::Landmarks_Result::DBSize));
     Assert::That(lms.EKFLandmarks, Is().EqualTo(::Landmarks_Result::EKFLandmarks));
     Assert::That(lms.degreePerScan, Is().EqualTo(::Landmarks_Result::defaultdegreePerScan));
-    Assert::That(lms.IDtoID.capacity(), Is().EqualTo(::Landmarks_Result::sizeIDtoID));
-    Assert::That(lms.landmarkDB.capacity(), Is().EqualTo(::Landmarks_Result::sizelandmarkDB));
+    Assert::That(lms.IDtoID.size(), Is().EqualTo(::Landmarks_Result::sizeIDtoID));
+    Assert::That(lms.landmarkDB.size(), Is().EqualTo(::Landmarks_Result::sizelandmarkDB));
   }
 
   Landmarks lms;
@@ -120,8 +120,8 @@ When(adding_one_Slam_Id)
 
   Then(it_should_be_the_good_id)
   {
-    Assert::That(lms.IDtoID.back().first, Is().EqualTo(::Landmarks_Result::goodSlamId.first));
-    Assert::That(lms.IDtoID.back().second, Is().EqualTo(::Landmarks_Result::goodSlamId.second));
+    Assert::That(lms.IDtoID[previousLandmarksNumber].first, Is().EqualTo(::Landmarks_Result::goodSlamId.first));
+    Assert::That(lms.IDtoID[previousLandmarksNumber].second, Is().EqualTo(::Landmarks_Result::goodSlamId.second));
   }
 
   Landmarks lms;
@@ -163,8 +163,16 @@ When(adding_landmark_to_db)
   
   void	SetUp()
   {
+    lm.pos[0] = ::Landmark_Result::pos[0] + 1;
+    lm.pos[1] = ::Landmark_Result::pos[1] + 1;
+    lm.life = LIFE - 1;
+    lm.bearing = ::Landmark_Result::bearing + 1;
+    lm.range = ::Landmark_Result::range + 1;
+    lm.a = 3.12;
+    lm.b = 4.52;
+
     previousDBSize = lms.DBSize;
-    lms.addToDB(lm);
+    idLandmark = lms.addToDB(lm);
   }
   
   Then(DBSize_should_be_increased_by_one)
@@ -172,18 +180,22 @@ When(adding_landmark_to_db)
     Assert::That(lms.DBSize, Is().EqualTo(previousDBSize + 1));
   }
 
-  // Then(it_return_the_good_id)
-  // {
-  //   Assert::That();
-  // }
-
-  // Then(it_have_the_good_landmark)
-  // {
-  //   Assert::That();
-  // }
+  Then(it_have_the_good_landmark)
+  {
+    Assert::That(lms.landmarkDB[idLandmark]->pos[0], Is().EqualTo(lm.pos[0]));
+    Assert::That(lms.landmarkDB[idLandmark]->pos[1], Is().EqualTo(lm.pos[1]));
+    Assert::That(lms.landmarkDB[idLandmark]->bearing, Is().EqualTo(lm.bearing));
+    Assert::That(lms.landmarkDB[idLandmark]->range, Is().EqualTo(lm.range));
+    Assert::That(lms.landmarkDB[idLandmark]->a, Is().EqualTo(lm.a));
+    Assert::That(lms.landmarkDB[idLandmark]->b, Is().EqualTo(lm.b));
+    Assert::That(lms.landmarkDB[idLandmark]->life, Is().EqualTo(LIFE));
+    Assert::That(lms.landmarkDB[idLandmark]->id, Is().EqualTo(idLandmark));
+    Assert::That(lms.landmarkDB[idLandmark]->totalTimeObserved, Is().EqualTo(1));
+  }
 
   Landmarks::Landmark	lm;
   Landmarks		lms;
   int			previousDBSize;
+  int			idLandmark;
 };
 
