@@ -1,17 +1,22 @@
-NAME	=	test
+NAME	=	smartapi
 CXX	=	g++
 RM	=	rm -f
-INCLUDE	=	./igloo-igloo.1.1.1/ ../Include/
+INCLUDE	=	./Include/
 CXXFLAGS	= -W -Wall $(foreach dir, $(INCLUDE), -I$(dir))
 
-SRCS	=	main.cpp			\
-		../src/Landmarks.cpp		\
-		test_landmark_extraction.cpp
+SRCS	=	./src/main.cpp		\
+		./src/Landmarks.cpp	\
+
 
 OBJS	=	$(SRCS:.cpp=.o)
 
-all	: CXXFLAGS += -D UNITTEST
 all	: $(NAME)
+
+unit	:
+	make re -C Test/
+
+unitfclean 	:
+		make fclean -C Test/
 
 $(NAME)	: $(OBJS)
 	$(CXX) $(OBJS) -o $(NAME)
