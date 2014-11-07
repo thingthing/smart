@@ -40,3 +40,13 @@ int Landmarks::getSLamId(int id) const
     }
   return (-1);
 }
+
+int Landmarks::addSlamId(int landmarkID, int slamID)
+{
+  std::pair<int, int> newSlamID;
+  newSlamID.first = landmarkID;
+  newSlamID.first = slamID;
+  this->IDtoID.push_back(newSlamID);
+  ++this->EKFLandmarks;
+  return (0);
+}
