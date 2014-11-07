@@ -50,3 +50,19 @@ int Landmarks::addSlamId(int landmarkID, int slamID)
   ++this->EKFLandmarks;
   return (0);
 }
+
+int Landmarks::getAssociation(Landmark &lm)
+{
+  for(int i = 0; i < this->DBSize; ++i)
+    {
+      if(this->distance(lm, (*landmarkDB[i])) < MAXERROR && landmarkDB[i]->id != -1)
+	{
+	  landmarkDB[i]->life = LIFE;
+	  ++landmarkDB[i]->totalTimeObserved;
+	  landmarkDB[i]->bearing = lm.bearing;
+	  landmarkDB[i]->range = lm.range;
+	  return (landmarkDB[i]->id);
+	}
+    }
+  return -1;
+}
