@@ -102,26 +102,28 @@ When(calling_getDBSize_after_DBSize_changed)
 };
 
 /**
- * Unit test for getSlamId()
+ * Unit test for addSlamId()
  **/
-// When(getting_Slam_Id)
-// {
+When(adding_one_Slam_Id)
+{
   
-//   void	SetUp()
-//   {
-//     lms.IDtoID[0] = ::Landmarks_Result::wrongSlamId;
-//     lms.IDtoID[1] = ::Landmarks_Result::goodSlamId;
-//   }
+  void	SetUp()
+  {
+    previousLandmarksNumber = lms.EKFLandmarks;
+    lms.addSlamId(::Landmarks_Result::goodSlamId.first, ::Landmarks_Result::goodSlamId.second);
+  }
   
-//   Then(it_should_not_return_the_bad_id)
-//   {
-//     Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first), Is().Not().EqualTo(::Landmarks_Result::wrongSlamId.second));
-//   }
+  Then(it_should_increase_EKFLandmarks_by_one)
+  {
+    Assert::That(lms.EKFLandmarks, Is().EqualTo(previousLandmarksNumber + 1));
+  }
 
-//   Then(it_should_return_the_good_id)
-//   {
-//     Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first), Is().EqualTo(::Landmarks_Result::goodSlamId.second));
-//   }
+  Then(it_should_be_the_good_id)
+  {
+    Assert::That(lms.IDtoID.back().first, Is().EqualTo(::Landmarks_Result::goodSlamId.first));
+    Assert::That(lms.IDtoID.back().second, Is().EqualTo(::Landmarks_Result::goodSlamId.second));
+  }
 
-//   Landmarks lms;
-// };
+  Landmarks lms;
+  int	previousLandmarksNumber;
+};

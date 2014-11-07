@@ -27,7 +27,7 @@ namespace	Landmarks_Result
   double	degreePerScan = 0.42; 
   int		sizeIDtoID = MAXLANDMARKS;
   int		sizelandmarkDB = MAXLANDMARKS;
-  std::pair<int, int>		goodSlamId = std::make_pair(42,42);
+  std::pair<int, int>		goodSlamId = std::make_pair(42,84);
   std::pair<int, int>		wrongSlamId = std::make_pair(13,12);
 };
 
