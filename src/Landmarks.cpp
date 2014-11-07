@@ -115,3 +115,30 @@ std::vector<Landmarks::Landmark *>Landmarks::getLandmarkDB() const
     }
   return (res);
 }
+
+void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObserved)
+{
+  int closestLandmark = 0;
+  double temp;
+  double leastDistance = 99999; // 100k meter, big distance
+
+  for(int i = 0; i < DBSize; ++i)
+    {
+      if(static_cast<unsigned int>(landmarkDB[i]->totalTimeObserved) > MINOBSERVATIONS)
+	{
+	  temp = this->distance(*lm, *landmarkDB[i]);
+	  if(temp < leastDistance)
+	    {
+	      leastDistance = temp;
+	      closestLandmark = landmarkDB[i]->id;
+	    }
+	}
+    }
+  if(leastDistance == 99999)
+    id = -1;
+  else
+    {
+      id = landmarkDB[closestLandmark]->id;
+      totalTimeObserved = landmarkDB[closestLandmark]->totalTimeObserved;
+    }
+}
