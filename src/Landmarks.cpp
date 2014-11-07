@@ -95,3 +95,12 @@ int Landmarks::addToDB(const Landmark &lm)
     }
   return (-1);
 }
+
+double Landmarks::distanceToLine(double x, double y, double a, double b)
+{
+  double ao = -1.0 / a;
+  double bo = y - ao * x;
+  double px = (b - bo) / (ao - a);
+  double py = ((ao * (b - bo)) / (ao - a)) + bo;
+  return (this->distance(x, y, px, py));
+}
