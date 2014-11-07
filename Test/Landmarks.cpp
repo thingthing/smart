@@ -2,14 +2,31 @@
 
 Landmarks::Landmark::Landmark()
 {
-  pos[0] = 0;
-  pos[1] = 0;
-  id = -1;
-  life = LIFE;
-  totalTimeObserved = 0;
-  range = -1;
-  bearing = -1;
+  this->pos[0] = 0.0;
+  this->pos[1] = 0.0;
+  this->id = -1;
+  this->life = LIFE;
+  this->totalTimeObserved = 0;
+  this->range = -1;
+  this->bearing = -1;
 }
 
 Landmarks::Landmark::~Landmark()
 {}
+
+Landmarks::Landmarks(double degrees)
+{
+  this->DBSize = 0;
+  this->EKFLandmarks = 0;
+  this->degreePerScan = degrees;
+  this->IDtoID.reserve(MAXLANDMARKS);
+  this->landmarkDB.reserve(MAXLANDMARKS);
+}
+
+Landmarks::~Landmarks()
+{}
+
+int Landmarks::getDBSize() const
+{
+  return (this->DBSize);
+}
