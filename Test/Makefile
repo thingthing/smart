@@ -12,6 +12,10 @@ OBJS	=	$(SRCS:.cpp=.o)
 
 all	: $(NAME)
 
+unit	: CXXFLAGS += -D UNITTEST
+unit	: fclean $(OBJS)
+	$(CXX) $(OBJS) -o $(NAME)
+
 $(NAME)	: $(OBJS)
 	$(CXX) $(OBJS) -o $(NAME)
 
