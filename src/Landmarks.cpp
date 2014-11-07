@@ -88,7 +88,7 @@ int Landmarks::addToDB(const Landmark &lm)
   if(static_cast<unsigned int>(DBSize + 1) < this->landmarkDB.size())
     {
       new_elem = new Landmarks::Landmark();
-      
+
       new_elem->pos[0] = lm.pos[0];
       new_elem->pos[1] = lm.pos[1];
       new_elem->life = LIFE;
@@ -115,13 +115,13 @@ double Landmarks::distanceToLine(double x, double y, double a, double b)
   return (this->distance(x, y, px, py));
 }
 
-std::vector<Landmarks::Landmark *>Landmarks::getLandmarkDB() const
+std::vector<Landmarks::Landmark *> Landmarks::getLandmarkDB() const
 {
   std::vector<Landmark *> res;
 
   for (int i = 0; i < this->DBSize; ++i)
     {
-      res[i] = this->landmarkDB[i];
+      res[i] = new Landmarks::Landmark(*this->landmarkDB[i]);
     }
   return (res);
 }
