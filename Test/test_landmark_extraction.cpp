@@ -127,3 +127,30 @@ When(adding_one_Slam_Id)
   Landmarks lms;
   int	previousLandmarksNumber;
 };
+
+/**
+ * Unit test for getSlamId()
+ **/
+When(getting_Slam_Id)
+{
+  
+  void	SetUp()
+  {
+    lms.addSlamId(::Landmarks_Result::wrongSlamId.first, ::Landmarks_Result::wrongSlamId.second);
+    lms.addSlamId(::Landmarks_Result::goodSlamId.first, ::Landmarks_Result::goodSlamId.second);
+  }
+  
+  Then(it_should_not_return_the_bad_id)
+  {
+    Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
+		 Is().Not().EqualTo(::Landmarks_Result::wrongSlamId.second));
+  }
+
+  Then(it_should_return_the_good_id)
+  {
+    Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first), Is().EqualTo(::Landmarks_Result::goodSlamId.second));
+  }
+
+  Landmarks lms;
+};
+
