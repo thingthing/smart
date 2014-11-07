@@ -66,3 +66,8 @@ int Landmarks::getAssociation(Landmark &lm)
     }
   return -1;
 }
+
+double Landmarks::distance(double x1, double y1, double x2, double y2) const
+{
+  return (sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)));
+}
