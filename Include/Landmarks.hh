@@ -49,13 +49,13 @@ public:
 
   int getSLamId(int id) const;
   int addSlamId(int landmarkId, int slamId);
-  int removeBadLandmarks(double laserdata[], double robotPosition[]); // Possibly change array to vector ? Depends of the robot
-  int removeBadLandmarks(const std::vector<double> & laserdata, const std::vector<double> & robotPosition); // both to be sure
+  int removeBadLandmarks(double cameradata[], double robotPosition[]); // Possibly change array to vector ? Depends of the robot
+  int removeBadLandmarks(const std::vector<double> & cameradata, const std::vector<double> & robotPosition); // both to be sure
 
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], int id[], double ranges[], double bearings[], double robotPosition[]);
   int updateLineLandmark(const Landmark &lm);
-  std::vector<Landmark *> extractLineLandmarks(double laserdata[], double robotPosition[]);
+  std::vector<Landmark *> extractLineLandmarks(double cameradata[], double robotPosition[]);
 
   // matched is an array of boolean
   // id is an arary of int
@@ -72,9 +72,9 @@ private:
   Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);
   Landmark *udpdateLandmark(Landmark *lm);
 
-  void leastSquaresLineEstimate(double laserdata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
-  std::vector<Landmark *> extractSpikeLandmarks(double laserdata[], double robotPosition[]);
+  std::vector<Landmark *> extractSpikeLandmarks(double cameradata[], double robotPosition[]);
   Landmark *getLandmark(double range, int readingNo, double robotPosition[]);
   Landmark *getLineLandmark(double a, double b, double robotPosition[]);
   Landmark *getLine(double a, double b);
