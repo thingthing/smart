@@ -16,7 +16,7 @@ namespace	Landmarks_Result
   int		DBSize = 0;
   int		EKFLandmarks = 0;
   double	defaultdegreePerScan = DEGREESPERSCAN;
-  double	degreePerScan = 0.4; 
+  double	degreePerScan = 0.42; 
   int		sizeIDtoID = MAXLANDMARKS;
   int		sizelandmarkDB = MAXLANDMARKS;
 };
@@ -52,3 +52,29 @@ When(creating_Landmarks)
 
   Landmarks lms;
 };
+
+When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
+{
+  void SetUp()
+  {
+    lms = new ::Landmarks(::Landmarks_Result::degreePerScan);
+  }
+
+  Then(it_should_not_have_default_degree_value)
+  {
+    Assert::That(lms->degreePerScan, Is().Not().EqualTo(::Landmarks_Result::defaultdegreePerScan));
+  }
+  
+  Then(it_should_have_this_specific_degree_value)
+  {
+    Assert::That(lms->degreePerScan, Is().EqualTo(::Landmarks_Result::degreePerScan));
+  }
+
+  void	TearDown()
+  {
+    delete lms;
+  }
+
+  Landmarks *lms;
+};
+
