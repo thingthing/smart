@@ -1,6 +1,7 @@
 #include "igloo/igloo_alt.h"
 #include "Landmarks.hh"
 #include "test_data.hh"
+#include "CustomConstraint.hh"
 
 using namespace igloo;
 
@@ -199,3 +200,50 @@ When(adding_landmark_to_db)
   int			idLandmark;
 };
 
+/**
+ * Unit test for getLandmarkDb()
+ **/
+When(getting_LandmarkDB)
+{
+  
+  void	SetUp()
+  {
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    db = lms.getLandmarkDB();
+  }
+  
+  Then(it_should_hae_the_same_size)
+  {
+    Assert::That(db.size(), Is().EqualTo(lms.DBSize));
+  }
+
+  Then(it_should_have_the_same_elements)
+  {
+    for(int i = 0; i < lms.DBSize; ++i)
+      {
+	Assert::That(db[i], Fulfills(IsSameLandmark(lms.landmarkDB[i])));
+      }
+  }
+
+  Then(it_should_be_a_copy)
+  {
+    double oldPos[2] = {lms.landmarkDB[id1]->pos[0], lms.landmarkDB[id1]->pos[1]};
+    double oldRange = lms.landmarkDB[id1]->range;
+
+    lms.landmarkDB[id1]->pos[0] = oldPos[0] + 1;
+    lms.landmarkDB[id1]->range = oldRange + 1;
+
+    Assert::That(db[id1], Is().Not().Fulfilling(IsSameLandmark(lms.landmarkDB[id1])));
+
+    Assert::That(db[id1]->pos[0], Is().EqualTo(oldPos[0]));
+    Assert::That(db[id1]->range, Is().EqualTo(oldRange));
+  }
+
+  Landmarks lms;
+  Landmarks::Landmark lm1;
+  Landmarks::Landmark lm2;
+  std::vector<Landmarks::Landmark *> db;
+  int	id1;
+  int	id2;
+};
