@@ -148,9 +148,42 @@ When(getting_Slam_Id)
 
   Then(it_should_return_the_good_id)
   {
-    Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first), Is().EqualTo(::Landmarks_Result::goodSlamId.second));
+    Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
+		 Is().EqualTo(::Landmarks_Result::goodSlamId.second));
   }
 
   Landmarks lms;
+};
+
+/**
+ * Unit test for addToDB()
+ **/
+When(adding_landmark_to_db)
+{
+  
+  void	SetUp()
+  {
+    previousDBSize = lms.DBSize;
+    lms.addToDB(lm);
+  }
+  
+  Then(DBSize_should_be_increased_by_one)
+  {
+    Assert::That(lms.DBSize, Is().EqualTo(previousDBSize + 1));
+  }
+
+  // Then(it_return_the_good_id)
+  // {
+  //   Assert::That();
+  // }
+
+  // Then(it_have_the_good_landmark)
+  // {
+  //   Assert::That();
+  // }
+
+  Landmarks::Landmark	lm;
+  Landmarks		lms;
+  int			previousDBSize;
 };
 
