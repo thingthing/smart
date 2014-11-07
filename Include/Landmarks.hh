@@ -16,7 +16,7 @@ static const unsigned int MAXSAMPLE = 10; // RANSAC: randomly select x points
 static const unsigned int MINLINEPOINTS = 30; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
 static const double RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
 static const unsigned int RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
-static const double DEGRESSPERSCAN = 0.5;
+static const double DEGREESPERSCAN = 0.5;
 
 class Landmarks
 {
@@ -44,9 +44,8 @@ public:
 
 
 public:
-  Landmarks();
   ~Landmarks();
-  Landmarks(double degreePerScan);
+  Landmarks(double degreePerScan = DEGREESPERSCAN);
 
   int getSLamId(int id) const;
   int addSlamId(int landmarkId, int slamId);
@@ -87,8 +86,11 @@ private:
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
 
-
-private:
+private: // PRIVATE OTHER CASES
+#ifdef UNITTEST
+public: // ONLY FOR UNIT TESTS
+#endif
+  double degreePerScan;
   std::vector<Landmark *> landmarkDB;
   int DBSize;
   std::vector<std::pair<int, int> > IDtoID;
