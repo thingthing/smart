@@ -3,8 +3,9 @@
 
 #include <vector>
 #include <map>
+#include <cmath>
 
-static const double CONVERSION = (Math.PI / 180.0); // Convert to radians
+static const double CONVERSION = (M_PI / 180.0); // Convert to radians
 static const unsigned int MAXLANDMARKS = 3000; // Max number of landmarks
 static const double MAXERROR = 0.5; // If a landmarks is within this distance of another landmarks, its the same landmarks
 static const unsigned int MINOBSERVATIONS = 15; // Number of times a landmark must be observed to be recongnized as a landmark
@@ -56,8 +57,13 @@ public:
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], int id[], double ranges[], double bearings[], double robotPosition[]);
   int updateLineLandmark(const Landmark &lm);
   std::vector<Landmark *> extractLineLandmarks(double laserdata[], double robotPosition[]);
-  int alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool &matched[], int &id[],
-			double &ranges[], double &bearings[], std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
+
+  // matched is an array of boolean
+  // id is an arary of int
+  // ranges is an array of double
+  // bearings is an array of double
+  int alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id,
+			double *ranges, double *bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
   int addToDB(const Landmark &lm);
 
   int getDBSize() const;
