@@ -1,28 +1,12 @@
-#include <igloo/igloo_alt.h>
-#include <Landmarks.hh>
-
-namespace	Landmark_Result
-{
-  int		id = -1;
-  int		life = LIFE;
-  int		totalTimesObserved = 0;
-  double	range = -1;
-  double	bearing = -1;
-  double	pos[2] = {0.0, 0.0};
-};
-
-namespace	Landmarks_Result
-{
-  int		DBSize = 0;
-  int		EKFLandmarks = 0;
-  double	defaultdegreePerScan = DEGREESPERSCAN;
-  double	degreePerScan = 0.42; 
-  int		sizeIDtoID = MAXLANDMARKS;
-  int		sizelandmarkDB = MAXLANDMARKS;
-};
+#include "igloo/igloo_alt.h"
+#include "Landmarks.hh"
+#include "test_data.hh"
 
 using namespace igloo;
 
+/**
+ * Unit test for Landmark constructor
+ **/
 When(creating_a_landmark)
 {
   Then(it_should_have_default_value)
@@ -39,6 +23,9 @@ When(creating_a_landmark)
   ::Landmarks::Landmark	lm;
 };
 
+/**
+ * Unit test for default Landmarks constructor
+ **/
 When(creating_Landmarks)
 {
   Then(it_should_have_default_landmarks_value)
@@ -53,6 +40,9 @@ When(creating_Landmarks)
   Landmarks lms;
 };
 
+/**
+ * Unit test for specifi Landmarks constructor : Landmarks(double)
+ **/
 When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
 {
   void SetUp()
@@ -78,6 +68,9 @@ When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
   Landmarks *lms;
 };
 
+/**
+ * Unit test for getDbSize() before any change
+ */
 When(calling_getDBSize_after_construct)
 {
 
@@ -89,6 +82,9 @@ When(calling_getDBSize_after_construct)
   Landmarks lms;
 };
 
+/**
+ * Unit test for getDbSize() after change
+ **/
 When(calling_getDBSize_after_DBSize_changed)
 {
 
@@ -105,3 +101,27 @@ When(calling_getDBSize_after_DBSize_changed)
   Landmarks lms;
 };
 
+/**
+ * Unit test for getSlamId()
+ **/
+// When(getting_Slam_Id)
+// {
+  
+//   void	SetUp()
+//   {
+//     lms.IDtoID[0] = ::Landmarks_Result::wrongSlamId;
+//     lms.IDtoID[1] = ::Landmarks_Result::goodSlamId;
+//   }
+  
+//   Then(it_should_not_return_the_bad_id)
+//   {
+//     Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first), Is().Not().EqualTo(::Landmarks_Result::wrongSlamId.second));
+//   }
+
+//   Then(it_should_return_the_good_id)
+//   {
+//     Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first), Is().EqualTo(::Landmarks_Result::goodSlamId.second));
+//   }
+
+//   Landmarks lms;
+// };
