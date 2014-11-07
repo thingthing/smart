@@ -76,3 +76,22 @@ double Landmarks::distance(const Landmark &lm1, const Landmark &lm2) const
 {
   return (sqrt(pow(lm1.pos[0] - lm2.pos[0], 2) + pow(lm1.pos[1] - lm2.pos[1], 2)));
 }
+
+int Landmarks::addToDB(const Landmark &lm)
+{
+  if(static_cast<unsigned int>(DBSize + 1) < this->landmarkDB.size())
+    {
+      landmarkDB[DBSize]->pos[0] = lm.pos[0];
+      landmarkDB[DBSize]->pos[1] = lm.pos[1];
+      landmarkDB[DBSize]->life = LIFE;
+      landmarkDB[DBSize]->id = DBSize;
+      landmarkDB[DBSize]->totalTimeObserved = 1;
+      landmarkDB[DBSize]->bearing = lm.bearing;
+      landmarkDB[DBSize]->range = lm.range;
+      landmarkDB[DBSize]->a = lm.a;
+      landmarkDB[DBSize]->b= lm.b;
+      ++DBSize;
+      return (DBSize - 1);
+    }
+  return (-1);
+}
