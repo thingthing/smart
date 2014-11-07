@@ -104,3 +104,14 @@ double Landmarks::distanceToLine(double x, double y, double a, double b)
   double py = ((ao * (b - bo)) / (ao - a)) + bo;
   return (this->distance(x, y, px, py));
 }
+
+std::vector<Landmarks::Landmark *>Landmarks::getLandmarkDB() const
+{
+  std::vector<Landmark *> res;
+
+  for (int i = 0; i < this->DBSize; ++i)
+    {
+      res[i] = this->landmarkDB[i];
+    }
+  return (res);
+}
