@@ -71,3 +71,8 @@ double Landmarks::distance(double x1, double y1, double x2, double y2) const
 {
   return (sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)));
 }
+
+double Landmarks::distance(const Landmark &lm1, const Landmark &lm2) const
+{
+  return (sqrt(pow(lm1.pos[0] - lm2.pos[0], 2) + pow(lm1.pos[1] - lm2.pos[1], 2)));
+}
