@@ -16,11 +16,13 @@ Landmarks::Landmark::~Landmark()
 
 Landmarks::Landmarks(double degrees)
 {
+  std::vector<std::pair<int, int> > idCpy(MAXLANDMARKS);
+  std::vector<Landmarks::Landmark *> landmarkCpy(MAXLANDMARKS);
   this->DBSize = 0;
   this->EKFLandmarks = 0;
   this->degreePerScan = degrees;
-  this->IDtoID.reserve(MAXLANDMARKS);
-  this->landmarkDB.reserve(MAXLANDMARKS);
+  this->IDtoID = idCpy;
+  this->landmarkDB = landmarkCpy;
 }
 
 Landmarks::~Landmarks()
@@ -46,7 +48,7 @@ int Landmarks::addSlamId(int landmarkID, int slamID)
   std::pair<int, int> newSlamID;
   newSlamID.first = landmarkID;
   newSlamID.second = slamID;
-  this->IDtoID.push_back(newSlamID);
+  this->IDtoID[EKFLandmarks] = newSlamID;
   ++this->EKFLandmarks;
   return (0);
 }
@@ -77,19 +79,27 @@ double Landmarks::distance(const Landmark &lm1, const Landmark &lm2) const
   return (sqrt(pow(lm1.pos[0] - lm2.pos[0], 2) + pow(lm1.pos[1] - lm2.pos[1], 2)));
 }
 
+#include <iostream>
+
 int Landmarks::addToDB(const Landmark &lm)
 {
+  Landmarks::Landmark	*new_elem;
+
   if(static_cast<unsigned int>(DBSize + 1) < this->landmarkDB.size())
     {
-      landmarkDB[DBSize]->pos[0] = lm.pos[0];
-      landmarkDB[DBSize]->pos[1] = lm.pos[1];
-      landmarkDB[DBSize]->life = LIFE;
-      landmarkDB[DBSize]->id = DBSize;
-      landmarkDB[DBSize]->totalTimeObserved = 1;
-      landmarkDB[DBSize]->bearing = lm.bearing;
-      landmarkDB[DBSize]->range = lm.range;
-      landmarkDB[DBSize]->a = lm.a;
-      landmarkDB[DBSize]->b= lm.b;
+      new_elem = new Landmarks::Landmark();
+      
+      new_elem->pos[0] = lm.pos[0];
+      new_elem->pos[1] = lm.pos[1];
+      new_elem->life = LIFE;
+      new_elem->id = DBSize;
+      new_elem->totalTimeObserved = 1;
+      new_elem->bearing = lm.bearing;
+      new_elem->range = lm.range;
+      new_elem->a = lm.a;
+      new_elem->b = lm.b;
+
+      landmarkDB[DBSize] = new_elem;
       ++DBSize;
       return (DBSize - 1);
     }
