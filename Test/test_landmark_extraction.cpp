@@ -1,7 +1,6 @@
 #include <igloo/igloo_alt.h>
 #include <Landmarks.hh>
 
-// Add true landmarks class when ready
 namespace	Landmark_Result
 {
   int		id = -1;
@@ -16,8 +15,10 @@ namespace	Landmarks_Result
 {
   int		DBSize = 0;
   int		EKFLandmarks = 0;
-  double	defaultdegreePerScan = 0.5;
-  double	degreePerScan = 4.2;
+  double	defaultdegreePerScan = DEGREESPERSCAN;
+  double	degreePerScan = 0.42; 
+  int		sizeIDtoID = MAXLANDMARKS;
+  int		sizelandmarkDB = MAXLANDMARKS;
 };
 
 using namespace igloo;
@@ -40,11 +41,40 @@ When(creating_a_landmark)
 
 When(creating_Landmarks)
 {
-  Then(should_have_default_landmarks_value)
+  Then(it_should_have_default_landmarks_value)
   {
-    Assert::That(lms.getDBSize(), Is().EqualTo(::Landmarks_Result::DBSize));
+    Assert::That(lms.DBSize, Is().EqualTo(::Landmarks_Result::DBSize));
+    Assert::That(lms.EKFLandmarks, Is().EqualTo(::Landmarks_Result::EKFLandmarks));
     Assert::That(lms.degreePerScan, Is().EqualTo(::Landmarks_Result::defaultdegreePerScan));
+    Assert::That(lms.IDtoID.capacity(), Is().EqualTo(::Landmarks_Result::sizeIDtoID));
+    Assert::That(lms.landmarkDB.capacity(), Is().EqualTo(::Landmarks_Result::sizelandmarkDB));
   }
 
   Landmarks lms;
 };
+
+When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
+{
+  void SetUp()
+  {
+    lms = new ::Landmarks(::Landmarks_Result::degreePerScan);
+  }
+
+  Then(it_should_not_have_default_degree_value)
+  {
+    Assert::That(lms->degreePerScan, Is().Not().EqualTo(::Landmarks_Result::defaultdegreePerScan));
+  }
+  
+  Then(it_should_have_this_specific_degree_value)
+  {
+    Assert::That(lms->degreePerScan, Is().EqualTo(::Landmarks_Result::degreePerScan));
+  }
+
+  void	TearDown()
+  {
+    delete lms;
+  }
+
+  Landmarks *lms;
+};
+
