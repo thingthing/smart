@@ -25,9 +25,6 @@ Landmarks::Landmarks(double degrees)
   this->landmarkDB = landmarkCpy;
 }
 
-/**
- * @TODO: Clean LandmarkDB
- **/
 Landmarks::~Landmarks()
 {
   for (unsigned int i = 0; i < this->landmarkDB.size(); ++i)
