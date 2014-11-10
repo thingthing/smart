@@ -70,6 +70,9 @@ public:
   std::vector<Landmark *> getLandmarkDB() const;
 
 private:
+#ifdef UNITTEST
+public: // ONLY FOR UNIT TESTS
+#endif
   Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);
   Landmark *udpdateLandmark(Landmark *lm);
 
