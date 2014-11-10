@@ -247,3 +247,68 @@ When(getting_LandmarkDB)
   int	id1;
   int	id2;
 };
+
+/**
+ * Unit test for getAssociation()
+ **/
+When(getting_association)
+{
+   
+  void	SetUp()
+  {
+    lm1.pos[0] = 4.2;
+    lm1.pos[1] = 2.4;
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+  }
+
+  When(it_is_a_already_seen_landmark)
+  {
+    void	SetUp()
+    {
+      Root().oldTimeObserved =  Root().lms.landmarkDB[Root().id1]->totalTimeObserved;
+      idGot = Root().lms.getAssociation(Root().lm1);
+    }
+    
+    Then(it_should_update_good_landmark)
+    {
+      Assert::That(idGot, Is().EqualTo(Root().id1));
+    }
+    
+    Then(it_should_increase_time_observed)
+    {
+      Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
+		   Is().EqualTo(Root().oldTimeObserved + 1));
+    }
+    
+    Then(it_should_reset_life_counter)
+    {
+      Assert::That(Root().lms.landmarkDB[Root().id1]->life, Is().EqualTo(LIFE));
+    }
+    int	idGot;
+  };
+
+  When(it_is_a_never_seen_landmark)
+  {
+    void	SetUp()
+    {
+      Root().lm2.pos[0] = 10;
+      Root().lm2.pos[1] = 8;
+      Root().oldTimeObserved = Root().lms.landmarkDB[Root().id2]->totalTimeObserved;
+    }
+    
+    Then(it_should_not_update)
+    {
+      Assert::That(Root().lms.getAssociation(Root().lm2), Is().EqualTo(-1));
+      Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
+		   Is().EqualTo(Root().oldTimeObserved));
+    }
+  };
+
+  Landmarks lms;
+  Landmarks::Landmark lm1;
+  Landmarks::Landmark lm2;
+  int	id1;
+  int	id2;
+  int	oldTimeObserved;
+};
