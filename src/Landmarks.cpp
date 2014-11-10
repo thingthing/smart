@@ -238,3 +238,12 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
     }
   return (lm);
 }
+
+int Landmarks::updateLineLandmark(Landmark &lm) // cannot be const, getassociation modify it
+{
+  int id = this->getAssociation(lm);
+
+  if (id == -1)
+    id = this->addToDB(lm);
+  return (id);
+}
