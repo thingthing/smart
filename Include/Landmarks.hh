@@ -54,10 +54,11 @@ public:
 
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], int id[], double ranges[], double bearings[], double robotPosition[]);
-  int updateLineLandmark(const Landmark &lm);
+  int updateLineLandmark(Landmark &lm);
   std::vector<Landmark *> extractLineLandmarks(double cameradata[], double robotPosition[]);
 
   // matched is an array of boolean
+  // id is an arary of int
   // id is an arary of int
   // ranges is an array of double
   // bearings is an array of double
