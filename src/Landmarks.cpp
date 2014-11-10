@@ -29,7 +29,12 @@ Landmarks::Landmarks(double degrees)
  * @TODO: Clean LandmarkDB
  **/
 Landmarks::~Landmarks()
-{}
+{
+  for (unsigned int i = 0; i < this->landmarkDB.size(); ++i)
+    {
+      delete (this->landmarkDB[i]);
+    }
+}
 
 int Landmarks::getDBSize() const
 {
@@ -49,6 +54,7 @@ int Landmarks::getSLamId(int id) const
 int Landmarks::addSlamId(int landmarkID, int slamID)
 {
   std::pair<int, int> newSlamID;
+
   newSlamID.first = landmarkID;
   newSlamID.second = slamID;
   this->IDtoID[EKFLandmarks] = newSlamID;
@@ -69,7 +75,7 @@ int Landmarks::getAssociation(Landmark &lm)
 	  return (landmarkDB[i]->id);
 	}
     }
-  return -1;
+  return (-1);
 }
 
 double Landmarks::distance(double x1, double y1, double x2, double y2) const
@@ -121,9 +127,7 @@ std::vector<Landmarks::Landmark *> Landmarks::getLandmarkDB() const
   std::vector<Landmark *> res(this->DBSize);
 
   for (int i = 0; i < this->DBSize; ++i)
-    {
-      res[i] = new Landmarks::Landmark(*this->landmarkDB[i]);
-    }
+    res[i] = new Landmarks::Landmark(*this->landmarkDB[i]);
   return (res);
 }
 
