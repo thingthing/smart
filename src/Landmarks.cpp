@@ -213,3 +213,31 @@ Landmarks::Landmark *Landmarks::udpdateLandmark(Landmark *lm)
   lm->id = newId;
   return (lm);
 }
+
+Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[])
+{
+  Landmarks::Landmark *lm;
+
+  if (matched && this->landmarkDB.size() > static_cast<unsigned int>(id))
+    {
+      // it exists in the DB
+      ++this->landmarkDB[id]->totalTimeObserved;
+      lm = this->landmarkDB[id];
+    }
+  else
+    {
+      // doesn't exist in the DB/fail to matched, so that, we've to add this sample
+      lm = new Landmarks::Landmark();
+
+      lm->pos[0] = cos((readingNo * this->degreePerScan * CONVERSION) +
+		       (robotPosition[2] * CONVERSION)) * distance;
+      lm->pos[0] = sin((readingNo * this->degreePerScan * CONVERSION) +
+		       (robotPosition[2] * CONVERSION)) * distance;
+
+      lm->pos[1] = 0;
+      lm->bearing = readingNo;
+      lm->range = distance;
+      lm->id = this->addToDB(*lm);
+    }
+  return (lm);
+}
