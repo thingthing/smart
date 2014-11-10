@@ -182,3 +182,20 @@ void Landmarks::leastSquaresLineEstimate(double cameradata[], double robotPositi
   b = (sumY * sumXX - sumX * sumYX) / (arraySize * sumXX - pow(sumX, 2));
   a = (arraySize * sumYX - sumX * sumY) / (arraySize * sumXX - pow(sumX, 2));
 }
+
+Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double robotPosition[])
+{
+  Landmarks::Landmark *lm = new Landmarks::Landmark();
+  int id = -1;
+  int totalTimeObserved = 0;
+
+  lm->pos[0] = (cos((readingNo * this->degreePerScan * CONVERSION) +
+		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[0];
+  lm->pos[1] = (sin((readingNo * this->degreePerScan * CONVERSION) +
+		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[0];
+  lm->range = range;
+  lm->bearing = readingNo;
+  this->getClosestAssociation(lm, id, totalTimeObserved);
+  lm->id = id;
+  return (lm);
+}
