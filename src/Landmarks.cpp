@@ -115,6 +115,9 @@ int Landmarks::addToDB(const Landmark &lm)
 
 double Landmarks::distanceToLine(double x, double y, double a, double b)
 {
+  // calculate point on line closest to (x, y)
+  // use this point to calculate distance between them
+
   double ao = -1.0 / a;
   double bo = y - ao * x;
   double px = (b - bo) / (ao - a);
@@ -197,5 +200,16 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double 
   lm->bearing = readingNo;
   this->getClosestAssociation(lm, id, totalTimeObserved);
   lm->id = id;
+  return (lm);
+}
+
+Landmarks::Landmark *Landmarks::udpdateLandmark(Landmark *lm)
+{
+  int newId = this->getAssociation(*lm);
+
+  if (newId == -1)
+    newId = this->addToDB(*lm);
+
+  lm->id = newId;
   return (lm);
 }
