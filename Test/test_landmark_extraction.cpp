@@ -374,7 +374,6 @@ When(getting_closest_association_landmark)
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
       Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1; 
-      Root().oldTimeObserved = Root().timeObservedResult;
       Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
     }
 
@@ -387,6 +386,138 @@ When(getting_closest_association_landmark)
     {
       Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
     }
+  };
+
+  When(there_is_more_than_one_landmark_without_enough_observation)
+  {
+    void	SetUp()
+    {
+      Root().id1 = Root().lms.addToDB(Root().lm1);
+      Root().id2 = Root().lms.addToDB(Root().lm2);
+      Root().oldTimeObserved = Root().timeObservedResult;
+      Root().lms.getClosestAssociation(&(Root().lm2), Root().idResult, Root().timeObservedResult);
+    }
+
+    Then(it_should_set_id_to_minus_one)
+    {
+      Assert::That(Root().idResult, Is().EqualTo(-1));
+    }
+
+    Then(it_should_not_change_total_time_observed)
+    {
+      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
+    }
+  };
+
+  When(there_is_more_than_one_landmark_and_one_with_enough_observation)
+  {
+    void	SetUp()
+    {
+      Root().id1 = Root().lms.addToDB(Root().lm1);
+      Root().id2 = Root().lms.addToDB(Root().lm2);
+      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1; 
+    }
+    
+    When(trying_with_the_one_that_has_enough_observation)
+    {
+      void	SetUp()
+      {
+	Root().lms.getClosestAssociation(&(Root().lm2), Root().idResult, Root().timeObservedResult);
+      }
+
+      Then(it_should_set_id_to_good_landmarkId)
+      {
+	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+      }
+      
+      Then(it_should_change_total_time_observed)
+      {
+	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+      }
+    };
+
+    When(trying_with_the_one_that_has_not_enough_observation)
+    {
+      void	SetUp()
+      {
+	Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
+      }
+
+      Then(it_should_set_id_to_good_landmarkId)
+      {
+	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+      }
+      
+      Then(it_should_change_total_time_observed)
+      {
+	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+      }
+    };
+  };
+
+  When(there_is_more_than_one_landmark_and_all_with_enough_observation)
+  {
+    void	SetUp()
+    {
+      Root().id1 = Root().lms.addToDB(Root().lm1);
+      Root().id2 = Root().lms.addToDB(Root().lm2);
+      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1; 
+      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1; 
+    }
+
+    When(trying_with_one)
+    {
+      void	SetUp()
+      {
+	Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
+      }
+
+      Then(it_should_set_id_to_good_landmarkId)
+      {
+	Assert::That(Root().idResult, Is().EqualTo(Root().id1));
+      }
+      
+      Then(it_should_change_total_time_observed)
+      {
+	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
+      }
+    };
+
+    When(trying_with_the_other)
+    {
+      void	SetUp()
+      {
+	Root().lms.getClosestAssociation(&(Root().lm2), Root().idResult, Root().timeObservedResult);
+      }
+
+      Then(it_should_set_id_to_good_landmarkId)
+      {
+	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+      }
+      
+      Then(it_should_change_total_time_observed)
+      {
+	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+      }
+    };
+
+    When(trying_with_one_that_is_not_in_db)
+    {
+      void	SetUp()
+      {
+	Root().lms.getClosestAssociation(&(Root().lm3), Root().idResult, Root().timeObservedResult);
+      }
+
+      Then(it_should_set_id_to_the_closest_landmarkId)
+      {
+	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+      }
+      
+      Then(it_should_change_total_time_observed)
+      {
+	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+      }
+    };
   };
 
   Landmarks		lms;
