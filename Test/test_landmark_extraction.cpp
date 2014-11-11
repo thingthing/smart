@@ -578,3 +578,69 @@ When(getting_landmark)
   double	range;
   double	bearing;
 };
+
+/**
+ * Unit Test for updateLandmark(Landmark *)
+ **/
+When(updating_landmarks_with_a_landmark)
+{
+  void		SetUp()
+  {
+    lm1.pos[0] = 42;
+    lm1.pos[1] = 24;
+    lm2.pos[0] = 12;
+    lm2.pos[1] = 5;
+
+    id1 = lms.addToDB(lm1);
+  }
+  
+  When(landmark_is_not_in_db)
+  {
+    void	SetUp()
+    {
+      Root().oldDBSize = Root().lms.DBSize;
+      Root().oldId = Root().lm2.id;
+      Root().lm3 = Root().lms.updateLandmark(&(Root().lm2));
+    }
+
+    Then(it_should_add_the_landmark_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
+    }
+
+    Then(it_should_set_landmark_id_to_the_db_id)
+    {
+      Assert::That(Root().lm3->id, Is().Not().EqualTo(Root().oldId));
+      Assert::That(Root().lm3->id, Is().EqualTo(Root().lms.DBSize - 1));
+    }
+  };
+  
+  When(landmark_is_in_db)
+  {
+    void	SetUp()
+    {
+      Root().oldDBSize = Root().lms.DBSize;
+      Root().oldId = Root().lm1.id;
+      Root().lm3 = Root().lms.updateLandmark(&(Root().lm1));
+    }
+
+    Then(it_should_not_add_the_landmark_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+    }
+
+    Then(it_should_set_landmark_id_to_the_db_id)
+    {
+      Assert::That(Root().lm3->id, Is().Not().EqualTo(Root().oldId));
+      Assert::That(Root().lm3->id, Is().EqualTo(Root().id1));
+    }
+  };
+
+  Landmarks	lms;
+  Landmarks::Landmark lm1;
+  Landmarks::Landmark lm2;
+  Landmarks::Landmark *lm3;
+  int		id1;
+  int		oldDBSize;
+  int		oldId;
+};
