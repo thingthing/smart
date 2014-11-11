@@ -348,6 +348,27 @@ When(getting_closest_association_landmark)
     }
   };
 
+  When(there_is_one_landmark_with_not_enough_observation)
+  {
+    void	SetUp()
+    {
+      Root().lm1.totalTimeObserved = 1;
+      Root().id1 = Root().lms.addToDB(Root().lm1);
+      Root().oldTimeObserved = Root().timeObservedResult;
+      Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
+    }
+
+    Then(it_should_set_id_to_landmark_id)
+    {
+      Assert::That(Root().idResult, Is().EqualTo(-1));
+    }
+
+    Then(it_should_change_total_time_observed)
+    {
+      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
+    }
+ };
+
   Landmarks		lms;
   Landmarks::Landmark	lm1;
   Landmarks::Landmark	lm2;
