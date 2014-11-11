@@ -644,3 +644,66 @@ When(updating_landmarks_with_a_landmark)
   int		oldDBSize;
   int		oldId;
 };
+
+/**
+ * Unit test for updateLineLandmark()
+ **/
+When(getting_line_landmark)
+{
+  void	SetUp()
+  {
+    lm1.pos[0] = 42;
+    lm1.pos[1] = 24;
+    lm2.pos[0] = 12;
+    lm2.pos[1] = 5;
+
+    id1 = lms.addToDB(lm1);
+  }
+
+  When(landmark_is_not_in_db)
+  {
+    void	SetUp()
+    {
+      Root().oldDBSize = Root().lms.DBSize;
+      Root().idResult = Root().lms.updateLineLandmark(Root().lm2);
+    }
+
+    Then(it_should_add_landmark_to_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
+    }
+
+    Then(it_should_return_new_landmark_id)
+    { 
+      Assert::That(Root().idResult, Is().Not().EqualTo(-1));
+      Assert::That(Root().idResult, Is().EqualTo(Root().lms.DBSize - 1));
+    }
+  };
+
+  When(landmark_is_in_db)
+  {
+    void	SetUp()
+    {
+      Root().lms.addToDB(Root().lm2);
+      Root().oldDBSize = Root().lms.DBSize;
+      Root().idResult = Root().lms.updateLineLandmark(Root().lm1);
+    }
+
+    Then(it_should_not_add_landmark_to_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+    }
+
+    Then(it_should_return_db_landmark_id)
+    { 
+      Assert::That(Root().idResult, Is().EqualTo(Root().id1));
+    }
+  };
+
+  Landmarks	lms;
+  Landmarks::Landmark lm1;
+  Landmarks::Landmark lm2;
+  int		id1;
+  int		idResult;
+  int		oldDBSize;
+};
