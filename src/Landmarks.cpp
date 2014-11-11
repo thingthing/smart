@@ -192,7 +192,7 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double 
   lm->pos[0] = (cos((readingNo * this->degreePerScan * CONVERSION) +
 		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[0];
   lm->pos[1] = (sin((readingNo * this->degreePerScan * CONVERSION) +
-		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[0];
+		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[1];
   lm->range = range;
   lm->bearing = readingNo;
   this->getClosestAssociation(lm, id, totalTimeObserved);
@@ -227,11 +227,9 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
       lm = new Landmarks::Landmark();
 
       lm->pos[0] = cos((readingNo * this->degreePerScan * CONVERSION) +
-		       (robotPosition[2] * CONVERSION)) * distance;
-      lm->pos[0] = sin((readingNo * this->degreePerScan * CONVERSION) +
-		       (robotPosition[2] * CONVERSION)) * distance;
-
-      lm->pos[1] = 0;
+		       (robotPosition[2] * CONVERSION)) * distance + robotPosition[0];
+      lm->pos[1] = sin((readingNo * this->degreePerScan * CONVERSION) +
+		       (robotPosition[2] * CONVERSION)) * distance + robotPosition[1];
       lm->bearing = readingNo;
       lm->range = distance;
       lm->id = this->addToDB(*lm);
