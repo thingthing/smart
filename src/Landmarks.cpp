@@ -183,6 +183,9 @@ void Landmarks::leastSquaresLineEstimate(double cameradata[], double robotPositi
   a = (arraySize * sumYX - sumX * sumY) / (arraySize * sumXX - pow(sumX, 2));
 }
 
+/**
+ * Need to do again, and add some comment
+ */
 Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double robotPosition[])
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
@@ -195,12 +198,13 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double 
 		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[1];
   lm->range = range;
   lm->bearing = readingNo;
+  //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème
   this->getClosestAssociation(lm, id, totalTimeObserved);
   lm->id = id;
   return (lm);
 }
 
-Landmarks::Landmark *Landmarks::udpdateLandmark(Landmark *lm)
+Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 {
   int newId = this->getAssociation(*lm);
 
@@ -211,6 +215,7 @@ Landmarks::Landmark *Landmarks::udpdateLandmark(Landmark *lm)
   return (lm);
 }
 
+// @TODO: correct it (the part when it does not exist, not the other one)
 Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[])
 {
   Landmarks::Landmark *lm;
