@@ -312,3 +312,49 @@ When(getting_association)
   int	id2;
   int	oldTimeObserved;
 };
+
+/**
+ * Unit test for getClosestAssociation()
+ **/
+When(getting_closest_association_landmark)
+{
+  void	SetUp()
+  {
+    lm1.pos[0] = 24;
+    lm1.pos[1] = 42;
+    lm2.pos[0] = 10;
+    lm2.pos[1] = 8;
+    lm3.pos[0] = 12;
+    lm3.pos[1] = 8;
+    timeObservedResult = 0;
+  }
+
+  When(there_are_no_landmark)
+  {
+    void	SetUp()
+    {
+      Root().oldTimeObserved = Root().timeObservedResult;
+      Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
+    }
+
+    Then(it_should_set_id_to_minus_one)
+    {
+      Assert::That(Root().idResult, Is().EqualTo(-1));
+    }
+
+    Then(it_should_not_change_total_time_observed)
+    {
+      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
+    }
+  };
+
+  Landmarks		lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  Landmarks::Landmark	lm3;
+  int		id1;
+  int		id2; 
+  int		idResult;
+  int		timeObservedResult;
+  int		oldTimeObserved;
+};
