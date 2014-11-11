@@ -530,3 +530,51 @@ When(getting_closest_association_landmark)
   int		timeObservedResult;
   int		oldTimeObserved;
 };
+
+/**
+ * Unit test for getLandmark()
+ * @TODO: add test when there is no good landmark in the database
+ **/
+When(getting_landmark)
+{
+  void	SetUp()
+  {
+    double	robotPosition[3] = {42, 22, 1};
+
+    lm1.pos[0] = 42;
+    lm1.pos[1] = 24;
+    lm2.pos[0] = 42;
+    lm2.pos[1] = 44;
+    range = 4.5;
+    bearing = 3;
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1; 
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1; 
+    lm3 = lms.getLandmark(range, bearing, robotPosition);
+  }
+
+  Then(it_should_return_one_of_the_db_landmark)
+  {
+    Assert::That(lm3->id, Is().EqualTo(id1));
+  }
+
+  Then(it_should_set_range)
+  {
+    Assert::That(lm3->range, Is().EqualTo(range));
+  }
+
+  Then(it_should_set_bearing)
+  {
+    Assert::That(lm3->bearing, Is().EqualTo(bearing));
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  Landmarks::Landmark	*lm3;
+  int		id1;
+  int		id2;
+  double	range;
+  double	bearing;
+};
