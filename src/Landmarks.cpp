@@ -204,7 +204,7 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double 
   return (lm);
 }
 
-Landmarks::Landmark *Landmarks::udpdateLandmark(Landmark *lm)
+Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 {
   int newId = this->getAssociation(*lm);
 

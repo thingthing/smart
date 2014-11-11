@@ -74,7 +74,7 @@ private:
 public: // ONLY FOR UNIT TESTS
 #endif
   Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);
-  Landmark *udpdateLandmark(Landmark *lm);
+  Landmark *updateLandmark(Landmark *lm);
 
   void leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
