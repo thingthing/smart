@@ -267,3 +267,32 @@ Landmarks::Landmark *Landmarks::getOrigin()
   lm->id = id;
   return (lm);
 }
+
+Landmarks::Landmark *Landmarks::getLine(double a, double b)
+{
+  Landmarks::Landmark *lm = new Landmarks::Landmark();
+
+  //our goal is to calculate point on line closest to origin (0,0)
+  //calculate line perpendicular to input line. a*ao = -1
+  double ao = -1.0 / a;
+  double x = b / (ao - a);
+
+  //get intersection between y = ax + b and y = aox
+  //so aox = ax + b => aox - ax = b => x = b/(ao - a), y = ao*b/(ao - a)
+  double y = (ao * b) / (ao - a);
+  int id = -1;
+  int totalTimesObserved = 0;
+
+  //convert landmark to map coordinate
+  lm->pos[0] =x;
+  lm->pos[1] =y;
+  lm->range = -1;
+  lm->bearing = -1;
+  lm->a = a;
+  lm->b = b;
+  //associate landmark to closest landmark.
+  this->getClosestAssociation(lm, id, totalTimesObserved);
+  lm->id = id;
+
+  return (lm);
+}
