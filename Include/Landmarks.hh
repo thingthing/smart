@@ -78,7 +78,8 @@ public: // ONLY FOR UNIT TESTS
 
   void leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
-  std::vector<Landmark *> extractSpikeLandmarks(double cameradata[], double robotPosition[]);
+  std::vector<Landmark *> extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber,
+						double robotPosition[]);
   Landmark *getLandmark(double range, int readingNo, double robotPosition[]);
   Landmark *getLineLandmark(double a, double b, double robotPosition[]);
   Landmark *getLine(double a, double b);

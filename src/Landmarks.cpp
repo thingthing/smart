@@ -339,3 +339,36 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robot
 
   return (lm);
 }
+
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber, double robotPosition[])
+{
+  //have a large array to keep track of found landmarks
+  std::vector<Landmarks::Landmark *> tempLandmarks;
+  for(unsigned int i = 0; i < 400; ++i)
+    tempLandmarks.push_back(new Landmarks::Landmark());
+  for (unsigned int i = 1; i < sampleNumber - 1 /* == cameradata.Length - 1 */; i++)
+    {
+      // Check for error measurement in laser data
+      if (cameradata[i - 1] < 8.1 && cameradata[i + 1] < 8.1)
+	{
+  	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > 0.5)
+  	    tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+  	  else
+  	    if((cameradata[i - 1] - cameradata[i]) > 0.3)
+	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+  	    else if (cameradata[i + 1] < 8.1)
+  	      if((cameradata[i + 1] - cameradata[i]) > 0.3)
+  		tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+	}
+    }
+
+  // copy landmarks into another vector
+  std::vector<Landmarks::Landmark *> foundLandmarks;
+  for(unsigned int i = 0; i < tempLandmarks.size(); ++i)
+    {
+      if(((int)tempLandmarks[i]->id) != -1)
+	foundLandmarks.push_back(new Landmarks::Landmark(*tempLandmarks[i]));
+      delete (tempLandmarks[i]);
+    }
+  return (foundLandmarks);
+}
