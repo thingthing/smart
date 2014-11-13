@@ -250,3 +250,20 @@ int Landmarks::updateLineLandmark(Landmark &lm) // cannot be const, getassociati
     id = this->addToDB(lm);
   return (id);
 }
+
+Landmarks::Landmark *Landmarks::getOrigin()
+{
+  Landmarks::Landmark *lm = new Landmarks::Landmark();
+  int id = -1;
+  int totalTimesObserved = 0;
+
+  lm->pos[0] = 0;
+  lm->pos[1] = 0;
+  lm->range = -1;
+  lm->bearing = -1;
+
+  //associate landmark to closest landmark.
+  this->getClosestAssociation(lm, id, totalTimesObserved);
+  lm->id = id;
+  return (lm);
+}
