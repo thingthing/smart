@@ -296,3 +296,46 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
 
   return (lm);
 }
+
+Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robotPosition[])
+{
+  //our goal is to calculate point on line closest to origin (0,0)
+  //calculate line perpendicular to input line. a*ao = -1
+  double ao = -1.0 / a;
+  //landmark position
+  double x = b / (ao - a);
+  double y = (ao * b) / (ao - a);
+  double range = sqrt(pow(x - robotPosition[0], 2) + pow(y - robotPosition[1], 2));
+  double bearing = atan((y - robotPosition[1]) / (x-robotPosition[0])) - robotPosition[2];
+  //now do same calculation but get point on wall closest to robot instead
+  //y = aox + bo => bo = y - aox
+  double bo = robotPosition[1] - ao * robotPosition[0];
+  //get intersection between y = ax + b and y = aox + bo
+  //so aox + bo = ax + b => aox - ax = b - bo => x = (b - bo)/(ao - a), y = ao*(b - bo)/(ao - a) + bo
+  double px = (b - bo) / (ao - a);
+  double py = ((ao * (b - bo)) / (ao - a)) + bo;
+  double rangeError = this->distance(robotPosition[0], robotPosition[1], px, py);
+  double bearingError = atan((py - robotPosition[1]) / (px - robotPosition[0]))
+    - robotPosition[2];  //do you subtract or add robot bearing? I am not sure!
+
+  Landmarks::Landmark *lm = new Landmarks::Landmark();
+  int id = 0;
+  int totalTimesObserved = 0;
+
+  //convert landmark to map coordinate
+  lm->pos[0] = x;
+  lm->pos[1] =y;
+  lm->range = range;
+  lm->bearing = bearing;
+  lm->a = a;
+  lm->b = b;
+  lm->rangeError = rangeError;
+  lm->bearingError = bearingError;
+
+  //associate landmark to closest landmark.
+  this->getClosestAssociation(lm, id, totalTimesObserved);
+  lm->id = id;
+  lm->totalTimeObserved = totalTimesObserved;
+
+  return (lm);
+}
