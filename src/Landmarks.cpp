@@ -372,3 +372,50 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
     }
   return (foundLandmarks);
 }
+
+std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks::Landmark *> extractedLandmarks)
+{
+  // int uniquelmrks = 0;
+  double leastDistance = 99999;
+  double temp;
+  std::vector<Landmarks::Landmark *> uniqueLandmarks;
+  for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
+    {
+      //remove landmarks that didn't get associated and also pass
+      //landmarks through our temporary landmark validation gate
+      if(extractedLandmarks[i]->id != -1 && this->getAssociation(*extractedLandmarks[i]) != -1)
+	{
+	  //remove doubles in extractedLandmarks
+	  //if two observations match same landmark, take closest landmark
+
+	  leastDistance = 99999;
+	  for(unsigned int j = 0; j < extractedLandmarks.size(); ++j)
+	    {
+	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
+		{
+		  if (j < i)
+		    break;
+		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
+		  if(temp < leastDistance)
+		    {
+		      leastDistance = temp;
+		      // NOT SURE
+		      uniqueLandmarks.push_back(extractedLandmarks[j]);
+		      //uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
+		    }
+		}
+	    }
+	}
+      // NOTE SURE
+      // if (leastDistance != 99999)
+      // 	++uniquelmrks;
+    }
+  return (uniqueLandmarks);
+  //copy landmarks over into an array of correct dimensions
+
+  // NOT SURE
+  // extractedLandmarks = new landmark[uniquelmrks];
+  // for(int i = 0; i < uniquelmrks; ++i)
+  //   extractedLandmarks[i] = uniqueLandmarks[i];
+  // return extractedLandmarks;
+}
