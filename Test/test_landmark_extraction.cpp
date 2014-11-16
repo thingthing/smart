@@ -864,3 +864,73 @@ When(getting_landmarks_nearest_to_line)
   double	x;
   double	y;
 };
+
+When(getting_landmarks_nearest_to_line_with_robot_pos)
+{
+  void	SetUp()
+  {
+    a = 35.5;
+    b = 26.3;
+    robotPosition[0] = 5.2;
+    robotPosition[1] = 4.2;
+    robotPosition[2] = 0.1;
+
+    double ao = -1.0 / a;
+    x = b / (ao - a);
+    y = (ao * b) / (ao - a);
+    range = sqrt(pow(x - robotPosition[0], 2) + pow(y - robotPosition[1], 2));
+    bearing = atan((y - robotPosition[1]) / (x - robotPosition[0])) - robotPosition[2];
+    
+    double bo = robotPosition[1] - ao * robotPosition[0];
+    double px = (b - bo) / (ao - a);
+    double py = ((ao * (b - bo)) / (ao - a)) + bo;
+    
+    rangeError = lms.distance(robotPosition[0], robotPosition[1], px, py);
+    bearingError = atan((py - robotPosition[1]) / (px - robotPosition[0])) - robotPosition[2];
+
+    lm1.pos[0] = 42.5;
+    lm1.pos[1] = 23.5;
+    lm2.pos[0] = x + 0.12;
+    lm2.pos[1] = y - 0.02;
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    lm3 = lms.getLineLandmark(a, b, robotPosition);
+  }
+
+  Then(it_should_have_id_of_landmark_closest_from_origin)
+  {
+    Assert::That(lm3->id, Is().Not().EqualTo(-1));
+    Assert::That(lm3->id, Is().EqualTo(id2));
+  }
+
+  Then(it_should_have_default_value)
+  {
+    Assert::That(lm3->pos[0], Is().EqualTo(x));
+    Assert::That(lm3->pos[1], Is().EqualTo(y));
+    Assert::That(lm3->a, Is().EqualTo(a));
+    Assert::That(lm3->b, Is().EqualTo(b));
+    Assert::That(lm3->range, Is().EqualTo(range));
+    Assert::That(lm3->bearing, Is().EqualTo(bearing));
+    Assert::That(lm3->rangeError, Is().EqualTo(rangeError));
+    Assert::That(lm3->bearingError, Is().EqualTo(bearingError));
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  Landmarks::Landmark	*lm3;
+  int		id1;
+  int		id2;
+  double	a;
+  double	b;
+  double	x;
+  double	y;
+  double	robotPosition[3];
+  double	range;
+  double	bearing;
+  double	rangeError;
+  double	bearingError;
+  int		totalTimesObserved;
+};
