@@ -344,12 +344,21 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robot
 std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber, double robotPosition[])
 {
   //have a large array to keep track of found landmarks
+
+  // Je crois que tu peux utiliser le 
+  // constructer de vecteur directement: std::vector<Landmarks::Landmark *> tempLandmarks(400)
+  // soit dit en passant, vu qu'on a la taille de cameradata, on a pas vraiment besoin de faire
+  // un vecteur plus grand que sampleNumber + 1 non ?
   std::vector<Landmarks::Landmark *> tempLandmarks;
   for(unsigned int i = 0; i < 400; ++i)
     tempLandmarks.push_back(new Landmarks::Landmark());
   for (unsigned int i = 1; i < sampleNumber - 1 /* == cameradata.Length - 1 */; i++)
     {
       // Check for error measurement in laser data
+
+      // Je euh... 8.1, genre comme ça, 8.1 ... euh, non... ou alors on a un static const, ou un define,
+      // mais pas 8.1 dans le vide comme ça. Je sais même pas à quoi ça correspond du coup!
+      // ça vaut aussi pour les autre chiffre: 0.5 et 0.3
       if (cameradata[i - 1] < 8.1 && cameradata[i + 1] < 8.1)
 	{
   	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > 0.5)
@@ -394,6 +403,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	    {
 	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
 		{
+		  // Pourquoi ne pas commencer par j = i  dans ce cas ?
 		  if (j < i)
 		    break;
 		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
@@ -401,6 +411,9 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 		    {
 		      leastDistance = temp;
 		      // NOT SURE
+		      // Donc ouai tu peux pas faire un push_back, sinon tu effaces pas les doubles
+		      // Tu les ajoutes à chaque fois. Il faut utiliser l'index, comme ça tu réécris sur le même
+		      // Et les doubles sont effacés
 		      uniqueLandmarks.push_back(extractedLandmarks[j]);
 		      //uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
 		    }
@@ -408,6 +421,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	    }
 	}
       // NOTE SURE
+      // Du coup faut laisser ça
       // if (leastDistance != 99999)
       // 	++uniquelmrks;
     }
