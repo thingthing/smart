@@ -949,9 +949,9 @@ When(extracting_spike_landmark)
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
     lm1.pos[0] = 42.5;
-    lm1.pos[1] = 23.5;
-    lm2.pos[0] = 0.12;
-    lm2.pos[1] = 0.02;
+    lm1.pos[1] = 24.1;
+    lm2.pos[0] = 12.2;
+    lm2.pos[1] = 2.0;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
@@ -979,5 +979,51 @@ When(extracting_spike_landmark)
   int		id2;
   double	data[30];
   double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> result;
+};
+
+When(removing_double_landmarks)
+{
+  void	SetUp()
+  {
+    srand(42);
+    for (int i = 0; i < 30; ++i)
+      {
+	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+      }
+    robotPosition[0] = 2.0;
+    robotPosition[1] = 4.0;
+    robotPosition[2] = 0.2;
+    lm1.pos[0] = (cos((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+      + robotPosition[0];
+    lm1.pos[1] = (sin((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+      + robotPosition[1];
+    lm2.pos[0] = (cos((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+      + robotPosition[0];
+    lm2.pos[1] = (sin((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+      + robotPosition[1];
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    extracted = lms.extractSpikeLandmarks(data, 30, robotPosition);
+    result = lms.removeDouble(extracted);
+  }
+
+  Then(it_should_not_have_more_landmarks_than_db)
+  {
+    Assert::That(result.size(), Is().Not().EqualTo(0));
+    Assert::That(result.size(), Is().LessThan(lms.DBSize + 1));
+  }
+
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  int		id1;
+  int		id2;
+  double	data[30];
+  double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
 };
