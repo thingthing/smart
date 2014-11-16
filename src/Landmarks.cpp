@@ -345,13 +345,15 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
 {
   //have a large array to keep track of found landmarks
 
-  // Je crois que tu peux utiliser le 
+  // Je crois que tu peux utiliser le
   // constructer de vecteur directement: std::vector<Landmarks::Landmark *> tempLandmarks(400)
   // soit dit en passant, vu qu'on a la taille de cameradata, on a pas vraiment besoin de faire
   // un vecteur plus grand que sampleNumber + 1 non ?
-  std::vector<Landmarks::Landmark *> tempLandmarks;
-  for(unsigned int i = 0; i < 400; ++i)
-    tempLandmarks.push_back(new Landmarks::Landmark());
+  std::vector<Landmarks::Landmark *> tempLandmarks(sampleNumber);
+  // for(unsigned int i = 0; i < 400; ++i)
+  //   tempLandmarks.push_back(new Landmarks::Landmark());
+
+
   for (unsigned int i = 1; i < sampleNumber - 1 /* == cameradata.Length - 1 */; i++)
     {
       // Check for error measurement in laser data
@@ -359,16 +361,17 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
       // Je euh... 8.1, genre comme ça, 8.1 ... euh, non... ou alors on a un static const, ou un define,
       // mais pas 8.1 dans le vide comme ça. Je sais même pas à quoi ça correspond du coup!
       // ça vaut aussi pour les autre chiffre: 0.5 et 0.3
-      if (cameradata[i - 1] < 8.1 && cameradata[i + 1] < 8.1)
+
+      // => 8.1 c'est la valeur qui utilisent pour déterminer si le laser chie ou pas
+      if (cameradata[i - 1] < CAMERAPROBLEM && cameradata[i + 1] < CAMERAPROBLEM)
 	{
-  	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > 0.5)
+  	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > MAX_DIFFERENCE)
   	    tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
   	  else
-  	    if((cameradata[i - 1] - cameradata[i]) > 0.3)
+  	    if((cameradata[i - 1] - cameradata[i]) > MIN_DIFFERENCE)
 	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
-  	    else if (cameradata[i + 1] < 8.1)
-  	      if((cameradata[i + 1] - cameradata[i]) > 0.3)
-  		tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+	    else if((cameradata[i + 1] - cameradata[i]) > MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
 	}
     }
 
@@ -378,7 +381,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
     {
       if(((int)tempLandmarks[i]->id) != -1)
 	foundLandmarks.push_back(new Landmarks::Landmark(*tempLandmarks[i]));
-      delete (tempLandmarks[i]);
+      // delete (tempLandmarks[i]);
     }
   return (foundLandmarks);
 }
