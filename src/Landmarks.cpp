@@ -388,10 +388,11 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
 
 std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks::Landmark *> extractedLandmarks)
 {
-  // int uniquelmrks = 0;
+  int uniquelmrks = 0;
   double leastDistance = 99999;
   double temp;
-  std::vector<Landmarks::Landmark *> uniqueLandmarks;
+  std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size());
+
   for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
     {
       //remove landmarks that didn't get associated and also pass
@@ -407,6 +408,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
 		{
 		  // Pourquoi ne pas commencer par j = i  dans ce cas ?
+		  // ==> Pour prévoir 6 mois d'optimisation
 		  if (j < i)
 		    break;
 		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
@@ -417,16 +419,16 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 		      // Donc ouai tu peux pas faire un push_back, sinon tu effaces pas les doubles
 		      // Tu les ajoutes à chaque fois. Il faut utiliser l'index, comme ça tu réécris sur le même
 		      // Et les doubles sont effacés
-		      uniqueLandmarks.push_back(extractedLandmarks[j]);
-		      //uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
+		      // uniqueLandmarks.push_back(extractedLandmarks[j]);
+		      uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
 		    }
 		}
 	    }
 	}
       // NOTE SURE
       // Du coup faut laisser ça
-      // if (leastDistance != 99999)
-      // 	++uniquelmrks;
+      if (leastDistance != 99999)
+	++uniquelmrks;
     }
   return (uniqueLandmarks);
   //copy landmarks over into an array of correct dimensions
@@ -436,4 +438,5 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
   // for(int i = 0; i < uniquelmrks; ++i)
   //   extractedLandmarks[i] = uniqueLandmarks[i];
   // return extractedLandmarks;
+
 }
