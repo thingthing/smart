@@ -251,6 +251,7 @@ int Landmarks::updateLineLandmark(Landmark &lm) // cannot be const, getassociati
   return (id);
 }
 
+// Function use for debug: Add origin as landmark to check other landmark
 Landmarks::Landmark *Landmarks::getOrigin()
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
