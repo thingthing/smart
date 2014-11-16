@@ -780,3 +780,40 @@ When(updating_line_landmark)
   int		idResult;
   int		oldDBSize;
 };
+
+When(getting_landmark_origin)
+{
+  void	SetUp()
+  {
+    lm1.pos[0] = 2.5;
+    lm1.pos[1] = 3.5;
+    lm2.pos[0] = 1.5;
+    lm2.pos[1] = 2.5;
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lm3 = lms.getOrigin();
+  }
+
+  Then(it_should_have_id_of_landmark_closest_from_origin)
+  {
+    Assert::That(lm3->id, Is().Not().EqualTo(-1));
+    Assert::That(lm3->id, Is().EqualTo(id2));
+  }
+
+  Then(it_should_have_default_value)
+  {
+    Assert::That(lm3->pos[0], Is().EqualTo(0));
+    Assert::That(lm3->pos[1], Is().EqualTo(0));
+    Assert::That(lm3->range, Is().EqualTo(-1));
+    Assert::That(lm3->bearing, Is().EqualTo(-1));
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  Landmarks::Landmark	*lm3;
+  int		id1;
+  int		id2;
+};
