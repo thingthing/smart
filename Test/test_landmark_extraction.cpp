@@ -646,9 +646,82 @@ When(updating_landmarks_with_a_landmark)
 };
 
 /**
+ * Unit Test for updateLandmark(bool, int, double, double, bearing, robotPos)
+ **/
+When(updating_landmarks_with_parameters)
+{
+  void		SetUp()
+  {
+    robotPosition[0] = 42.0;
+    robotPosition[1] = 24.0;
+    robotPosition[2] = 1.0;
+    distance = 2.5;
+    bearing = 0.5;
+    oldDBSize = lms.DBSize;
+    lm1 = lms.updateLandmark(false, 0, distance, bearing, robotPosition);
+    id1 = lm1->id;
+  }
+ 
+
+  When(landmark_is_not_in_db)
+  {
+    Then(it_should_add_the_landmark_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
+    }
+
+    Then(it_should_return_the_new_landmark)
+    {
+      Assert::That(Root().lm1->id, Is().Not().EqualTo(-1));
+      Assert::That(Root().lm1->bearing, Is().EqualTo(Root().bearing));
+      Assert::That(Root().lm1->range, Is().EqualTo(Root().distance));
+      Assert::That(Root().lm1->pos[0], Is().Not().EqualTo(0));
+      Assert::That(Root().lm1->pos[1], Is().Not().EqualTo(0));
+    }
+  };
+  
+  When(landmark_is_in_db)
+  {
+    void	SetUp()
+    {
+      Root().oldDBSize = Root().lms.DBSize;
+      Root().oldTimeObserved = Root().lms.landmarkDB[Root().id1]->totalTimeObserved;
+      Root().lm2 = Root().lms.updateLandmark(true, Root().id1, Root().distance,
+					     Root().bearing, Root().robotPosition);
+    }
+
+    Then(it_should_not_add_the_landmark_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+    }
+
+    Then(it_should_return_the_old_landmark)
+    {
+      Assert::That(Root().lm2->id, Is().EqualTo(Root().id1));
+    }
+
+    Then(it_should_add_one_to_timeobserved)
+    {
+      Assert::That(Root().lm2->totalTimeObserved, Is().EqualTo(Root().oldTimeObserved + 1));
+      Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved, Is().EqualTo(Root().oldTimeObserved + 1));
+    }
+  };
+
+  Landmarks	lms;
+  Landmarks::Landmark *lm1;
+  Landmarks::Landmark *lm2;
+  double	distance;
+  double	bearing;
+  double	robotPosition[3];
+  int		id1;
+  int		oldDBSize;
+  int		oldTimeObserved;
+};
+
+/**
  * Unit test for updateLineLandmark()
  **/
-When(getting_line_landmark)
+When(updating_line_landmark)
 {
   void	SetUp()
   {
