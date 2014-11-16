@@ -215,7 +215,7 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
   return (lm);
 }
 
-// @TODO: correct it (the part when it does not exist, not the other one)
+
 Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[])
 {
   Landmarks::Landmark *lm;
