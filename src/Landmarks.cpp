@@ -345,13 +345,15 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
 {
   //have a large array to keep track of found landmarks
 
-  // Je crois que tu peux utiliser le 
+  // Je crois que tu peux utiliser le
   // constructer de vecteur directement: std::vector<Landmarks::Landmark *> tempLandmarks(400)
   // soit dit en passant, vu qu'on a la taille de cameradata, on a pas vraiment besoin de faire
   // un vecteur plus grand que sampleNumber + 1 non ?
-  std::vector<Landmarks::Landmark *> tempLandmarks;
-  for(unsigned int i = 0; i < 400; ++i)
-    tempLandmarks.push_back(new Landmarks::Landmark());
+  std::vector<Landmarks::Landmark *> tempLandmarks(sampleNumber);
+  // for(unsigned int i = 0; i < 400; ++i)
+  //   tempLandmarks.push_back(new Landmarks::Landmark());
+
+
   for (unsigned int i = 1; i < sampleNumber - 1 /* == cameradata.Length - 1 */; i++)
     {
       // Check for error measurement in laser data
@@ -359,16 +361,17 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
       // Je euh... 8.1, genre comme ça, 8.1 ... euh, non... ou alors on a un static const, ou un define,
       // mais pas 8.1 dans le vide comme ça. Je sais même pas à quoi ça correspond du coup!
       // ça vaut aussi pour les autre chiffre: 0.5 et 0.3
-      if (cameradata[i - 1] < 8.1 && cameradata[i + 1] < 8.1)
+
+      // => 8.1 c'est la valeur qui utilisent pour déterminer si le laser chie ou pas
+      if (cameradata[i - 1] < CAMERAPROBLEM && cameradata[i + 1] < CAMERAPROBLEM)
 	{
-  	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > 0.5)
+  	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > MAX_DIFFERENCE)
   	    tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
   	  else
-  	    if((cameradata[i - 1] - cameradata[i]) > 0.3)
+  	    if((cameradata[i - 1] - cameradata[i]) > MIN_DIFFERENCE)
 	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
-  	    else if (cameradata[i + 1] < 8.1)
-  	      if((cameradata[i + 1] - cameradata[i]) > 0.3)
-  		tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+	    else if((cameradata[i + 1] - cameradata[i]) > MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
 	}
     }
 
@@ -378,17 +381,18 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
     {
       if(((int)tempLandmarks[i]->id) != -1)
 	foundLandmarks.push_back(new Landmarks::Landmark(*tempLandmarks[i]));
-      delete (tempLandmarks[i]);
+      // delete (tempLandmarks[i]);
     }
   return (foundLandmarks);
 }
 
 std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks::Landmark *> extractedLandmarks)
 {
-  // int uniquelmrks = 0;
+  int uniquelmrks = 0;
   double leastDistance = 99999;
   double temp;
-  std::vector<Landmarks::Landmark *> uniqueLandmarks;
+  std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size());
+
   for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
     {
       //remove landmarks that didn't get associated and also pass
@@ -404,6 +408,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
 		{
 		  // Pourquoi ne pas commencer par j = i  dans ce cas ?
+		  // ==> Pour prévoir 6 mois d'optimisation
 		  if (j < i)
 		    break;
 		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
@@ -414,16 +419,16 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 		      // Donc ouai tu peux pas faire un push_back, sinon tu effaces pas les doubles
 		      // Tu les ajoutes à chaque fois. Il faut utiliser l'index, comme ça tu réécris sur le même
 		      // Et les doubles sont effacés
-		      uniqueLandmarks.push_back(extractedLandmarks[j]);
-		      //uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
+		      // uniqueLandmarks.push_back(extractedLandmarks[j]);
+		      uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
 		    }
 		}
 	    }
 	}
       // NOTE SURE
       // Du coup faut laisser ça
-      // if (leastDistance != 99999)
-      // 	++uniquelmrks;
+      if (leastDistance != 99999)
+	++uniquelmrks;
     }
   return (uniqueLandmarks);
   //copy landmarks over into an array of correct dimensions
@@ -433,4 +438,5 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
   // for(int i = 0; i < uniquelmrks; ++i)
   //   extractedLandmarks[i] = uniqueLandmarks[i];
   // return extractedLandmarks;
+
 }
