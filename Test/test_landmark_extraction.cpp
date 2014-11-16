@@ -1,3 +1,4 @@
+#include <cstdlib> //Rand
 #include "igloo/igloo_alt.h"
 #include "Landmarks.hh"
 #include "test_data.hh"
@@ -933,4 +934,50 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
   double	rangeError;
   double	bearingError;
   int		totalTimesObserved;
+};
+
+When(extracting_spike_landmark)
+{
+  void	SetUp()
+  {
+    srand(42);
+    for (int i = 0; i < 30; ++i)
+      {
+	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+      }
+    robotPosition[0] = 2.0;
+    robotPosition[1] = 4.0;
+    robotPosition[2] = 0.2;
+    lm1.pos[0] = 42.5;
+    lm1.pos[1] = 23.5;
+    lm2.pos[0] = 0.12;
+    lm2.pos[1] = 0.02;
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    result = lms.extractSpikeLandmarks(data, 30, robotPosition);
+  }
+
+  Then(it_should_have_some_landmarks)
+  {
+    Assert::That(result.size(), Is().GreaterThan(0));
+  }
+
+  Then(each_landmark_should_have_a_good_id)
+  {
+    for (std::vector<Landmarks::Landmark *>::iterator it = result.begin(); it != result.end(); ++it)
+      {
+	Assert::That((*it)->id, Is().Not().EqualTo(-1));
+      }
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  int		id1;
+  int		id2;
+  double	data[30];
+  double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> result;
 };
