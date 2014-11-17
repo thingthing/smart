@@ -17,6 +17,9 @@ static const unsigned int MINLINEPOINTS = 30; // RANSAC: if less than x points l
 static const double RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
 static const unsigned int RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
 static const double DEGREESPERSCAN = 0.5;
+static const double CAMERAPROBLEM = 8.1; // meters
+static const double MAX_DIFFERENCE = 0.5; // meter
+static const double MIN_DIFFERENCE = 0.3; // meter
 
 class Landmarks
 {
@@ -55,14 +58,14 @@ public:
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], int id[], double ranges[], double bearings[], double robotPosition[]);
   int updateLineLandmark(Landmark &lm);
-  std::vector<Landmark *> extractLineLandmarks(double cameradata[], double robotPosition[]);
+  std::vector<Landmark *> extractLineLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]);
 
   // matched is an array of boolean
   // id is an arary of int
   // id is an arary of int
   // ranges is an array of double
   // bearings is an array of double
-  int alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id,
+  void alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id,
 			double *ranges, double *bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
   int addToDB(const Landmark &lm);
 
