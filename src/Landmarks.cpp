@@ -350,9 +350,9 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
   // constructer de vecteur directement: std::vector<Landmarks::Landmark *> tempLandmarks(400)
   // soit dit en passant, vu qu'on a la taille de cameradata, on a pas vraiment besoin de faire
   // un vecteur plus grand que sampleNumber + 1 non ?
-  std::vector<Landmarks::Landmark *> tempLandmarks(sampleNumber);
-  // for(unsigned int i = 0; i < 400; ++i)
-  //   tempLandmarks.push_back(new Landmarks::Landmark());
+  std::vector<Landmarks::Landmark *> tempLandmarks;
+  for(unsigned int i = 0; i < sampleNumber; ++i)
+     tempLandmarks.push_back(new Landmarks::Landmark());
 
 
   for (unsigned int i = 1; i < sampleNumber - 1 /* == cameradata.Length - 1 */; i++)
@@ -386,13 +386,14 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
     }
   return (foundLandmarks);
 }
-
+#include <iostream>
 std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks::Landmark *> extractedLandmarks)
 {
   int uniquelmrks = 0;
   double leastDistance = 99999;
   double temp;
   std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size());
+  std::vector<Landmarks::Landmark *> resultUniqueLandmarks;
 
   for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
     {
@@ -404,6 +405,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	  //if two observations match same landmark, take closest landmark
 
 	  leastDistance = 99999;
+	  std::cerr << "id == " << extractedLandmarks[i]->id << std::endl;
 	  for(unsigned int j = i; j < extractedLandmarks.size(); ++j)
 	    {
 	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
@@ -411,6 +413,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
 		  if(temp < leastDistance)
 		    {
+		      std::cerr << "found double === " <<  extractedLandmarks[i]->id << " - " << extractedLandmarks[j]->id << std::endl;
 		      leastDistance = temp;
 		      // NOT SURE
 		      // Donc ouai tu peux pas faire un push_back, sinon tu effaces pas les doubles
@@ -427,14 +430,20 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
       if (leastDistance != 99999)
 	++uniquelmrks;
     }
-  return (uniqueLandmarks);
+  //return (uniqueLandmarks);
+  // Obliger de faire ça sinon la taille du tableau de sortie n'est pas la bonne
   //copy landmarks over into an array of correct dimensions
 
-  // NOT SURE
-  // extractedLandmarks = new landmark[uniquelmrks];
-  // for(int i = 0; i < uniquelmrks; ++i)
-  //   extractedLandmarks[i] = uniqueLandmarks[i];
-  // return extractedLandmarks;
+  for (std::vector<Landmarks::Landmark *>::iterator it = uniqueLandmarks.begin();
+       it != uniqueLandmarks.end(); ++it)
+    {
+      if (*it != NULL)
+	{
+	  std::cerr << "id is == " << (*it)->id << std::endl;
+	  resultUniqueLandmarks.push_back(*it);
+	}
+    }
+  return (resultUniqueLandmarks);
 }
 
 void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id, double *ranges, double *bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks)
