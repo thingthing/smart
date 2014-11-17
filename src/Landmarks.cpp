@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "Landmarks.hh"
 
 Landmarks::Landmark::Landmark()
@@ -403,14 +404,10 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	  //if two observations match same landmark, take closest landmark
 
 	  leastDistance = 99999;
-	  for(unsigned int j = 0; j < extractedLandmarks.size(); ++j)
+	  for(unsigned int j = i; j < extractedLandmarks.size(); ++j)
 	    {
 	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
 		{
-		  // Pourquoi ne pas commencer par j = i  dans ce cas ?
-		  // ==> Pour prévoir 6 mois d'optimisation
-		  if (j < i)
-		    break;
 		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
 		  if(temp < leastDistance)
 		    {
@@ -438,5 +435,56 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
   // for(int i = 0; i < uniquelmrks; ++i)
   //   extractedLandmarks[i] = uniqueLandmarks[i];
   // return extractedLandmarks;
+}
 
+void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id, double *ranges, double *bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks)
+{
+  int uniquelmrks = 0;
+  double leastDistance = 99999;
+  double temp;
+  std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size());
+
+  // on commence par supprimer les doublons
+  for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
+    {
+      if(extractedLandmarks[i]->id != -1)
+	{
+	  leastDistance = 99999;
+	  for(unsigned int j = i; j < extractedLandmarks.size(); ++j)
+	    {
+	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
+		{
+		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
+		  if(temp<leastDistance)
+		    {
+		      leastDistance = temp;
+		      uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
+		    }
+		}
+	    }
+	}
+      if (leastDistance != 99999)
+	uniquelmrks++;
+    }
+  // uniqueLandmark ne contient aucun doublons ici
+  // on set alors les tableaux/vectors passés en paramètre (ref ou ptr)
+
+  matched = new bool[uniquelmrks];
+  id = new int[uniquelmrks];
+  ranges = new double[uniquelmrks];
+  bearings = new double[uniquelmrks];
+  lmrks = std::vector<std::pair<double, double> >(uniquelmrks);
+  exlmrks = std::vector<std::pair<double, double> >(uniquelmrks);
+
+  for(int i = 0; i < uniquelmrks; ++i)
+    {
+      matched[i] = true;
+      id[i] = uniqueLandmarks[i]->id;
+      ranges[i] = uniqueLandmarks[i]->range;
+      bearings[i] = uniqueLandmarks[i]->bearing;
+      lmrks[i].first = landmarkDB[uniqueLandmarks[i]->id]->pos[0];
+      lmrks[i].second = landmarkDB[uniqueLandmarks[i]->id]->pos[1];
+      exlmrks[i].first = uniqueLandmarks[i]->pos[0];
+      exlmrks[i].second = uniqueLandmarks[i]->pos[1];
+    }
 }
