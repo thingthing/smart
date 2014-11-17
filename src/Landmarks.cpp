@@ -508,11 +508,14 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 
   // BEGIN RANSAC ALGORITHM
   unsigned int noTrials = 0;
+
+  // MINLINEPOINTS : if less than x points left, stop trying to find a consensus (stop algorithm)
+  // MAXTRIAL : max times to run algorithm
   while(noTrials < MAXTRIALS && totalLinepoints > MINLINEPOINTS)
     {
       int *rndSelectedPoints = new int[MAXSAMPLE];
       int temp = 0;
-      bool newpoint;
+      bool newpoint = false;
       //– Randomly select a subset S1 of n data points and
       //compute the model M1
       //Initial version chooses entirely randomly. Now choose
