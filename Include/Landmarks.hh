@@ -17,6 +17,9 @@ static const unsigned int MINLINEPOINTS = 30; // RANSAC: if less than x points l
 static const double RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
 static const unsigned int RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
 static const double DEGREESPERSCAN = 0.5;
+static const double CAMERAPROBLEM = 8.1; // meters
+static const double MAX_DIFFERENCE = 0.5; // meter
+static const double MIN_DIFFERENCE = 0.3; // meter
 
 class Landmarks
 {
