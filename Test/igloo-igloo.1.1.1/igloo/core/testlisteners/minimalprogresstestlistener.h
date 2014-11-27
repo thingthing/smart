@@ -18,17 +18,41 @@ namespace igloo {
         std::cout << std::endl;
       }
 
-      virtual void ContextRunStarting(const ContextBase& ) {}
-      virtual void ContextRunEnded(const ContextBase& ) {}
-      virtual void SpecRunStarting(const ContextBase& , const std::string& ) {}
-      virtual void SpecSucceeded(const ContextBase& , const std::string& )
+      virtual void ContextRunStarting(const ContextBase& context)
       {
-        std::cout << ".";
+	std::string name = context.Name();
+	std::string const	&hasParent = context.GetAttribute("hasParent");
+
+	std::replace(name.begin(), name.end(), '_', ' ');
+	std::cout << DEFAULT_OUTPUT_COLOR << hasParent << "When " <<  name << std::endl;
+      }
+      virtual void ContextRunEnded(const ContextBase& context)
+      {
+	const std::string	&hasChild = context.GetAttribute("hasChild");
+
+	if (hasChild.empty())
+	  std::cout << std::endl;
+      }
+      virtual void SpecRunStarting(const ContextBase& context, const std::string& name)
+      {
+	std::string cpy = name;
+	std::string const	&hasParent = context.GetAttribute("hasParent");
+
+	std::replace(cpy.begin(), cpy.end(), '_', ' ');
+	std::cout << DEFAULT_OUTPUT_COLOR << hasParent << "\t Then " << cpy << std::endl;;
+      }
+      virtual void SpecSucceeded(const ContextBase& context, const std::string& )
+      {
+	std::string const	&hasParent = context.GetAttribute("hasParent");
+
+	std::cout << PASSED_OUTPUT_COLOR << hasParent << "\t SUCCESS" << std::endl;
       }
 
-      virtual void SpecFailed(const ContextBase& , const std::string& )
+      virtual void SpecFailed(const ContextBase& context, const std::string& )
       {
-        std::cout << "F";
+	std::string const	&hasParent = context.GetAttribute("hasParent");
+
+	std::cout << FAILED_OUTPUT_COLOR << hasParent << "\t FAILURE" << std::endl;
       }
   };
 

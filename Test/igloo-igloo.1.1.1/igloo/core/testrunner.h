@@ -72,7 +72,7 @@ namespace igloo {
         }
         else
         {
-          output = std::auto_ptr<TestResultsOutput>(new DefaultTestResultsOutput());
+          output = std::auto_ptr<TestResultsOutput>(new ColoredConsoleTestResultsOutput());
         }
 
 
