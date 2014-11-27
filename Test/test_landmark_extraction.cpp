@@ -1074,3 +1074,70 @@ When(removing_double_landmarks)
   std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
 };
+
+
+When(getting_aligned_landmark_data)
+{
+  void	SetUp()
+  {
+    srand(42);
+    for (int i = 0; i < 30; ++i)
+      {
+	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+      }
+    robotPosition[0] = 2.0;
+    robotPosition[1] = 4.0;
+    robotPosition[2] = 0.2;
+    lm1.pos[0] = (cos((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+      + robotPosition[0];
+    lm1.pos[1] = (sin((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+      + robotPosition[1];
+    lm2.pos[0] = (cos((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+      + robotPosition[0];
+    lm2.pos[1] = (sin((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+      + robotPosition[1];
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    extracted = lms.extractSpikeLandmarks(data, 30, robotPosition);
+    lms.alignLandmarkData(extracted, matched, id, ranges, bearings, lmrk, exlmrk);
+  }
+
+  Then(it_should_not_have_more_data_than_landmarks_in_db)
+  {
+    Assert::That(lmrk.size(), Is().Not().EqualTo(0));
+    Assert::That(exlmrk.size(), Is().Not().EqualTo(0));
+    Assert::That(lmrk.size(), Is().LessThan(lms.DBSize + 1));
+    Assert::That(exlmrk.size(), Is().LessThan(lms.DBSize + 1));
+  }
+
+  Then(it_should_have_good_values)
+  {
+    int	i = 0;
+
+    for(std::vector<std::pair<double, double> >::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
+      {
+	Assert::That(id[i], Is().GreaterThan(0));
+	Assert::That(matched[i], Is().EqualTo(true));
+	Assert::That(lmrk[i].first, Is().EqualTo(lms.landmarkDB[id[i]]->pos[0]));
+	Assert::That(lmrk[i].second, Is().EqualTo(lms.landmarkDB[id[i]]->pos[1]));
+	++i;
+      }
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  int		id1;
+  int		id2;
+  double	data[30];
+  double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> extracted;
+  bool		*matched;
+  int		*id;
+  double	*ranges;
+  double	*bearings;
+  std::vector<std::pair<double, double> > lmrk;
+  std::vector<std::pair<double, double> > exlmrk;
+};
