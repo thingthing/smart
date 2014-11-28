@@ -630,3 +630,28 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
     }
   return foundLandmarks;
 }
+
+
+int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[])
+{
+  (void)cameradata;
+  (void)robotPosition;
+  (void)numberSample;
+  return (0);
+}
+
+std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLineLandmarks(std::vector<Landmarks::Landmark *> extractedLandmarks) // bad return value
+{
+  std::vector<Landmarks::Landmark *> res(extractedLandmarks.size());
+  for (unsigned int i = 0; i < extractedLandmarks.size(); ++i)
+    res[i] = this->updateLandmark(extractedLandmarks[i]);
+  return (res);
+}
+
+std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[])
+{
+  std::vector<Landmarks::Landmark *> res(numberMatched);
+  for (unsigned int i = 0; i < numberMatched; ++i)
+    res[i] = this->updateLandmark(matched[i], id[i], ranges[i], bearings[i], robotPosition[i]);
+  return (res);
+}

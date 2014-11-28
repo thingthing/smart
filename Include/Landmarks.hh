@@ -52,11 +52,11 @@ public:
 
   int getSLamId(int id) const;
   int addSlamId(int landmarkId, int slamId);
-  int removeBadLandmarks(double cameradata[], double robotPosition[]); // Possibly change array to vector ? Depends of the robot
+  int removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
   int removeBadLandmarks(const std::vector<double> & cameradata, const std::vector<double> & robotPosition); // both to be sure
 
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
-  std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], int id[], double ranges[], double bearings[], double robotPosition[]);
+  std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[]);
   int updateLineLandmark(Landmark &lm);
   std::vector<Landmark *> extractLineLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]);
 
