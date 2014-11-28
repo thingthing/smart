@@ -254,7 +254,8 @@ When(getting_LandmarkDB)
  **/
 When(getting_association)
 {
-   
+  ScenarioAttribute("hasChild", "true")
+
   void	SetUp()
   {
     lm1.pos[0] = 4.2;
@@ -265,6 +266,8 @@ When(getting_association)
 
   When(it_is_a_already_seen_landmark)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().oldTimeObserved =  Root().lms.landmarkDB[Root().id1]->totalTimeObserved;
@@ -291,6 +294,8 @@ When(getting_association)
 
   When(it_is_a_never_seen_landmark)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().lm2.pos[0] = 10;
@@ -319,6 +324,8 @@ When(getting_association)
  **/
 When(getting_closest_association_landmark)
 {
+  ScenarioAttribute("hasChild", "true")
+
   void	SetUp()
   {
     lm1.pos[0] = 24;
@@ -332,6 +339,8 @@ When(getting_closest_association_landmark)
 
   When(there_are_no_landmark)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().oldTimeObserved = Root().timeObservedResult;
@@ -351,6 +360,8 @@ When(getting_closest_association_landmark)
 
   When(there_is_one_landmark_with_not_enough_observation)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
@@ -371,6 +382,8 @@ When(getting_closest_association_landmark)
   
   When(there_is_one_landmark_with_enough_observation)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
@@ -391,6 +404,8 @@ When(getting_closest_association_landmark)
 
   When(there_is_more_than_one_landmark_without_enough_observation)
   {
+    ScenarioAttribute("hasParent", "\t");      
+
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
@@ -412,6 +427,8 @@ When(getting_closest_association_landmark)
 
   When(there_is_more_than_one_landmark_and_one_with_enough_observation)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
@@ -421,6 +438,8 @@ When(getting_closest_association_landmark)
     
     When(trying_with_the_one_that_has_enough_observation)
     {
+      ScenarioAttribute("hasParent", "\t\t")
+
       void	SetUp()
       {
 	Root().lms.getClosestAssociation(&(Root().lm2), Root().idResult, Root().timeObservedResult);
@@ -439,6 +458,8 @@ When(getting_closest_association_landmark)
 
     When(trying_with_the_one_that_has_not_enough_observation)
     {
+      ScenarioAttribute("hasParent", "\t\t")
+
       void	SetUp()
       {
 	Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
@@ -458,6 +479,8 @@ When(getting_closest_association_landmark)
 
   When(there_is_more_than_one_landmark_and_all_with_enough_observation)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
@@ -468,6 +491,8 @@ When(getting_closest_association_landmark)
 
     When(trying_with_one)
     {
+      ScenarioAttribute("hasParent", "\t\t")
+
       void	SetUp()
       {
 	Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
@@ -486,6 +511,8 @@ When(getting_closest_association_landmark)
 
     When(trying_with_the_other)
     {
+      ScenarioAttribute("hasParent", "\t\t")
+
       void	SetUp()
       {
 	Root().lms.getClosestAssociation(&(Root().lm2), Root().idResult, Root().timeObservedResult);
@@ -504,6 +531,8 @@ When(getting_closest_association_landmark)
 
     When(trying_with_one_that_is_not_in_db)
     {
+      ScenarioAttribute("hasParent", "\t\t")
+
       void	SetUp()
       {
 	Root().lms.getClosestAssociation(&(Root().lm3), Root().idResult, Root().timeObservedResult);
@@ -585,6 +614,8 @@ When(getting_landmark)
  **/
 When(updating_landmarks_with_a_landmark)
 {
+  ScenarioAttribute("hasChild", "true")
+
   void		SetUp()
   {
     lm1.pos[0] = 42;
@@ -597,6 +628,8 @@ When(updating_landmarks_with_a_landmark)
   
   When(landmark_is_not_in_db)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().oldDBSize = Root().lms.DBSize;
@@ -618,6 +651,8 @@ When(updating_landmarks_with_a_landmark)
   
   When(landmark_is_in_db)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().oldDBSize = Root().lms.DBSize;
@@ -651,6 +686,8 @@ When(updating_landmarks_with_a_landmark)
  **/
 When(updating_landmarks_with_parameters)
 {
+  ScenarioAttribute("hasChild", "true")
+
   void		SetUp()
   {
     robotPosition[0] = 42.0;
@@ -666,6 +703,8 @@ When(updating_landmarks_with_parameters)
 
   When(landmark_is_not_in_db)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     Then(it_should_add_the_landmark_to_the_db)
     {
       Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
@@ -683,6 +722,8 @@ When(updating_landmarks_with_parameters)
   
   When(landmark_is_in_db)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().oldDBSize = Root().lms.DBSize;
@@ -724,6 +765,8 @@ When(updating_landmarks_with_parameters)
  **/
 When(updating_line_landmark)
 {
+  ScenarioAttribute("hasChild", "true")
+
   void	SetUp()
   {
     lm1.pos[0] = 42;
@@ -736,6 +779,8 @@ When(updating_line_landmark)
 
   When(landmark_is_not_in_db)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().oldDBSize = Root().lms.DBSize;
@@ -756,6 +801,8 @@ When(updating_line_landmark)
 
   When(landmark_is_in_db)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void	SetUp()
     {
       Root().lms.addToDB(Root().lm2);
@@ -1026,4 +1073,71 @@ When(removing_double_landmarks)
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
+};
+
+
+When(getting_aligned_landmark_data)
+{
+  void	SetUp()
+  {
+    srand(42);
+    for (int i = 0; i < 30; ++i)
+      {
+	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+      }
+    robotPosition[0] = 2.0;
+    robotPosition[1] = 4.0;
+    robotPosition[2] = 0.2;
+    lm1.pos[0] = (cos((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+      + robotPosition[0];
+    lm1.pos[1] = (sin((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+      + robotPosition[1];
+    lm2.pos[0] = (cos((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+      + robotPosition[0];
+    lm2.pos[1] = (sin((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+      + robotPosition[1];
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    extracted = lms.extractSpikeLandmarks(data, 30, robotPosition);
+    lms.alignLandmarkData(extracted, matched, id, ranges, bearings, lmrk, exlmrk);
+  }
+
+  Then(it_should_not_have_more_data_than_landmarks_in_db)
+  {
+    Assert::That(lmrk.size(), Is().Not().EqualTo(0));
+    Assert::That(exlmrk.size(), Is().Not().EqualTo(0));
+    Assert::That(lmrk.size(), Is().LessThan(lms.DBSize + 1));
+    Assert::That(exlmrk.size(), Is().LessThan(lms.DBSize + 1));
+  }
+
+  Then(it_should_have_good_values)
+  {
+    int	i = 0;
+
+    for(std::vector<std::pair<double, double> >::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
+      {
+	Assert::That(id[i], Is().GreaterThan(0));
+	Assert::That(matched[i], Is().EqualTo(true));
+	Assert::That(lmrk[i].first, Is().EqualTo(lms.landmarkDB[id[i]]->pos[0]));
+	Assert::That(lmrk[i].second, Is().EqualTo(lms.landmarkDB[id[i]]->pos[1]));
+	++i;
+      }
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  int		id1;
+  int		id2;
+  double	data[30];
+  double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> extracted;
+  bool		*matched;
+  int		*id;
+  double	*ranges;
+  double	*bearings;
+  std::vector<std::pair<double, double> > lmrk;
+  std::vector<std::pair<double, double> > exlmrk;
 };
