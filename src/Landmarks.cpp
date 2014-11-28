@@ -451,46 +451,18 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
   return (resultUniqueLandmarks);
 }
 
-void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id, double *ranges, double *bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks)
+void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id, double *&ranges, double *&bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks)
 {
-  int uniquelmrks = 0;
-  double leastDistance = 99999;
-  double temp;
-  std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size());
+  std::vector<Landmarks::Landmark *> uniqueLandmarks = this->removeDouble(extractedLandmarks);
 
-  // on commence par supprimer les doublons
-  for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
-    {
-      if(extractedLandmarks[i]->id != -1)
-	{
-	  leastDistance = 99999;
-	  for(unsigned int j = i; j < extractedLandmarks.size(); ++j)
-	    {
-	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
-		{
-		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
-		  if(temp<leastDistance)
-		    {
-		      leastDistance = temp;
-		      uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
-		    }
-		}
-	    }
-	}
-      if (leastDistance != 99999)
-	uniquelmrks++;
-    }
-  // uniqueLandmark ne contient aucun doublons ici
-  // on set alors les tableaux/vectors passés en paramètre (ref ou ptr)
+  matched = new bool[uniqueLandmarks.size()];
+  id = new int[uniqueLandmarks.size()];
+  ranges = new double[uniqueLandmarks.size()];
+  bearings = new double[uniqueLandmarks.size()];
+  lmrks = std::vector<std::pair<double, double> >(uniqueLandmarks.size());
+  exlmrks = std::vector<std::pair<double, double> >(uniqueLandmarks.size());
 
-  matched = new bool[uniquelmrks];
-  id = new int[uniquelmrks];
-  ranges = new double[uniquelmrks];
-  bearings = new double[uniquelmrks];
-  lmrks = std::vector<std::pair<double, double> >(uniquelmrks);
-  exlmrks = std::vector<std::pair<double, double> >(uniquelmrks);
-
-  for(int i = 0; i < uniquelmrks; ++i)
+  for(unsigned int i = 0; i < uniqueLandmarks.size(); ++i)
     {
       matched[i] = true;
       id[i] = uniqueLandmarks[i]->id;

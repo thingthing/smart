@@ -65,8 +65,8 @@ public:
   // id is an arary of int
   // ranges is an array of double
   // bearings is an array of double
-  void alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *matched, int *id,
-			double *ranges, double *bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
+  void alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id,
+			double *&ranges, double *&bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
   int addToDB(const Landmark &lm);
 
   int getDBSize() const;

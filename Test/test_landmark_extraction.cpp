@@ -56,7 +56,7 @@ When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
   {
     Assert::That(lms->degreePerScan, Is().Not().EqualTo(::Landmarks_Result::defaultdegreePerScan));
   }
-  
+
   Then(it_should_have_this_specific_degree_value)
   {
     Assert::That(lms->degreePerScan, Is().EqualTo(::Landmarks_Result::degreePerScan));
@@ -80,7 +80,7 @@ When(calling_getDBSize_after_construct)
   {
     Assert::That(lms.getDBSize(), Is().EqualTo(lms.DBSize));
   }
-  
+
   Landmarks lms;
 };
 
@@ -99,7 +99,7 @@ When(calling_getDBSize_after_DBSize_changed)
   {
     Assert::That(lms.getDBSize(), Is().EqualTo(lms.DBSize));
   }
-  
+
   Landmarks lms;
 };
 
@@ -108,13 +108,13 @@ When(calling_getDBSize_after_DBSize_changed)
  **/
 When(adding_one_Slam_Id)
 {
-  
+
   void	SetUp()
   {
     previousLandmarksNumber = lms.EKFLandmarks;
     lms.addSlamId(::Landmarks_Result::goodSlamId.first, ::Landmarks_Result::goodSlamId.second);
   }
-  
+
   Then(it_should_increase_EKFLandmarks_by_one)
   {
     Assert::That(lms.EKFLandmarks, Is().EqualTo(previousLandmarksNumber + 1));
@@ -135,13 +135,13 @@ When(adding_one_Slam_Id)
  **/
 When(getting_Slam_Id)
 {
-  
+
   void	SetUp()
   {
     lms.addSlamId(::Landmarks_Result::wrongSlamId.first, ::Landmarks_Result::wrongSlamId.second);
     lms.addSlamId(::Landmarks_Result::goodSlamId.first, ::Landmarks_Result::goodSlamId.second);
   }
-  
+
   Then(it_should_not_return_the_bad_id)
   {
     Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
@@ -162,7 +162,7 @@ When(getting_Slam_Id)
  **/
 When(adding_landmark_to_db)
 {
-  
+
   void	SetUp()
   {
     lm.pos[0] = ::Landmark_Result::pos[0] + 1;
@@ -176,7 +176,7 @@ When(adding_landmark_to_db)
     previousDBSize = lms.DBSize;
     idLandmark = lms.addToDB(lm);
   }
-  
+
   Then(DBSize_should_be_increased_by_one)
   {
     Assert::That(lms.DBSize, Is().EqualTo(previousDBSize + 1));
@@ -206,14 +206,14 @@ When(adding_landmark_to_db)
  **/
 When(getting_LandmarkDB)
 {
-  
+
   void	SetUp()
   {
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     db = lms.getLandmarkDB();
   }
-  
+
   Then(it_should_hae_the_same_size)
   {
     Assert::That(db.size(), Is().EqualTo(lms.DBSize));
@@ -273,18 +273,18 @@ When(getting_association)
       Root().oldTimeObserved =  Root().lms.landmarkDB[Root().id1]->totalTimeObserved;
       idGot = Root().lms.getAssociation(Root().lm1);
     }
-    
+
     Then(it_should_update_good_landmark)
     {
       Assert::That(idGot, Is().EqualTo(Root().id1));
     }
-    
+
     Then(it_should_increase_time_observed)
     {
       Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
 		   Is().EqualTo(Root().oldTimeObserved + 1));
     }
-    
+
     Then(it_should_reset_life_counter)
     {
       Assert::That(Root().lms.landmarkDB[Root().id1]->life, Is().EqualTo(LIFE));
@@ -302,7 +302,7 @@ When(getting_association)
       Root().lm2.pos[1] = 8;
       Root().oldTimeObserved = Root().lms.landmarkDB[Root().id2]->totalTimeObserved;
     }
-    
+
     Then(it_should_not_update)
     {
       Assert::That(Root().lms.getAssociation(Root().lm2), Is().EqualTo(-1));
@@ -379,7 +379,7 @@ When(getting_closest_association_landmark)
       Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
     }
   };
-  
+
   When(there_is_one_landmark_with_enough_observation)
   {
     ScenarioAttribute("hasParent", "\t")
@@ -387,7 +387,7 @@ When(getting_closest_association_landmark)
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
-      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1; 
+      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1;
       Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
     }
 
@@ -404,7 +404,7 @@ When(getting_closest_association_landmark)
 
   When(there_is_more_than_one_landmark_without_enough_observation)
   {
-    ScenarioAttribute("hasParent", "\t");      
+    ScenarioAttribute("hasParent", "\t");
 
     void	SetUp()
     {
@@ -433,9 +433,9 @@ When(getting_closest_association_landmark)
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
       Root().id2 = Root().lms.addToDB(Root().lm2);
-      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1; 
+      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1;
     }
-    
+
     When(trying_with_the_one_that_has_enough_observation)
     {
       ScenarioAttribute("hasParent", "\t\t")
@@ -449,7 +449,7 @@ When(getting_closest_association_landmark)
       {
 	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
       }
-      
+
       Then(it_should_change_total_time_observed)
       {
 	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
@@ -469,7 +469,7 @@ When(getting_closest_association_landmark)
       {
 	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
       }
-      
+
       Then(it_should_change_total_time_observed)
       {
 	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
@@ -485,8 +485,8 @@ When(getting_closest_association_landmark)
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
       Root().id2 = Root().lms.addToDB(Root().lm2);
-      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1; 
-      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1; 
+      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1;
+      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1;
     }
 
     When(trying_with_one)
@@ -502,7 +502,7 @@ When(getting_closest_association_landmark)
       {
 	Assert::That(Root().idResult, Is().EqualTo(Root().id1));
       }
-      
+
       Then(it_should_change_total_time_observed)
       {
 	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
@@ -522,7 +522,7 @@ When(getting_closest_association_landmark)
       {
 	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
       }
-      
+
       Then(it_should_change_total_time_observed)
       {
 	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
@@ -542,7 +542,7 @@ When(getting_closest_association_landmark)
       {
 	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
       }
-      
+
       Then(it_should_change_total_time_observed)
       {
 	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
@@ -555,7 +555,7 @@ When(getting_closest_association_landmark)
   Landmarks::Landmark	lm2;
   Landmarks::Landmark	lm3;
   int		id1;
-  int		id2; 
+  int		id2;
   int		idResult;
   int		timeObservedResult;
   int		oldTimeObserved;
@@ -579,8 +579,8 @@ When(getting_landmark)
     bearing = 3;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1; 
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1; 
+    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
     lm3 = lms.getLandmark(range, bearing, robotPosition);
   }
 
@@ -625,7 +625,7 @@ When(updating_landmarks_with_a_landmark)
 
     id1 = lms.addToDB(lm1);
   }
-  
+
   When(landmark_is_not_in_db)
   {
     ScenarioAttribute("hasParent", "\t")
@@ -648,7 +648,7 @@ When(updating_landmarks_with_a_landmark)
       Assert::That(Root().lm3->id, Is().EqualTo(Root().lms.DBSize - 1));
     }
   };
-  
+
   When(landmark_is_in_db)
   {
     ScenarioAttribute("hasParent", "\t")
@@ -699,7 +699,7 @@ When(updating_landmarks_with_parameters)
     lm1 = lms.updateLandmark(false, 0, distance, bearing, robotPosition);
     id1 = lm1->id;
   }
- 
+
 
   When(landmark_is_not_in_db)
   {
@@ -719,7 +719,7 @@ When(updating_landmarks_with_parameters)
       Assert::That(Root().lm1->pos[1], Is().Not().EqualTo(0));
     }
   };
-  
+
   When(landmark_is_in_db)
   {
     ScenarioAttribute("hasParent", "\t")
@@ -793,7 +793,7 @@ When(updating_line_landmark)
     }
 
     Then(it_should_return_new_landmark_id)
-    { 
+    {
       Assert::That(Root().idResult, Is().Not().EqualTo(-1));
       Assert::That(Root().idResult, Is().EqualTo(Root().lms.DBSize - 1));
     }
@@ -816,7 +816,7 @@ When(updating_line_landmark)
     }
 
     Then(it_should_return_db_landmark_id)
-    { 
+    {
       Assert::That(Root().idResult, Is().EqualTo(Root().id1));
     }
   };
@@ -928,11 +928,11 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     y = (ao * b) / (ao - a);
     range = sqrt(pow(x - robotPosition[0], 2) + pow(y - robotPosition[1], 2));
     bearing = atan((y - robotPosition[1]) / (x - robotPosition[0])) - robotPosition[2];
-    
+
     double bo = robotPosition[1] - ao * robotPosition[0];
     double px = (b - bo) / (ao - a);
     double py = ((ao * (b - bo)) / (ao - a)) + bo;
-    
+
     rangeError = lms.distance(robotPosition[0], robotPosition[1], px, py);
     bearingError = atan((py - robotPosition[1]) / (px - robotPosition[0])) - robotPosition[2];
 
@@ -1118,7 +1118,7 @@ When(getting_aligned_landmark_data)
 
     for(std::vector<std::pair<double, double> >::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
       {
-	Assert::That(id[i], Is().GreaterThan(0));
+	Assert::That(id[i], Is().GreaterThan(-1));
 	Assert::That(matched[i], Is().EqualTo(true));
 	Assert::That(lmrk[i].first, Is().EqualTo(lms.landmarkDB[id[i]]->pos[0]));
 	Assert::That(lmrk[i].second, Is().EqualTo(lms.landmarkDB[id[i]]->pos[1]));
