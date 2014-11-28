@@ -652,6 +652,6 @@ std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResult
 {
   std::vector<Landmarks::Landmark *> res(numberMatched);
   for (unsigned int i = 0; i < numberMatched; ++i)
-    res[i] = this->updateLandmark(matched[i], id[i], ranges[i], bearings[i], robotPosition[i]);
+    res[i] = this->updateLandmark(matched[i], id[i], ranges[i], bearings[i], robotPosition);
   return (res);
 }
