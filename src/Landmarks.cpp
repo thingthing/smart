@@ -606,9 +606,66 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 
 int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[])
 {
-  (void)cameradata;
-  (void)robotPosition;
-  (void)numberSample;
+  double maxrange = 0;
+
+  for(unsigned int i = 1; i < numberSample - 1; ++i)
+    {
+      // we get the laser data with max range
+      if (cameradata[i - 1] < CAMERAPROBLEM
+	  && cameradata[i + 1] < CAMERAPROBLEM
+	  && cameradata[i] > maxrange)
+	maxrange = cameradata[i];
+    }
+  maxrange = MAX_RANGE;
+  double *Xbounds = new double[4];
+  double *Ybounds = new double[4];
+
+  //get bounds of rectangular box to remove bad landmarks from 88
+  Xbounds[0] = cos((this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[0];
+  Ybounds[0] = sin((this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[1];
+  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
+  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
+  Xbounds[2] = cos((359 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[0];
+  Ybounds[2] = sin((359 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[1];
+  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
+  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
+
+  //now check DB for landmarks that are within this box
+  //decrease life of all landmarks in box. If the life reaches zero, remove landmark
+
+  double pntx;
+  double pnty;
+
+  for(int k = 0; k < DBSize + 1; ++k)
+    {
+      pntx = this->landmarkDB[k]->pos[0];
+      pnty = this->landmarkDB[k]->pos[1];
+      int i = 0;
+      int j = 0;
+      bool inRectangle = true;
+      if(robotPosition[0] < 0 || robotPosition[1] < 0)
+	inRectangle = false;
+      for(i = 0; i < 4; ++i)
+	{
+	  if ((((Ybounds[i] <= pnty) && (pnty < Ybounds[j])) || ((Ybounds[j] <= pnty) && (pnty < Ybounds[i]))) &&
+	       (pntx < (Xbounds[j] - Xbounds[i]) * (pnty - Ybounds[i]) / (Ybounds[j] - Ybounds[i]) + Xbounds[i]))
+	    {
+	      if(inRectangle == false)
+		inRectangle = true;
+	    }
+	  j = i++;
+	}
+      if(inRectangle)
+	{
+	  //in rectangle so decrease life and maybe remove
+	  if((--(this->landmarkDB[k]->life)) <= 0)
+	    {
+	      delete (this->landmarkDB[k]);
+	      this->landmarkDB.erase(this->landmarkDB.begin() + k);
+	      --DBSize;
+	    }
+	}
+    }
   return (0);
 }
 
