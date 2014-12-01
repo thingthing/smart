@@ -487,14 +487,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 #endif
 
   // linepoints est un ensemble de points correspondant aux lignes vues
-  int *linepoints = new int[numberSample];
-  unsigned int totalLinepoints = 0;
-
-  for (unsigned int i = 0; i < numberSample - 1; ++i)
-    {
-      linepoints[totalLinepoints] = i;
-      ++totalLinepoints;
-    }
+  unsigned int totalLinepoints = numberSample - 1;
 
   // BEGIN RANSAC ALGORITHM
   unsigned int noTrials = 0;
@@ -531,38 +524,40 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
       double a = 0;
       double b = 0;
       // ax + b => ligne
-
+      // cette fonction modifie les valeurs de 'a' et 'b'
       this->leastSquaresLineEstimate(cameradata, robotPosition, rndSelectedPoints, MAXSAMPLE, a, b);
+
 
       //– Determine the consensus set S1* of points is P
       int *consensusPoints = new int[numberSample]; // points closed to the line
       unsigned int totalConsensusPoints = 0;
       int *newLinePoints = new int[numberSample]; // points far to the line
-      int totalNewLinePoints = 0;
+      unsigned int totalNewLinePoints = 0;
       double x = 0;
       double y = 0;
       double d = 0;
       for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
-	  //convert ranges and bearing to coordinates
-	  x = (cos((linepoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[linepoints[i]]) + robotPosition[0];
-	  y = (sin((linepoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[linepoints[i]]) + robotPosition[1];
+	  // convert ranges and bearing to coordinates
+	  x = (cos((i * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[i]) + robotPosition[0];
+	  y = (sin((i * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[i]) + robotPosition[1];
 	  d = this->distanceToLine(x, y, a, b);
 	  if (d < RANSAC_TOLERANCE)
 	    {
 	      // points prets de la ligne
-	      consensusPoints[totalConsensusPoints] = linepoints[i];
+	      consensusPoints[totalConsensusPoints] = i;
 	      ++totalConsensusPoints;
 	    }
 	  else
 	    {
 	      // points loin de la ligne
-	      newLinePoints[totalNewLinePoints] = linepoints[i];
+	      newLinePoints[totalNewLinePoints] = i;
 	      ++totalNewLinePoints;
 	    }
 	}
       if(totalConsensusPoints > RANSAC_CONSENSUS)
 	{
+	  // cette fonction modifie les valeurs de 'a' et 'b'
 	  this->leastSquaresLineEstimate(cameradata, robotPosition, consensusPoints, totalConsensusPoints, a, b);
 	  totalLinepoints = totalNewLinePoints;
 
