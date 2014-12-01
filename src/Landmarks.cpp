@@ -478,9 +478,13 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, b
 std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[])
 {
   // lignes trouvées
-  double *la = new double[100];
-  double *lb = new double[100];
+  std::vector<double> la;
+  std::vector<double> lb;
   int totalLines = 0;
+
+#ifdef DEBUG
+  std::vector<Landmarks::Landmark *> tempLandmarks;
+#endif
 
   // linepoints est un ensemble de points correspondant aux lignes vues
   int *linepoints = new int[numberSample];
@@ -502,13 +506,11 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
       int *rndSelectedPoints = new int[MAXSAMPLE];
       int temp = 0;
       bool newpoint = false;
-      //– Randomly select a subset S1 of n data points and
-      //compute the model M1
-      //Initial version chooses entirely randomly. Now choose
-      //one point randomly and then sample from neighbours within some defined
-      //radius
+
       int centerPoint = rand() % (totalLinepoints - 1) + MAXSAMPLE;
       rndSelectedPoints[0] = centerPoint;
+
+      // on cherche des points random afin de créer un modèle
       for(unsigned int i = 1; i < MAXSAMPLE; ++i)
 	{
 	  newpoint = false;
@@ -523,23 +525,24 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 		    newpoint = true; //point has not already been selected
 		}
 	    }
-	  rndSelectedPoints[i] = temp;
+	  rndSelectedPoints[i] = temp; // nouveau point trouvé
 	}
-      //compute model M1
+
       double a = 0;
       double b = 0;
-      //y = a+ bx
+      // ax + b => ligne
+
       this->leastSquaresLineEstimate(cameradata, robotPosition, rndSelectedPoints, MAXSAMPLE, a, b);
+
       //– Determine the consensus set S1* of points is P
-      //compatible with M1 (within some error tolerance)
-      int *consensusPoints = new int[numberSample];
+      int *consensusPoints = new int[numberSample]; // points closed to the line
       unsigned int totalConsensusPoints = 0;
-      int *newLinePoints = new int[numberSample];
+      int *newLinePoints = new int[numberSample]; // points far to the line
       int totalNewLinePoints = 0;
       double x = 0;
-      double y =0;
+      double y = 0;
       double d = 0;
-      for(unsigned int i = 0; i < totalLinepoints; ++i)
+      for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
 	  //convert ranges and bearing to coordinates
 	  x = (cos((linepoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[linepoints[i]]) + robotPosition[0];
@@ -558,42 +561,35 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 	      ++totalNewLinePoints;
 	    }
 	}
-      //– If #(S1*) > t, use S1* to compute (maybe using least squares) a new model M1*g
       if(totalConsensusPoints > RANSAC_CONSENSUS)
 	{
-	  //Calculate updated line equation based on consensus points
 	  this->leastSquaresLineEstimate(cameradata, robotPosition, consensusPoints, totalConsensusPoints, a, b);
+	  totalLinepoints = totalNewLinePoints;
+
+#ifdef DEBUG
 	  //for now add points associated to line as landmarks to see results
 	  for(unsigned int i = 0; i < totalConsensusPoints; ++i)
 	    {
-	      //tempLandmarks[consensusPoints[i]] = GetLandmark(laserdata[consensusPoints[i]], consensusPoints[i], robotPosition);
 	      //Remove points that have now been associated to this line
-
-	      /* newLinePoints.CopyTo(linepoints, 0); */ // WTF
-	      totalLinepoints = totalNewLinePoints;
+	      tempLandmarks[consensusPoints[i]] = this->getLandmark(cameradata[consensusPoints[i]], consensusPoints[i], robotPosition);
 	    }
+#endif
+
 	  //add line to found lines
-	  la[totalLines] = a;
-	  lb[totalLines] = b;
+	  la.push_back(a);
+	  lb.push_back(b);
 	  ++totalLines;
-	  //restart search since we found a line
-	  //noTrials = MAXTRIALS; //when maxtrials = debugging
 	  noTrials = 0;
 	}
       else
-	//DEBUG add point that we chose as middle value
-	//tempLandmarks[centerPoint] = GetLandmark(laserdata[centerPoint], centerPoint, robotPosition);
-	//– If #(S1*) < t, randomly select another subset S2 and
-	//repeat
-	//– If, after some predetermined number of trials there is
-	//no consensus set with t points, return with failure
 	++noTrials;
     }
   // END OF RANSAC ALGORITHM
 
   // pour debug, ajouter origin comme un landmark
-  // tempLandmarks[totalLines+1] = GetOrigin();
-  // tempLandmarks[i] = GetLandmark(laserdata[i], i, robotPosition);
+#ifdef DEBUG
+  tempLandmarks.push_back(this->getOrigin());
+#endif
 
   std::vector<Landmarks::Landmark *> foundLandmarks(totalLines);
   for(int i = 0; i < totalLines; ++i)
