@@ -550,13 +550,13 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 	  d = this->distanceToLine(x, y, a, b);
 	  if (d < RANSAC_TOLERANCE)
 	    {
-	      //add points which are close to line
+	      // points prets de la ligne
 	      consensusPoints[totalConsensusPoints] = linepoints[i];
 	      ++totalConsensusPoints;
 	    }
 	  else
 	    {
-	      //add points which are not close to line
+	      // points loin de la ligne
 	      newLinePoints[totalNewLinePoints] = linepoints[i];
 	      ++totalNewLinePoints;
 	    }
@@ -575,7 +575,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 	    }
 #endif
 
-	  //add line to found lines
+	  // ajout des lignes trouvées
 	  la.push_back(a);
 	  lb.push_back(b);
 	  ++totalLines;
