@@ -1,0 +1,29 @@
+# Ignore everything
+*
+
+# Except:
+!.gitignore
+!Makefile
+
+# Folders
+!*/
+
+# Visual Studio files
+!*.sln
+!*.v11.suo
+!*.vcxproj*
+
+# UML files
+!*.moo
+
+# Assets files
+!*.png
+!*.meta
+
+# CPP files
+!*.cpp
+!*.h
+!*.hpp
+
+# other legit files
+!*.txt
