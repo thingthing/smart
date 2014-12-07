@@ -1141,3 +1141,95 @@ When(getting_aligned_landmark_data)
   std::vector<std::pair<double, double> > lmrk;
   std::vector<std::pair<double, double> > exlmrk;
 };
+
+When(update_and_add_line_landmarks)
+{
+  ScenarioAttribute("hasChild", "true")
+
+  void SetUp()
+  {
+    lmrk1.pos[0] = 21;
+    lmrk1.pos[1] = 42;
+    lmrk2.pos[0] = 12;
+    lmrk2.pos[1] = 24;
+  }
+
+  When(Landmarks_are_not_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+    void SetUp()
+    {
+      Root().lmrks.push_back(&(Root().lmrk1));
+      Root().lmrks.push_back(&(Root().lmrk2));
+
+      oldIds.push_back(Root().lmrk1.id);
+      oldIds.push_back(Root().lmrk2.id);
+      oldDBsize = Root().lms.DBSize;
+      Root().dbLmrks = Root().lms.updateAndAddLineLandmarks(Root().lmrks);
+      for (unsigned int i = 0; i < Root().dbLmrks.size(); ++i)
+	ids.push_back(Root().dbLmrks[i]->id);
+    }
+
+    Then(it_should_add_landmarks_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(2));
+    }
+
+    Then(it_should_return_updated_landmarks_with_good_values)
+    {
+      Assert::That(Root().dbLmrks.size(), Is().EqualTo(2));
+      Assert::That(oldIds.size(), Is().EqualTo(ids.size()));
+      for (unsigned int i = 0; i < oldIds.size(); ++i)
+	Assert::That(oldIds[i], Is().Not().EqualTo(ids[i]));
+    }
+
+    unsigned int oldDBsize;
+    std::vector<unsigned int> ids;
+    std::vector<unsigned int> oldIds;
+  };
+
+
+  When(Landmarks_are_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+
+    void SetUp()
+    {
+      Root().dbLmrks.push_back(&(Root().lmrk1));
+      Root().dbLmrks.push_back(&(Root().lmrk2));
+
+      Root().lms.addToDB(Root().lmrk1);
+      Root().lms.addToDB(Root().lmrk2);
+
+      oldDBsize = Root().lms.DBSize;
+      for (unsigned int i = 0; i < Root().dbLmrks.size(); ++i)
+	oldIds.push_back(Root().dbLmrks[i]->id);
+      Root().lmrks = Root().lms.updateAndAddLineLandmarks(Root().dbLmrks);
+      for (unsigned int i = 0; i < Root().lmrks.size(); ++i)
+	ids.push_back(Root().lmrks[i]->id);
+    }
+
+    Then(it_should_not_add_landmarks_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(oldDBsize));
+    }
+
+    Then(it_should_return_updated_landmarks_with_good_values)
+    {
+      Assert::That(Root().lmrks.size(), Is().EqualTo(2));
+      Assert::That(oldIds.size(), Is().EqualTo(ids.size()));
+      for (unsigned int i = 0; i < oldIds.size(); ++i)
+	Assert::That(oldIds[i], Is().Not().EqualTo(ids[i]));
+    }
+
+    unsigned int oldDBsize;
+    std::vector<unsigned int> ids;
+    std::vector<unsigned int> oldIds;
+  };
+
+  Landmarks lms;
+  Landmarks::Landmark lmrk1;
+  Landmarks::Landmark lmrk2;
+  std::vector<Landmarks::Landmark *> lmrks;
+  std::vector<Landmarks::Landmark *> dbLmrks;
+};
