@@ -1142,8 +1142,9 @@ When(getting_aligned_landmark_data)
   std::vector<std::pair<double, double> > exlmrk;
 };
 
+
 /**
- * Unit test for updateAndAddLineLandmarks(std::vector<Landmarks::Landmark *>)
+ * Unit Test for updateAndAddLineLandmarks(std::vector<Landmarks::Landmark *>)
  **/
 When(update_and_add_line_landmarks)
 {
@@ -1229,4 +1230,108 @@ When(update_and_add_line_landmarks)
   unsigned int oldDBsize;
   std::vector<unsigned int> ids;
   std::vector<unsigned int> oldIds;
+};
+
+/**
+ * Unit test for updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[])
+ **/
+When(Update_And_Add_Landmark_Using_EKF_Results)
+{
+  ScenarioAttribute("hasChild", "true")
+
+    void SetUp()
+    {
+      robotPosition[0] = 42.0;
+      robotPosition[1] = 24.0;
+      robotPosition[2] = 1.0;
+    }
+
+  When(Landmarks_are_not_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+      void SetUp()
+      {
+	Root().matched[0] = false;
+	Root().matched[1] = false;
+	Root().id[0] = 0;
+	Root().id[1] = 1;
+	Root().ranges[0] = 1.4;
+	Root().ranges[1] = 1.4;
+	Root().bearings[0] = 4;
+	Root().bearings[1] = 4;
+	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, Root().robotPosition);
+      }
+
+    Then(it_should_add_landmarks_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(2));
+    }
+
+    Then(it_should_return_updated_landmarks_with_good_values)
+    {
+      Assert::That(Root().ldmks.size(), Is().EqualTo(2));
+      for (unsigned int i = 0; i < Root().ldmks.size(); ++i)
+	{
+	  Assert::That(Root().ldmks[i]->id, Is().EqualTo(i));
+	  Assert::That(Root().ldmks[i]->range, Is().EqualTo(1.4));
+	  Assert::That(Root().ldmks[i]->bearing, Is().EqualTo(4));
+	}
+    }
+  };
+
+  When(Landmarks_are_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+
+      void SetUp()
+      {
+	Root().matched[0] = true;
+	Root().matched[1] = true;
+	Root().id[0] = 0;
+	Root().id[1] = 1;
+	Root().ranges[0] = 1.4;
+	Root().ranges[1] = 1.4;
+	Root().bearings[0] = 4;
+	Root().bearings[1] = 4;
+	ldmk1.id = Root().id[0];
+	ldmk2.id = Root().id[1];
+	ldmk1.range = Root().ranges[0];
+	ldmk2.range = Root().ranges[1];
+	ldmk1.bearing = Root().bearings[0];
+	ldmk2.bearing = Root().bearings[1];
+	Root().lms.addToDB(ldmk1);
+	Root().lms.addToDB(ldmk2);
+	oldSize = Root().lms.DBSize;
+	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, Root().robotPosition);
+      }
+
+    Then(it_should_not_add_landmarks_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(oldSize));
+    }
+
+    Then(it_should_return_updated_landmarks_with_good_values)
+    {
+      Assert::That(Root().ldmks.size(), Is().EqualTo(2));
+      for (unsigned int i = 0; i < Root().ldmks.size(); ++i)
+	{
+	  Assert::That(Root().ldmks[i]->id, Is().EqualTo(i));
+	  Assert::That(Root().ldmks[i]->range, Is().EqualTo(1.4));
+	  Assert::That(Root().ldmks[i]->bearing, Is().EqualTo(4));
+	  Assert::That(Root().ldmks[i]->totalTimeObserved, Is().EqualTo(2));
+	}
+    }
+
+    Landmarks::Landmark ldmk1;
+    Landmarks::Landmark ldmk2;
+    unsigned int oldSize;
+  };
+
+  Landmarks	lms;
+  std::vector<Landmarks::Landmark *> ldmks;
+  bool		matched[2];
+  int		id[2];
+  double	ranges[2];
+  double	bearings[2];
+  double	robotPosition[3];
 };
