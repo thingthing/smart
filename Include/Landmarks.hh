@@ -50,16 +50,29 @@ public:
   ~Landmarks();
   Landmarks(double degreePerScan = DEGREESPERSCAN);
 
+  // Getters
   int getSLamId(int id) const;
+  int getDBSize() const;
+  std::vector<Landmark *> getLandmarkDB() const;
+
+  // Setters
   int addSlamId(int landmarkId, int slamId);
+  int addToDB(const Landmark &lm);
+
+  //Remove
   int removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
   int removeBadLandmarks(const std::vector<double> & cameradata, const std::vector<double> & robotPosition); // both to be sure
 
+  //Update
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[]);
   int updateLineLandmark(Landmark &lm);
+
+  //Extract
   std::vector<Landmark *> extractLineLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]);
 
+
+  //Other
   // matched is an array of boolean
   // id is an arary of int
   // id is an arary of int
@@ -67,30 +80,33 @@ public:
   // bearings is an array of double
   void alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id,
 			double *&ranges, double *&bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
-  int addToDB(const Landmark &lm);
-
-  int getDBSize() const;
-  std::vector<Landmark *> getLandmarkDB() const;
 
 private:
 #ifdef UNITTEST
 public: // ONLY FOR UNIT TESTS
 #endif
-  Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);
-  Landmark *updateLandmark(Landmark *lm);
 
-  void leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
-  double distanceToLine(double x, double y, double a, double b);
-  std::vector<Landmark *> extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber,
-						double robotPosition[]);
+  //Getters
   Landmark *getLandmark(double range, int readingNo, double robotPosition[]);
   Landmark *getLineLandmark(double a, double b, double robotPosition[]);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();
   void getClosestAssociation(Landmark *lm, int &id, int &totalTimeObserved);
   int getAssociation(Landmark &lm);
+
+  //Update
+  Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);
+  Landmark *updateLandmark(Landmark *lm);
+
+  //Extract
+  std::vector<Landmark *> extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber,
+						double robotPosition[]);
+  //Remove
   std::vector<Landmark *> removeDouble(std::vector<Landmark *> extractedLandmarks);
 
+  //Other
+  void leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
+  double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
 
