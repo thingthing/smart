@@ -81,6 +81,10 @@ public:
   void alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id,
 			double *&ranges, double *&bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
 
+  int getAssociation(Landmark &lm);
+  void getClosestAssociation(Landmark *lm, int &id, int &totalTimeObserved);
+
+
 private:
 #ifdef UNITTEST
 public: // ONLY FOR UNIT TESTS
@@ -91,8 +95,6 @@ public: // ONLY FOR UNIT TESTS
   Landmark *getLineLandmark(double a, double b, double robotPosition[]);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();
-  void getClosestAssociation(Landmark *lm, int &id, int &totalTimeObserved);
-  int getAssociation(Landmark &lm);
 
   //Update
   Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);

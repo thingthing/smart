@@ -77,6 +77,7 @@ int Landmarks::addSlamId(int landmarkID, int slamID)
   return (0);
 }
 
+//@TODO: Should add innovation to getAssociation one day (after matrice implementation)
 int Landmarks::getAssociation(Landmark &lm)
 {
   for(int i = 0; i < this->DBSize; ++i)
