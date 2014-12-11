@@ -6,6 +6,7 @@ CXXFLAGS	= -W -Wall $(foreach dir, $(INCLUDE), -I$(dir))
 
 SRCS	=	main.cpp			\
 		../src/Landmarks.cpp		\
+		../src/DataAssociation.cpp	\
 		CustomConstraint.cpp		\
 		test_landmark_extraction.cpp
 
