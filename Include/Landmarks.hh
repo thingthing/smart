@@ -5,25 +5,25 @@
 #include <map>
 #include <cmath>
 
-static const double CONVERSION = (M_PI / 180.0); // Convert to radians
-static const unsigned int MAXLANDMARKS = 3000; // Max number of landmarks
-static const double MAXERROR = 0.5; // If a landmarks is within this distance of another landmarks, its the same landmarks
-static const unsigned int MINOBSERVATIONS = 15; // Number of times a landmark must be observed to be recongnized as a landmark
-static const unsigned int LIFE = 40; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
-static const float MAX_RANGE = 1.0;
-static const unsigned int MAXTRIALS = 1000; // RANSAC: max times to run algorithm
-static const unsigned int MAXSAMPLE = 10; // RANSAC: randomly select x points
-static const unsigned int MINLINEPOINTS = 30; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
-static const double RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
-static const unsigned int RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
-static const double DEGREESPERSCAN = 0.5;
-static const double CAMERAPROBLEM = 8.1; // meters
-static const double MAX_DIFFERENCE = 0.5; // meter
-static const double MIN_DIFFERENCE = 0.3; // meter
-
 class Landmarks
 {
 public:
+static const double CONVERSION; // Convert to radians
+static const unsigned int MAXLANDMARKS; // Max number of landmarks
+static const double MAXERROR; // If a landmarks is within this distance of another landmarks, its the same landmarks
+static const unsigned int MINOBSERVATIONS; // Number of times a landmark must be observed to be recongnized as a landmark
+static const unsigned int LIFE; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
+static const float MAX_RANGE;
+static const unsigned int MAXTRIALS; // RANSAC: max times to run algorithm
+static const unsigned int MAXSAMPLE; // RANSAC: randomly select x points
+static const unsigned int MINLINEPOINTS; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
+static const double RANSAC_TOLERANCE; // RANSAC: if point is within x distance of line, its part of the line
+static const unsigned int RANSAC_CONSENSUS; // RANSAC: at leat x votes required to determine if its a line
+static const double DEGREESPERSCAN;
+static const double CAMERAPROBLEM; // meters
+static const double MAX_DIFFERENCE; // meter
+static const double MIN_DIFFERENCE; // meter
+
   class  Landmark
   {
   public:

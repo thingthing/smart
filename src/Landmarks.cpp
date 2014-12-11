@@ -2,12 +2,28 @@
 #include <algorithm>
 #include "Landmarks.hh"
 
+const double Landmarks::CONVERSION = (M_PI / 180.0); // Convert to radians
+const unsigned int Landmarks::MAXLANDMARKS = 3000; // Max number of landmarks
+const double Landmarks::MAXERROR = 0.5; // If a landmarks is within this distance of another landmarks, its the same landmarks
+const unsigned int Landmarks::MINOBSERVATIONS = 15; // Number of times a landmark must be observed to be recongnized as a landmark
+const unsigned int Landmarks::LIFE = 40; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
+const float Landmarks::MAX_RANGE = 1.0;
+const unsigned int Landmarks::MAXTRIALS = 1000; // RANSAC: max times to run algorithm
+const unsigned int Landmarks::MAXSAMPLE = 10; // RANSAC: randomly select x points
+const unsigned int Landmarks::MINLINEPOINTS = 30; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
+const double  Landmarks::RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
+const unsigned int Landmarks::RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
+const double Landmarks::DEGREESPERSCAN = 0.5;
+const double Landmarks::CAMERAPROBLEM = 8.1; // meters
+const double Landmarks::MAX_DIFFERENCE = 0.5; // meter
+const double Landmarks::MIN_DIFFERENCE = 0.3; // meter
+
 Landmarks::Landmark::Landmark()
 {
   this->pos[0] = 0.0;
   this->pos[1] = 0.0;
   this->id = -1;
-  this->life = LIFE;
+  this->life = Landmarks::LIFE;
   this->totalTimeObserved = 0;
   this->range = -1;
   this->bearing = -1;
@@ -18,8 +34,8 @@ Landmarks::Landmark::~Landmark()
 
 Landmarks::Landmarks(double degrees)
 {
-  std::vector<std::pair<int, int> > idCpy(MAXLANDMARKS);
-  std::vector<Landmarks::Landmark *> landmarkCpy(MAXLANDMARKS);
+  std::vector<std::pair<int, int> > idCpy(Landmarks::MAXLANDMARKS);
+  std::vector<Landmarks::Landmark *> landmarkCpy(Landmarks::MAXLANDMARKS);
   this->DBSize = 0;
   this->EKFLandmarks = 0;
   this->degreePerScan = degrees;
@@ -65,9 +81,9 @@ int Landmarks::getAssociation(Landmark &lm)
 {
   for(int i = 0; i < this->DBSize; ++i)
     {
-      if(this->distance(lm, (*landmarkDB[i])) < MAXERROR && landmarkDB[i]->id != -1)
+      if(this->distance(lm, (*landmarkDB[i])) < Landmarks::MAXERROR && landmarkDB[i]->id != -1)
 	{
-	  landmarkDB[i]->life = LIFE;
+	  landmarkDB[i]->life = Landmarks::LIFE;
 	  ++landmarkDB[i]->totalTimeObserved;
 	  landmarkDB[i]->bearing = lm.bearing;
 	  landmarkDB[i]->range = lm.range;
@@ -97,7 +113,7 @@ int Landmarks::addToDB(const Landmark &lm)
 
       new_elem->pos[0] = lm.pos[0];
       new_elem->pos[1] = lm.pos[1];
-      new_elem->life = LIFE;
+      new_elem->life = Landmarks::LIFE;
       new_elem->id = DBSize;
       new_elem->totalTimeObserved = 1;
       new_elem->bearing = lm.bearing;
@@ -173,8 +189,8 @@ void Landmarks::leastSquaresLineEstimate(double cameradata[], double robotPositi
   for(int i = 0; i < arraySize; ++i)
     {
       //convert ranges and bearing to coordinates
-      x = (cos((selectPoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[0];
-      y = (sin((selectPoints[i] * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[1];
+      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[0];
+      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[1];
       sumY += y;
       sumYY += pow(y,2);
       sumX += x;
@@ -194,10 +210,10 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double 
   int id = -1;
   int totalTimeObserved = 0;
 
-  lm->pos[0] = (cos((readingNo * this->degreePerScan * CONVERSION) +
-		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[0];
-  lm->pos[1] = (sin((readingNo * this->degreePerScan * CONVERSION) +
-		    (robotPosition[2] * CONVERSION)) * range) + robotPosition[1];
+  lm->pos[0] = (cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+		    (robotPosition[2] * Landmarks::CONVERSION)) * range) + robotPosition[0];
+  lm->pos[1] = (sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+		    (robotPosition[2] * Landmarks::CONVERSION)) * range) + robotPosition[1];
   lm->range = range;
   lm->bearing = readingNo;
   //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème
@@ -233,10 +249,10 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
       // doesn't exist in the DB/fail to matched, so that, we've to add this sample
       lm = new Landmarks::Landmark();
 
-      lm->pos[0] = cos((readingNo * this->degreePerScan * CONVERSION) +
-		       (robotPosition[2] * CONVERSION)) * distance + robotPosition[0];
-      lm->pos[1] = sin((readingNo * this->degreePerScan * CONVERSION) +
-		       (robotPosition[2] * CONVERSION)) * distance + robotPosition[1];
+      lm->pos[0] = cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+		       (robotPosition[2] * Landmarks::CONVERSION)) * distance + robotPosition[0];
+      lm->pos[1] = sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+		       (robotPosition[2] * Landmarks::CONVERSION)) * distance + robotPosition[1];
       lm->bearing = readingNo;
       lm->range = distance;
       lm->id = this->addToDB(*lm);
@@ -365,14 +381,14 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
       // ça vaut aussi pour les autre chiffre: 0.5 et 0.3
 
       // => 8.1 c'est la valeur qui utilisent pour déterminer si le laser chie ou pas
-      if (cameradata[i - 1] < CAMERAPROBLEM && cameradata[i + 1] < CAMERAPROBLEM)
+      if (cameradata[i - 1] < Landmarks::CAMERAPROBLEM && cameradata[i + 1] < Landmarks::CAMERAPROBLEM)
 	{
   	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > MAX_DIFFERENCE)
   	    tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
   	  else
-  	    if((cameradata[i - 1] - cameradata[i]) > MIN_DIFFERENCE)
+  	    if((cameradata[i - 1] - cameradata[i]) > Landmarks::MIN_DIFFERENCE)
 	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
-	    else if((cameradata[i + 1] - cameradata[i]) > MIN_DIFFERENCE)
+	    else if((cameradata[i + 1] - cameradata[i]) > Landmarks::MIN_DIFFERENCE)
 	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
 	}
     }
@@ -494,22 +510,22 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 
   // MINLINEPOINTS : if less than x points left, stop trying to find a consensus (stop algorithm)
   // MAXTRIAL : max times to run algorithm
-  while(noTrials < MAXTRIALS && totalLinepoints > MINLINEPOINTS)
+  while(noTrials < Landmarks::MAXTRIALS && totalLinepoints > Landmarks::MINLINEPOINTS)
     {
-      int *rndSelectedPoints = new int[MAXSAMPLE];
+      int *rndSelectedPoints = new int[Landmarks::MAXSAMPLE];
       int temp = 0;
       bool newpoint = false;
 
-      int centerPoint = rand() % (totalLinepoints - 1) + MAXSAMPLE;
+      int centerPoint = rand() % (totalLinepoints - 1) + Landmarks::MAXSAMPLE;
       rndSelectedPoints[0] = centerPoint;
 
       // on cherche des points random afin de créer un modèle
-      for(unsigned int i = 1; i < MAXSAMPLE; ++i)
+      for(unsigned int i = 1; i < Landmarks::MAXSAMPLE; ++i)
 	{
 	  newpoint = false;
 	  while(!newpoint)
 	    {
-	      temp = centerPoint + (rand() % 2 - 1) * rand() % MAXSAMPLE;
+	      temp = centerPoint + (rand() % 2 - 1) * rand() % Landmarks::MAXSAMPLE;
 	      for(unsigned int j = 0; j < i; ++j)
 		{
 		  if(rndSelectedPoints[j] == temp)
@@ -525,7 +541,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
       double b = 0;
       // ax + b => ligne
       // cette fonction modifie les valeurs de 'a' et 'b'
-      this->leastSquaresLineEstimate(cameradata, robotPosition, rndSelectedPoints, MAXSAMPLE, a, b);
+      this->leastSquaresLineEstimate(cameradata, robotPosition, rndSelectedPoints, Landmarks::MAXSAMPLE, a, b);
 
 
       //– Determine the consensus set S1* of points is P
@@ -539,10 +555,10 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
       for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
 	  // convert ranges and bearing to coordinates
-	  x = (cos((i * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[i]) + robotPosition[0];
-	  y = (sin((i * this->degreePerScan * CONVERSION) + robotPosition[2] * CONVERSION) * cameradata[i]) + robotPosition[1];
+	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i]) + robotPosition[0];
+	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i]) + robotPosition[1];
 	  d = this->distanceToLine(x, y, a, b);
-	  if (d < RANSAC_TOLERANCE)
+	  if (d < Landmarks::RANSAC_TOLERANCE)
 	    {
 	      // points prets de la ligne
 	      consensusPoints[totalConsensusPoints] = i;
@@ -555,7 +571,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
 	      ++totalNewLinePoints;
 	    }
 	}
-      if(totalConsensusPoints > RANSAC_CONSENSUS)
+      if(totalConsensusPoints > Landmarks::RANSAC_CONSENSUS)
 	{
 	  // cette fonction modifie les valeurs de 'a' et 'b'
 	  this->leastSquaresLineEstimate(cameradata, robotPosition, consensusPoints, totalConsensusPoints, a, b);
@@ -602,24 +618,24 @@ int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample
   for(unsigned int i = 1; i < numberSample - 1; ++i)
     {
       // we get the laser data with max range
-      if (cameradata[i - 1] < CAMERAPROBLEM
-	  && cameradata[i + 1] < CAMERAPROBLEM
+      if (cameradata[i - 1] < Landmarks::CAMERAPROBLEM
+	  && cameradata[i + 1] < Landmarks::CAMERAPROBLEM
 	  && cameradata[i] > maxrange)
 	maxrange = cameradata[i];
     }
-  maxrange = MAX_RANGE;
+  maxrange = Landmarks::MAX_RANGE;
   double *Xbounds = new double[4];
   double *Ybounds = new double[4];
 
   //get bounds of rectangular box to remove bad landmarks from 88
-  Xbounds[0] = cos((this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[0];
-  Ybounds[0] = sin((this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[1];
-  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
-  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
-  Xbounds[2] = cos((359 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[0];
-  Ybounds[2] = sin((359 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange + robotPosition[1];
-  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
-  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * maxrange;
+  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[0];
+  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[1];
+  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[0];
+  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[1];
+  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
 
   //now check DB for landmarks that are within this box
   //decrease life of all landmarks in box. If the life reaches zero, remove landmark

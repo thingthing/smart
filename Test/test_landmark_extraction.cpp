@@ -167,7 +167,7 @@ When(adding_landmark_to_db)
   {
     lm.pos[0] = ::Landmark_Result::pos[0] + 1;
     lm.pos[1] = ::Landmark_Result::pos[1] + 1;
-    lm.life = LIFE - 1;
+    lm.life = Landmarks::LIFE - 1;
     lm.bearing = ::Landmark_Result::bearing + 1;
     lm.range = ::Landmark_Result::range + 1;
     lm.a = 3.12;
@@ -190,7 +190,7 @@ When(adding_landmark_to_db)
     Assert::That(lms.landmarkDB[idLandmark]->range, Is().EqualTo(lm.range));
     Assert::That(lms.landmarkDB[idLandmark]->a, Is().EqualTo(lm.a));
     Assert::That(lms.landmarkDB[idLandmark]->b, Is().EqualTo(lm.b));
-    Assert::That(lms.landmarkDB[idLandmark]->life, Is().EqualTo(LIFE));
+    Assert::That(lms.landmarkDB[idLandmark]->life, Is().EqualTo(Landmarks::LIFE));
     Assert::That(lms.landmarkDB[idLandmark]->id, Is().EqualTo(idLandmark));
     Assert::That(lms.landmarkDB[idLandmark]->totalTimeObserved, Is().EqualTo(1));
   }
@@ -287,7 +287,7 @@ When(getting_association)
 
     Then(it_should_reset_life_counter)
     {
-      Assert::That(Root().lms.landmarkDB[Root().id1]->life, Is().EqualTo(LIFE));
+      Assert::That(Root().lms.landmarkDB[Root().id1]->life, Is().EqualTo(Landmarks::LIFE));
     }
     int	idGot;
   };
@@ -387,7 +387,7 @@ When(getting_closest_association_landmark)
     void	SetUp()
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
-      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
       Root().lms.getClosestAssociation(&(Root().lm1), Root().idResult, Root().timeObservedResult);
     }
 
@@ -433,7 +433,7 @@ When(getting_closest_association_landmark)
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
       Root().id2 = Root().lms.addToDB(Root().lm2);
-      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1;
+      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     }
 
     When(trying_with_the_one_that_has_enough_observation)
@@ -485,8 +485,8 @@ When(getting_closest_association_landmark)
     {
       Root().id1 = Root().lms.addToDB(Root().lm1);
       Root().id2 = Root().lms.addToDB(Root().lm2);
-      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = MINOBSERVATIONS + 1;
-      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+      Root().lms.landmarkDB[Root().id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+      Root().lms.landmarkDB[Root().id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     }
 
     When(trying_with_one)
@@ -579,8 +579,8 @@ When(getting_landmark)
     bearing = 3;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lm3 = lms.getLandmark(range, bearing, robotPosition);
   }
 
@@ -839,8 +839,8 @@ When(getting_landmark_origin)
     lm2.pos[1] = 2.5;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lm3 = lms.getOrigin();
   }
 
@@ -880,8 +880,8 @@ When(getting_landmarks_nearest_to_line)
     lm2.pos[1] = y - 0.02;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 1;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lm3 = lms.getLine(a, b);
   }
 
@@ -942,8 +942,8 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     lm2.pos[1] = y - 0.02;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
     lm3 = lms.getLineLandmark(a, b, robotPosition);
   }
 
@@ -1001,8 +1001,8 @@ When(extracting_spike_landmark)
     lm2.pos[1] = 2.0;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
     result = lms.extractSpikeLandmarks(data, 30, robotPosition);
   }
 
@@ -1041,18 +1041,18 @@ When(removing_double_landmarks)
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
-    lm1.pos[0] = (cos((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+    lm1.pos[0] = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
       + robotPosition[0];
-    lm1.pos[1] = (sin((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+    lm1.pos[1] = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
       + robotPosition[1];
-    lm2.pos[0] = (cos((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+    lm2.pos[0] = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
       + robotPosition[0];
-    lm2.pos[1] = (sin((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+    lm2.pos[1] = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
       + robotPosition[1];
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
     extracted = lms.extractSpikeLandmarks(data, 30, robotPosition);
     result = lms.removeDouble(extracted);
   }
@@ -1088,18 +1088,18 @@ When(getting_aligned_landmark_data)
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
-    lm1.pos[0] = (cos((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+    lm1.pos[0] = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
       + robotPosition[0];
-    lm1.pos[1] = (sin((1 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[1])
+    lm1.pos[1] = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
       + robotPosition[1];
-    lm2.pos[0] = (cos((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+    lm2.pos[0] = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
       + robotPosition[0];
-    lm2.pos[1] = (sin((19 * lms.degreePerScan * CONVERSION) + (robotPosition[2] * CONVERSION)) * data[19])
+    lm2.pos[1] = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
       + robotPosition[1];
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
-    lms.landmarkDB[id1]->totalTimeObserved = MINOBSERVATIONS + 1;
-    lms.landmarkDB[id2]->totalTimeObserved = MINOBSERVATIONS + 2;
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
     extracted = lms.extractSpikeLandmarks(data, 30, robotPosition);
     lms.alignLandmarkData(extracted, matched, id, ranges, bearings, lmrk, exlmrk);
   }
@@ -1142,8 +1142,9 @@ When(getting_aligned_landmark_data)
   std::vector<std::pair<double, double> > exlmrk;
 };
 
+
 /**
- * Unit test for updateAndAddLineLandmarks(std::vector<Landmarks::Landmark *>)
+ * Unit Test for updateAndAddLineLandmarks(std::vector<Landmarks::Landmark *>)
  **/
 When(update_and_add_line_landmarks)
 {
@@ -1229,4 +1230,108 @@ When(update_and_add_line_landmarks)
   unsigned int oldDBsize;
   std::vector<unsigned int> ids;
   std::vector<unsigned int> oldIds;
+};
+
+/**
+ * Unit test for updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[])
+ **/
+When(Update_And_Add_Landmark_Using_EKF_Results)
+{
+  ScenarioAttribute("hasChild", "true")
+
+    void SetUp()
+    {
+      robotPosition[0] = 42.0;
+      robotPosition[1] = 24.0;
+      robotPosition[2] = 1.0;
+    }
+
+  When(Landmarks_are_not_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+      void SetUp()
+      {
+	Root().matched[0] = false;
+	Root().matched[1] = false;
+	Root().id[0] = 0;
+	Root().id[1] = 1;
+	Root().ranges[0] = 1.4;
+	Root().ranges[1] = 1.4;
+	Root().bearings[0] = 4;
+	Root().bearings[1] = 4;
+	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, Root().robotPosition);
+      }
+
+    Then(it_should_add_landmarks_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(2));
+    }
+
+    Then(it_should_return_updated_landmarks_with_good_values)
+    {
+      Assert::That(Root().ldmks.size(), Is().EqualTo(2));
+      for (unsigned int i = 0; i < Root().ldmks.size(); ++i)
+	{
+	  Assert::That(Root().ldmks[i]->id, Is().EqualTo(i));
+	  Assert::That(Root().ldmks[i]->range, Is().EqualTo(1.4));
+	  Assert::That(Root().ldmks[i]->bearing, Is().EqualTo(4));
+	}
+    }
+  };
+
+  When(Landmarks_are_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+
+      void SetUp()
+      {
+	Root().matched[0] = true;
+	Root().matched[1] = true;
+	Root().id[0] = 0;
+	Root().id[1] = 1;
+	Root().ranges[0] = 1.4;
+	Root().ranges[1] = 1.4;
+	Root().bearings[0] = 4;
+	Root().bearings[1] = 4;
+	ldmk1.id = Root().id[0];
+	ldmk2.id = Root().id[1];
+	ldmk1.range = Root().ranges[0];
+	ldmk2.range = Root().ranges[1];
+	ldmk1.bearing = Root().bearings[0];
+	ldmk2.bearing = Root().bearings[1];
+	Root().lms.addToDB(ldmk1);
+	Root().lms.addToDB(ldmk2);
+	oldSize = Root().lms.DBSize;
+	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, Root().robotPosition);
+      }
+
+    Then(it_should_not_add_landmarks_to_the_db)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(oldSize));
+    }
+
+    Then(it_should_return_updated_landmarks_with_good_values)
+    {
+      Assert::That(Root().ldmks.size(), Is().EqualTo(2));
+      for (unsigned int i = 0; i < Root().ldmks.size(); ++i)
+	{
+	  Assert::That(Root().ldmks[i]->id, Is().EqualTo(i));
+	  Assert::That(Root().ldmks[i]->range, Is().EqualTo(1.4));
+	  Assert::That(Root().ldmks[i]->bearing, Is().EqualTo(4));
+	  Assert::That(Root().ldmks[i]->totalTimeObserved, Is().EqualTo(2));
+	}
+    }
+
+    Landmarks::Landmark ldmk1;
+    Landmarks::Landmark ldmk2;
+    unsigned int oldSize;
+  };
+
+  Landmarks	lms;
+  std::vector<Landmarks::Landmark *> ldmks;
+  bool		matched[2];
+  int		id[2];
+  double	ranges[2];
+  double	bearings[2];
+  double	robotPosition[3];
 };
