@@ -1374,11 +1374,11 @@ When(Remove_bad_landmarks)
       Root().lms.addToDB(Root().goodLandmark1);
       Root().lms.addToDB(Root().goodLandmark2);
       Root().lms.addToDB(Root().goodLandmark3);
-      Root().lms.addToDB(Root().badLandmark1);
+      Root().badLandmarkID = Root().lms.addToDB(Root().badLandmark1);
 
       Root().lms.landmarkDB[3]->life = 1;
 
-      Root().oldDBSize =  Root().lms.DBSize;
+      Root().oldDBSize = Root().lms.DBSize;
       Root().lms.removeBadLandmarks(Root().cameradata, 4, Root().robotPosition);
     }
 
@@ -1390,11 +1390,7 @@ When(Remove_bad_landmarks)
     Then(landmarkDB_should_not_contain_badlandmark)
     {
       for (int i = 0; i < Root().lms.DBSize; ++i)
-	{
-	  // badLandmarkPos
-	  Assert::That(Root().lms.landmarkDB[i]->pos[0], Is().Not().EqualTo(1.4));
-	  Assert::That(Root().lms.landmarkDB[i]->pos[1], Is().Not().EqualTo(3.5));
-	}
+	Assert::That(Root().lms.landmarkDB[i]->id, Is().Not().EqualTo(Root().badLandmarkID));
     }
   };
 
@@ -1427,7 +1423,7 @@ When(Remove_bad_landmarks)
       Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
     }
 
-    Then(landmarkDB_not_contain_badlandmark)
+    Then(landmarkDB_contains_badlandmark)
     {
       Assert::That(Root().lms.landmarkDB[3]->pos[0], Is().EqualTo(75.4));
       Assert::That(Root().lms.landmarkDB[3]->pos[1], Is().EqualTo(90.8));
@@ -1439,6 +1435,7 @@ When(Remove_bad_landmarks)
   Landmarks::Landmark goodLandmark3;
   Landmarks::Landmark goodLandmark4;
   Landmarks::Landmark badLandmark1;
+  int badLandmarkID;
   unsigned int oldDBSize;
   Landmarks lms;
   double cameradata[4];
