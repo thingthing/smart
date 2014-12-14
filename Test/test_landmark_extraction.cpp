@@ -1336,6 +1336,9 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
   double	robotPosition[3];
 };
 
+/*
+** Unit test for removeBadLandmarks(double[], unsigned int, double[])
+*/
 When(Remove_bad_landmarks)
 {
   ScenarioAttribute("hasChild", "true")
@@ -1441,4 +1444,57 @@ When(Remove_bad_landmarks)
   double cameradata[4];
   unsigned int numberSample;
   double robotPosition[3];
+};
+
+/*
+** Unit test for extractLineLandmarks(double[], unsigned int, double[])
+*/
+When(extracting_line_landmark)
+{
+  void	SetUp()
+  {
+    /*
+    ** depend du Ransac consensus (static variable)
+    ** Datasize = 150 = Landmarks::RANSAC_CONSENSUS * 5
+    */
+    srand(42);
+    for (int i = 0; i < 150; ++i)
+      {
+	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+      }
+    robotPosition[0] = 2.0;
+    robotPosition[1] = 4.0;
+    robotPosition[2] = 0.2;
+    lm1.pos[0] = 42.5;
+    lm1.pos[1] = 24.1;
+    lm2.pos[0] = 12.2;
+    lm2.pos[1] = 2.0;
+    id1 = lms.addToDB(lm1);
+    id2 = lms.addToDB(lm2);
+    lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
+    lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
+    result = lms.extractLineLandmarks(data, 150, robotPosition);
+  }
+
+  Then(it_should_have_some_landmarks)
+  {
+    Assert::That(result.size(), Is().GreaterThan(0));
+  }
+
+  Then(each_landmark_should_have_a_good_id)
+  {
+    for (std::vector<Landmarks::Landmark *>::iterator it = result.begin(); it != result.end(); ++it)
+      {
+	Assert::That((*it)->id, Is().Not().EqualTo(-1));
+      }
+  }
+
+  Landmarks	lms;
+  Landmarks::Landmark	lm1;
+  Landmarks::Landmark	lm2;
+  int		id1;
+  int		id2;
+  double	data[150];
+  double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> result;
 };
