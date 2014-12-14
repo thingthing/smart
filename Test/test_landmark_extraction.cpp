@@ -1338,6 +1338,8 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 
 When(Remove_bad_landmarks)
 {
+  ScenarioAttribute("hasChild", "true")
+
   void	SetUp()
   {
     cameradata[0] = 2.2;
@@ -1355,6 +1357,7 @@ When(Remove_bad_landmarks)
 
   When(All_Landmarks_are_in_rectangle)
   {
+    ScenarioAttribute("hasParent", "\t")
 
     void SetUp()
     {
@@ -1394,6 +1397,8 @@ When(Remove_bad_landmarks)
 
   When(Badlandmark_is_not_in_rectangle)
   {
+    ScenarioAttribute("hasParent", "\t")
+
     void SetUp()
     {
       Root().badLandmark1.pos[0] = 75.4;
