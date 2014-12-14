@@ -611,14 +611,14 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
   return foundLandmarks;
 }
 
-
+#include <iostream>
 int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[])
 {
   double maxrange = 0;
 
   for(unsigned int i = 1; i < numberSample - 1; ++i)
     {
-      // we get the laser data with max range
+      // we get the camera data with max range
       if (cameradata[i - 1] < Landmarks::CAMERAPROBLEM
 	  && cameradata[i + 1] < Landmarks::CAMERAPROBLEM
 	  && cameradata[i] > maxrange)
@@ -628,7 +628,7 @@ int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample
   double *Xbounds = new double[4];
   double *Ybounds = new double[4];
 
-  //get bounds of rectangular box to remove bad landmarks from 88
+  //get bounds of rectangular box to remove bad landmarks from
   Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[0];
   Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[1];
   Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
@@ -644,15 +644,13 @@ int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample
   double pntx;
   double pnty;
 
-  for(int k = 0; k < DBSize + 1; ++k)
+  for(int k = 0; k < DBSize; ++k)
     {
       pntx = this->landmarkDB[k]->pos[0];
       pnty = this->landmarkDB[k]->pos[1];
       int i = 0;
       int j = 0;
-      bool inRectangle = true;
-      if(robotPosition[0] < 0 || robotPosition[1] < 0)
-	inRectangle = false;
+      bool inRectangle = (robotPosition[0] < 0 || robotPosition[1] < 0 ? false : true);
       for(i = 0; i < 4; ++i)
 	{
 	  if ((((Ybounds[i] <= pnty) && (pnty < Ybounds[j])) || ((Ybounds[j] <= pnty) && (pnty < Ybounds[i]))) &&

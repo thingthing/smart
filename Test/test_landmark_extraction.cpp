@@ -1335,3 +1335,105 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
   double	bearings[2];
   double	robotPosition[3];
 };
+
+When(Remove_bad_landmarks)
+{
+  void	SetUp()
+  {
+    cameradata[0] = 2.2;
+    cameradata[1] = 4.6;
+    cameradata[2] = 1.8;
+    cameradata[3] = 3.3;
+
+    goodLandmark1.pos[0] = 1.2;
+    goodLandmark1.pos[1] = 3.4;
+    goodLandmark2.pos[0] = 0.9;
+    goodLandmark2.pos[1] = 3.6;
+    goodLandmark3.pos[0] = 1.5;
+    goodLandmark3.pos[1] = 3.1;
+  }
+
+  When(All_Landmarks_are_in_rectangle)
+  {
+
+    void SetUp()
+    {
+      Root().badLandmark1.pos[0] = 1.4;
+      Root().badLandmark1.pos[1] = 3.5;
+
+      Root().robotPosition[0] = 42.0;
+      Root().robotPosition[1] = 3.0;
+      Root().robotPosition[2] = 60.2;
+
+      Root().lms.addToDB(Root().goodLandmark1);
+      Root().lms.addToDB(Root().goodLandmark2);
+      Root().lms.addToDB(Root().goodLandmark3);
+      Root().lms.addToDB(Root().badLandmark1);
+
+      Root().lms.landmarkDB[3]->life = 1;
+
+      Root().oldDBSize =  Root().lms.DBSize;
+      Root().lms.removeBadLandmarks(Root().cameradata, 4, Root().robotPosition);
+    }
+
+    Then(DBSize_should_be_smaller)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize - 1));
+    }
+
+    Then(landmarkDB_should_not_contain_badlandmark)
+    {
+      for (int i = 0; i < Root().lms.DBSize; ++i)
+	{
+	  // badLandmarkPos
+	  Assert::That(Root().lms.landmarkDB[i]->pos[0], Is().Not().EqualTo(1.4));
+	  Assert::That(Root().lms.landmarkDB[i]->pos[1], Is().Not().EqualTo(3.5));
+	}
+    }
+  };
+
+  When(Badlandmark_is_not_in_rectangle)
+  {
+    void SetUp()
+    {
+      Root().badLandmark1.pos[0] = 75.4;
+      Root().badLandmark1.pos[1] = 90.8;
+
+      Root().robotPosition[0] = 25.7;
+      Root().robotPosition[1] = -33.2;
+      Root().robotPosition[2] = 160.4;
+
+      Root().lms.addToDB(Root().goodLandmark1);
+      Root().lms.addToDB(Root().goodLandmark2);
+      Root().lms.addToDB(Root().goodLandmark3);
+      Root().lms.addToDB(Root().badLandmark1);
+
+      Root().lms.landmarkDB[3]->life = 1;
+
+      Root().oldDBSize =  Root().lms.DBSize;
+      Root().lms.removeBadLandmarks(Root().cameradata, 4, Root().robotPosition);
+    }
+
+    Then(DBSize_should_not_change)
+    {
+      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+    }
+
+    Then(landmarkDB_not_contain_badlandmark)
+    {
+      Assert::That(Root().lms.landmarkDB[3]->pos[0], Is().EqualTo(75.4));
+      Assert::That(Root().lms.landmarkDB[3]->pos[1], Is().EqualTo(90.8));
+    }
+  };
+
+  Landmarks::Landmark goodLandmark1;
+  Landmarks::Landmark goodLandmark2;
+  Landmarks::Landmark goodLandmark3;
+  Landmarks::Landmark goodLandmark4;
+  Landmarks::Landmark badLandmark1;
+  unsigned int oldDBSize;
+  Landmarks lms;
+  double cameradata[4];
+  unsigned int numberSample;
+  double robotPosition[3];
+};
