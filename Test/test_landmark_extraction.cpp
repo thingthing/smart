@@ -13,13 +13,13 @@ When(creating_a_landmark)
 {
   Then(it_should_have_default_value)
     {
-      Assert::That(lm.id, Is().EqualTo(::Landmark_Result::id));
-      Assert::That(lm.life, Is().EqualTo(::Landmark_Result::life));
-      Assert::That(lm.totalTimeObserved, Is().EqualTo(::Landmark_Result::totalTimesObserved));
-      Assert::That(lm.range, Is().EqualTo(::Landmark_Result::range));
-      Assert::That(lm.bearing, Is().EqualTo(::Landmark_Result::bearing));
-      Assert::That(lm.pos[0], Is().EqualTo(::Landmark_Result::pos[0]));
-      Assert::That(lm.pos[1], Is().EqualTo(::Landmark_Result::pos[1]));
+      AssertThatDetail(lm.id, Is().EqualTo(::Landmark_Result::id));
+      AssertThatDetail(lm.life, Is().EqualTo(::Landmark_Result::life));
+      AssertThatDetail(lm.totalTimeObserved, Is().EqualTo(::Landmark_Result::totalTimesObserved));
+      AssertThatDetail(lm.range, Is().EqualTo(::Landmark_Result::range));
+      AssertThatDetail(lm.bearing, Is().EqualTo(::Landmark_Result::bearing));
+      AssertThatDetail(lm.pos[0], Is().EqualTo(::Landmark_Result::pos[0]));
+      AssertThatDetail(lm.pos[1], Is().EqualTo(::Landmark_Result::pos[1]));
     }
 
   ::Landmarks::Landmark	lm;
@@ -32,11 +32,11 @@ When(creating_Landmarks)
 {
   Then(it_should_have_default_landmarks_value)
   {
-    Assert::That(lms.DBSize, Is().EqualTo(::Landmarks_Result::DBSize));
-    Assert::That(lms.EKFLandmarks, Is().EqualTo(::Landmarks_Result::EKFLandmarks));
-    Assert::That(lms.degreePerScan, Is().EqualTo(::Landmarks_Result::defaultdegreePerScan));
-    Assert::That(lms.IDtoID.size(), Is().EqualTo(::Landmarks_Result::sizeIDtoID));
-    Assert::That(lms.landmarkDB.size(), Is().EqualTo(::Landmarks_Result::sizelandmarkDB));
+    AssertThatDetail(lms.DBSize, Is().EqualTo(::Landmarks_Result::DBSize));
+    AssertThatDetail(lms.EKFLandmarks, Is().EqualTo(::Landmarks_Result::EKFLandmarks));
+    AssertThatDetail(lms.degreePerScan, Is().EqualTo(::Landmarks_Result::defaultdegreePerScan));
+    AssertThatDetail(lms.IDtoID.size(), Is().EqualTo(::Landmarks_Result::sizeIDtoID));
+    AssertThatDetail(lms.landmarkDB.size(), Is().EqualTo(::Landmarks_Result::sizelandmarkDB));
   }
 
   Landmarks lms;
@@ -54,12 +54,12 @@ When(creating_Landmarks_with_a_specific_degree_value_different_from_default)
 
   Then(it_should_not_have_default_degree_value)
   {
-    Assert::That(lms->degreePerScan, Is().Not().EqualTo(::Landmarks_Result::defaultdegreePerScan));
+    AssertThatDetail(lms->degreePerScan, Is().Not().EqualTo(::Landmarks_Result::defaultdegreePerScan));
   }
 
   Then(it_should_have_this_specific_degree_value)
   {
-    Assert::That(lms->degreePerScan, Is().EqualTo(::Landmarks_Result::degreePerScan));
+    AssertThatDetail(lms->degreePerScan, Is().EqualTo(::Landmarks_Result::degreePerScan));
   }
 
   void	TearDown()
@@ -78,7 +78,7 @@ When(calling_getDBSize_after_construct)
 
   Then(it_should_be_equal_to_DBSize_value)
   {
-    Assert::That(lms.getDBSize(), Is().EqualTo(lms.DBSize));
+    AssertThatDetail(lms.getDBSize(), Is().EqualTo(lms.DBSize));
   }
 
   Landmarks lms;
@@ -97,7 +97,7 @@ When(calling_getDBSize_after_DBSize_changed)
 
   Then(it_should_be_equal_to_DBSize_value)
   {
-    Assert::That(lms.getDBSize(), Is().EqualTo(lms.DBSize));
+    AssertThatDetail(lms.getDBSize(), Is().EqualTo(lms.DBSize));
   }
 
   Landmarks lms;
@@ -117,13 +117,13 @@ When(adding_one_Slam_Id)
 
   Then(it_should_increase_EKFLandmarks_by_one)
   {
-    Assert::That(lms.EKFLandmarks, Is().EqualTo(previousLandmarksNumber + 1));
+    AssertThatDetail(lms.EKFLandmarks, Is().EqualTo(previousLandmarksNumber + 1));
   }
 
   Then(it_should_be_the_good_id)
   {
-    Assert::That(lms.IDtoID[previousLandmarksNumber].first, Is().EqualTo(::Landmarks_Result::goodSlamId.first));
-    Assert::That(lms.IDtoID[previousLandmarksNumber].second, Is().EqualTo(::Landmarks_Result::goodSlamId.second));
+    AssertThatDetail(lms.IDtoID[previousLandmarksNumber].first, Is().EqualTo(::Landmarks_Result::goodSlamId.first));
+    AssertThatDetail(lms.IDtoID[previousLandmarksNumber].second, Is().EqualTo(::Landmarks_Result::goodSlamId.second));
   }
 
   Landmarks lms;
@@ -144,13 +144,13 @@ When(getting_Slam_Id)
 
   Then(it_should_not_return_the_bad_id)
   {
-    Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
+    AssertThatDetail(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
 		 Is().Not().EqualTo(::Landmarks_Result::wrongSlamId.second));
   }
 
   Then(it_should_return_the_good_id)
   {
-    Assert::That(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
+    AssertThatDetail(lms.getSLamId(::Landmarks_Result::goodSlamId.first),
 		 Is().EqualTo(::Landmarks_Result::goodSlamId.second));
   }
 
@@ -179,20 +179,20 @@ When(adding_landmark_to_db)
 
   Then(DBSize_should_be_increased_by_one)
   {
-    Assert::That(lms.DBSize, Is().EqualTo(previousDBSize + 1));
+    AssertThatDetail(lms.DBSize, Is().EqualTo(previousDBSize + 1));
   }
 
   Then(it_have_the_good_landmark)
   {
-    Assert::That(lms.landmarkDB[idLandmark]->pos[0], Is().EqualTo(lm.pos[0]));
-    Assert::That(lms.landmarkDB[idLandmark]->pos[1], Is().EqualTo(lm.pos[1]));
-    Assert::That(lms.landmarkDB[idLandmark]->bearing, Is().EqualTo(lm.bearing));
-    Assert::That(lms.landmarkDB[idLandmark]->range, Is().EqualTo(lm.range));
-    Assert::That(lms.landmarkDB[idLandmark]->a, Is().EqualTo(lm.a));
-    Assert::That(lms.landmarkDB[idLandmark]->b, Is().EqualTo(lm.b));
-    Assert::That(lms.landmarkDB[idLandmark]->life, Is().EqualTo(Landmarks::LIFE));
-    Assert::That(lms.landmarkDB[idLandmark]->id, Is().EqualTo(idLandmark));
-    Assert::That(lms.landmarkDB[idLandmark]->totalTimeObserved, Is().EqualTo(1));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->pos[0], Is().EqualTo(lm.pos[0]));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->pos[1], Is().EqualTo(lm.pos[1]));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->bearing, Is().EqualTo(lm.bearing));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->range, Is().EqualTo(lm.range));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->a, Is().EqualTo(lm.a));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->b, Is().EqualTo(lm.b));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->life, Is().EqualTo(Landmarks::LIFE));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->id, Is().EqualTo(idLandmark));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->totalTimeObserved, Is().EqualTo(1));
   }
 
   Landmarks::Landmark	lm;
@@ -216,14 +216,14 @@ When(getting_LandmarkDB)
 
   Then(it_should_hae_the_same_size)
   {
-    Assert::That(db.size(), Is().EqualTo(lms.DBSize));
+    AssertThatDetail(db.size(), Is().EqualTo(lms.DBSize));
   }
 
   Then(it_should_have_the_same_elements)
   {
     for(int i = 0; i < lms.DBSize; ++i)
       {
-	Assert::That(db[i], Fulfills(IsSameLandmark(lms.landmarkDB[i])));
+	AssertThatDetail(db[i], Fulfills(IsSameLandmark(lms.landmarkDB[i])));
       }
   }
 
@@ -235,10 +235,10 @@ When(getting_LandmarkDB)
     lms.landmarkDB[id1]->pos[0] = oldPos[0] + 1;
     lms.landmarkDB[id1]->range = oldRange + 1;
 
-    Assert::That(db[id1], Is().Not().Fulfilling(IsSameLandmark(lms.landmarkDB[id1])));
+    AssertThatDetail(db[id1], Is().Not().Fulfilling(IsSameLandmark(lms.landmarkDB[id1])));
 
-    Assert::That(db[id1]->pos[0], Is().EqualTo(oldPos[0]));
-    Assert::That(db[id1]->range, Is().EqualTo(oldRange));
+    AssertThatDetail(db[id1]->pos[0], Is().EqualTo(oldPos[0]));
+    AssertThatDetail(db[id1]->range, Is().EqualTo(oldRange));
   }
 
   Landmarks lms;
@@ -276,18 +276,18 @@ When(getting_association)
 
     Then(it_should_update_good_landmark)
     {
-      Assert::That(idGot, Is().EqualTo(Root().id1));
+      AssertThatDetail(idGot, Is().EqualTo(Root().id1));
     }
 
     Then(it_should_increase_time_observed)
     {
-      Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
+      AssertThatDetail(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
 		   Is().EqualTo(Root().oldTimeObserved + 1));
     }
 
     Then(it_should_reset_life_counter)
     {
-      Assert::That(Root().lms.landmarkDB[Root().id1]->life, Is().EqualTo(Landmarks::LIFE));
+      AssertThatDetail(Root().lms.landmarkDB[Root().id1]->life, Is().EqualTo(Landmarks::LIFE));
     }
     int	idGot;
   };
@@ -305,8 +305,8 @@ When(getting_association)
 
     Then(it_should_not_update)
     {
-      Assert::That(Root().lms.getAssociation(Root().lm2), Is().EqualTo(-1));
-      Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
+      AssertThatDetail(Root().lms.getAssociation(Root().lm2), Is().EqualTo(-1));
+      AssertThatDetail(Root().lms.landmarkDB[Root().id1]->totalTimeObserved,
 		   Is().EqualTo(Root().oldTimeObserved));
     }
   };
@@ -349,12 +349,12 @@ When(getting_closest_association_landmark)
 
     Then(it_should_set_id_to_minus_one)
     {
-      Assert::That(Root().idResult, Is().EqualTo(-1));
+      AssertThatDetail(Root().idResult, Is().EqualTo(-1));
     }
 
     Then(it_should_not_change_total_time_observed)
     {
-      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
+      AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
     }
   };
 
@@ -371,12 +371,12 @@ When(getting_closest_association_landmark)
 
     Then(it_should_set_id_to_minus_one)
     {
-      Assert::That(Root().idResult, Is().EqualTo(-1));
+      AssertThatDetail(Root().idResult, Is().EqualTo(-1));
     }
 
     Then(it_should_not_change_total_time_observed)
     {
-      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
+      AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
     }
   };
 
@@ -393,12 +393,12 @@ When(getting_closest_association_landmark)
 
     Then(it_should_set_id_to_landmark_id)
     {
-      Assert::That(Root().idResult, Is().EqualTo(Root().id1));
+      AssertThatDetail(Root().idResult, Is().EqualTo(Root().id1));
     }
 
     Then(it_should_change_total_time_observed)
     {
-      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
+      AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
     }
   };
 
@@ -416,12 +416,12 @@ When(getting_closest_association_landmark)
 
     Then(it_should_set_id_to_minus_one)
     {
-      Assert::That(Root().idResult, Is().EqualTo(-1));
+      AssertThatDetail(Root().idResult, Is().EqualTo(-1));
     }
 
     Then(it_should_not_change_total_time_observed)
     {
-      Assert::That(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
+      AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().oldTimeObserved));
     }
   };
 
@@ -447,12 +447,12 @@ When(getting_closest_association_landmark)
 
       Then(it_should_set_id_to_good_landmarkId)
       {
-	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+	AssertThatDetail(Root().idResult, Is().EqualTo(Root().id2));
       }
 
       Then(it_should_change_total_time_observed)
       {
-	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+	AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
       }
     };
 
@@ -467,12 +467,12 @@ When(getting_closest_association_landmark)
 
       Then(it_should_set_id_to_good_landmarkId)
       {
-	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+	AssertThatDetail(Root().idResult, Is().EqualTo(Root().id2));
       }
 
       Then(it_should_change_total_time_observed)
       {
-	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+	AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
       }
     };
   };
@@ -500,12 +500,12 @@ When(getting_closest_association_landmark)
 
       Then(it_should_set_id_to_good_landmarkId)
       {
-	Assert::That(Root().idResult, Is().EqualTo(Root().id1));
+	AssertThatDetail(Root().idResult, Is().EqualTo(Root().id1));
       }
 
       Then(it_should_change_total_time_observed)
       {
-	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
+	AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id1]->totalTimeObserved));
       }
     };
 
@@ -520,12 +520,12 @@ When(getting_closest_association_landmark)
 
       Then(it_should_set_id_to_good_landmarkId)
       {
-	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+	AssertThatDetail(Root().idResult, Is().EqualTo(Root().id2));
       }
 
       Then(it_should_change_total_time_observed)
       {
-	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+	AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
       }
     };
 
@@ -540,12 +540,12 @@ When(getting_closest_association_landmark)
 
       Then(it_should_set_id_to_the_closest_landmarkId)
       {
-	Assert::That(Root().idResult, Is().EqualTo(Root().id2));
+	AssertThatDetail(Root().idResult, Is().EqualTo(Root().id2));
       }
 
       Then(it_should_change_total_time_observed)
       {
-	Assert::That(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
+	AssertThatDetail(Root().timeObservedResult, Is().EqualTo(Root().lms.landmarkDB[Root().id2]->totalTimeObserved));
       }
     };
   };
@@ -586,17 +586,17 @@ When(getting_landmark)
 
   Then(it_should_return_one_of_the_db_landmark)
   {
-    Assert::That(lm3->id, Is().EqualTo(id1));
+    AssertThatDetail(lm3->id, Is().EqualTo(id1));
   }
 
   Then(it_should_set_range)
   {
-    Assert::That(lm3->range, Is().EqualTo(range));
+    AssertThatDetail(lm3->range, Is().EqualTo(range));
   }
 
   Then(it_should_set_bearing)
   {
-    Assert::That(lm3->bearing, Is().EqualTo(bearing));
+    AssertThatDetail(lm3->bearing, Is().EqualTo(bearing));
   }
 
   Landmarks	lms;
@@ -639,13 +639,13 @@ When(updating_landmarks_with_a_landmark)
 
     Then(it_should_add_the_landmark_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
     }
 
     Then(it_should_set_landmark_id_to_the_db_id)
     {
-      Assert::That(Root().lm3->id, Is().Not().EqualTo(Root().oldId));
-      Assert::That(Root().lm3->id, Is().EqualTo(Root().lms.DBSize - 1));
+      AssertThatDetail(Root().lm3->id, Is().Not().EqualTo(Root().oldId));
+      AssertThatDetail(Root().lm3->id, Is().EqualTo(Root().lms.DBSize - 1));
     }
   };
 
@@ -662,13 +662,13 @@ When(updating_landmarks_with_a_landmark)
 
     Then(it_should_not_add_the_landmark_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
     }
 
     Then(it_should_set_landmark_id_to_the_db_id)
     {
-      Assert::That(Root().lm3->id, Is().Not().EqualTo(Root().oldId));
-      Assert::That(Root().lm3->id, Is().EqualTo(Root().id1));
+      AssertThatDetail(Root().lm3->id, Is().Not().EqualTo(Root().oldId));
+      AssertThatDetail(Root().lm3->id, Is().EqualTo(Root().id1));
     }
   };
 
@@ -707,16 +707,16 @@ When(updating_landmarks_with_parameters)
 
     Then(it_should_add_the_landmark_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
     }
 
     Then(it_should_return_the_new_landmark)
     {
-      Assert::That(Root().lm1->id, Is().Not().EqualTo(-1));
-      Assert::That(Root().lm1->bearing, Is().EqualTo(Root().bearing));
-      Assert::That(Root().lm1->range, Is().EqualTo(Root().distance));
-      Assert::That(Root().lm1->pos[0], Is().Not().EqualTo(0));
-      Assert::That(Root().lm1->pos[1], Is().Not().EqualTo(0));
+      AssertThatDetail(Root().lm1->id, Is().Not().EqualTo(-1));
+      AssertThatDetail(Root().lm1->bearing, Is().EqualTo(Root().bearing));
+      AssertThatDetail(Root().lm1->range, Is().EqualTo(Root().distance));
+      AssertThatDetail(Root().lm1->pos[0], Is().Not().EqualTo(0));
+      AssertThatDetail(Root().lm1->pos[1], Is().Not().EqualTo(0));
     }
   };
 
@@ -734,18 +734,18 @@ When(updating_landmarks_with_parameters)
 
     Then(it_should_not_add_the_landmark_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
     }
 
     Then(it_should_return_the_old_landmark)
     {
-      Assert::That(Root().lm2->id, Is().EqualTo(Root().id1));
+      AssertThatDetail(Root().lm2->id, Is().EqualTo(Root().id1));
     }
 
     Then(it_should_add_one_to_timeobserved)
     {
-      Assert::That(Root().lm2->totalTimeObserved, Is().EqualTo(Root().oldTimeObserved + 1));
-      Assert::That(Root().lms.landmarkDB[Root().id1]->totalTimeObserved, Is().EqualTo(Root().oldTimeObserved + 1));
+      AssertThatDetail(Root().lm2->totalTimeObserved, Is().EqualTo(Root().oldTimeObserved + 1));
+      AssertThatDetail(Root().lms.landmarkDB[Root().id1]->totalTimeObserved, Is().EqualTo(Root().oldTimeObserved + 1));
     }
   };
 
@@ -789,13 +789,13 @@ When(updating_line_landmark)
 
     Then(it_should_add_landmark_to_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize + 1));
     }
 
     Then(it_should_return_new_landmark_id)
     {
-      Assert::That(Root().idResult, Is().Not().EqualTo(-1));
-      Assert::That(Root().idResult, Is().EqualTo(Root().lms.DBSize - 1));
+      AssertThatDetail(Root().idResult, Is().Not().EqualTo(-1));
+      AssertThatDetail(Root().idResult, Is().EqualTo(Root().lms.DBSize - 1));
     }
   };
 
@@ -812,12 +812,12 @@ When(updating_line_landmark)
 
     Then(it_should_not_add_landmark_to_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
     }
 
     Then(it_should_return_db_landmark_id)
     {
-      Assert::That(Root().idResult, Is().EqualTo(Root().id1));
+      AssertThatDetail(Root().idResult, Is().EqualTo(Root().id1));
     }
   };
 
@@ -846,16 +846,16 @@ When(getting_landmark_origin)
 
   Then(it_should_have_id_of_landmark_closest_from_origin)
   {
-    Assert::That(lm3->id, Is().Not().EqualTo(-1));
-    Assert::That(lm3->id, Is().EqualTo(id2));
+    AssertThatDetail(lm3->id, Is().Not().EqualTo(-1));
+    AssertThatDetail(lm3->id, Is().EqualTo(id2));
   }
 
   Then(it_should_have_default_value)
   {
-    Assert::That(lm3->pos[0], Is().EqualTo(0));
-    Assert::That(lm3->pos[1], Is().EqualTo(0));
-    Assert::That(lm3->range, Is().EqualTo(-1));
-    Assert::That(lm3->bearing, Is().EqualTo(-1));
+    AssertThatDetail(lm3->pos[0], Is().EqualTo(0));
+    AssertThatDetail(lm3->pos[1], Is().EqualTo(0));
+    AssertThatDetail(lm3->range, Is().EqualTo(-1));
+    AssertThatDetail(lm3->bearing, Is().EqualTo(-1));
   }
 
   Landmarks	lms;
@@ -887,18 +887,18 @@ When(getting_landmarks_nearest_to_line)
 
   Then(it_should_have_id_of_landmark_closest_from_origin)
   {
-    Assert::That(lm3->id, Is().Not().EqualTo(-1));
-    Assert::That(lm3->id, Is().EqualTo(id2));
+    AssertThatDetail(lm3->id, Is().Not().EqualTo(-1));
+    AssertThatDetail(lm3->id, Is().EqualTo(id2));
   }
 
   Then(it_should_have_default_value)
   {
-    Assert::That(lm3->pos[0], Is().EqualTo(x));
-    Assert::That(lm3->pos[1], Is().EqualTo(y));
-    Assert::That(lm3->a, Is().EqualTo(a));
-    Assert::That(lm3->b, Is().EqualTo(b));
-    Assert::That(lm3->range, Is().EqualTo(-1));
-    Assert::That(lm3->bearing, Is().EqualTo(-1));
+    AssertThatDetail(lm3->pos[0], Is().EqualTo(x));
+    AssertThatDetail(lm3->pos[1], Is().EqualTo(y));
+    AssertThatDetail(lm3->a, Is().EqualTo(a));
+    AssertThatDetail(lm3->b, Is().EqualTo(b));
+    AssertThatDetail(lm3->range, Is().EqualTo(-1));
+    AssertThatDetail(lm3->bearing, Is().EqualTo(-1));
   }
 
   Landmarks	lms;
@@ -949,20 +949,20 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
 
   Then(it_should_have_id_of_landmark_closest_from_origin)
   {
-    Assert::That(lm3->id, Is().Not().EqualTo(-1));
-    Assert::That(lm3->id, Is().EqualTo(id2));
+    AssertThatDetail(lm3->id, Is().Not().EqualTo(-1));
+    AssertThatDetail(lm3->id, Is().EqualTo(id2));
   }
 
   Then(it_should_have_default_value)
   {
-    Assert::That(lm3->pos[0], Is().EqualTo(x));
-    Assert::That(lm3->pos[1], Is().EqualTo(y));
-    Assert::That(lm3->a, Is().EqualTo(a));
-    Assert::That(lm3->b, Is().EqualTo(b));
-    Assert::That(lm3->range, Is().EqualTo(range));
-    Assert::That(lm3->bearing, Is().EqualTo(bearing));
-    Assert::That(lm3->rangeError, Is().EqualTo(rangeError));
-    Assert::That(lm3->bearingError, Is().EqualTo(bearingError));
+    AssertThatDetail(lm3->pos[0], Is().EqualTo(x));
+    AssertThatDetail(lm3->pos[1], Is().EqualTo(y));
+    AssertThatDetail(lm3->a, Is().EqualTo(a));
+    AssertThatDetail(lm3->b, Is().EqualTo(b));
+    AssertThatDetail(lm3->range, Is().EqualTo(range));
+    AssertThatDetail(lm3->bearing, Is().EqualTo(bearing));
+    AssertThatDetail(lm3->rangeError, Is().EqualTo(rangeError));
+    AssertThatDetail(lm3->bearingError, Is().EqualTo(bearingError));
   }
 
   Landmarks	lms;
@@ -1008,14 +1008,14 @@ When(extracting_spike_landmark)
 
   Then(it_should_have_some_landmarks)
   {
-    Assert::That(result.size(), Is().GreaterThan(0));
+    AssertThatDetail(result.size(), Is().GreaterThan(0));
   }
 
   Then(each_landmark_should_have_a_good_id)
   {
     for (std::vector<Landmarks::Landmark *>::iterator it = result.begin(); it != result.end(); ++it)
       {
-	Assert::That((*it)->id, Is().Not().EqualTo(-1));
+	AssertThatDetail((*it)->id, Is().Not().EqualTo(-1));
       }
   }
 
@@ -1059,8 +1059,8 @@ When(removing_double_landmarks)
 
   Then(it_should_not_have_more_landmarks_than_db)
   {
-    Assert::That(result.size(), Is().Not().EqualTo(0));
-    Assert::That(result.size(), Is().LessThan(lms.DBSize + 1));
+    AssertThatDetail(result.size(), Is().Not().EqualTo(0));
+    AssertThatDetail(result.size(), Is().LessThan(lms.DBSize + 1));
   }
 
 
@@ -1106,10 +1106,10 @@ When(getting_aligned_landmark_data)
 
   Then(it_should_not_have_more_data_than_landmarks_in_db)
   {
-    Assert::That(lmrk.size(), Is().Not().EqualTo(0));
-    Assert::That(exlmrk.size(), Is().Not().EqualTo(0));
-    Assert::That(lmrk.size(), Is().LessThan(lms.DBSize + 1));
-    Assert::That(exlmrk.size(), Is().LessThan(lms.DBSize + 1));
+    AssertThatDetail(lmrk.size(), Is().Not().EqualTo(0));
+    AssertThatDetail(exlmrk.size(), Is().Not().EqualTo(0));
+    AssertThatDetail(lmrk.size(), Is().LessThan(lms.DBSize + 1));
+    AssertThatDetail(exlmrk.size(), Is().LessThan(lms.DBSize + 1));
   }
 
   Then(it_should_have_good_values)
@@ -1118,10 +1118,10 @@ When(getting_aligned_landmark_data)
 
     for(std::vector<std::pair<double, double> >::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
       {
-	Assert::That(id[i], Is().GreaterThan(-1));
-	Assert::That(matched[i], Is().EqualTo(true));
-	Assert::That(lmrk[i].first, Is().EqualTo(lms.landmarkDB[id[i]]->pos[0]));
-	Assert::That(lmrk[i].second, Is().EqualTo(lms.landmarkDB[id[i]]->pos[1]));
+	AssertThatDetail(id[i], Is().GreaterThan(-1));
+	AssertThatDetail(matched[i], Is().EqualTo(true));
+	AssertThatDetail(lmrk[i].first, Is().EqualTo(lms.landmarkDB[id[i]]->pos[0]));
+	AssertThatDetail(lmrk[i].second, Is().EqualTo(lms.landmarkDB[id[i]]->pos[1]));
 	++i;
       }
   }
@@ -1176,15 +1176,15 @@ When(update_and_add_line_landmarks)
 
     Then(it_should_add_landmarks_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(2));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(2));
     }
 
     Then(it_should_return_updated_landmarks_with_good_values)
     {
-      Assert::That(Root().dbLmrks.size(), Is().EqualTo(2));
-      Assert::That(Root().oldIds.size(), Is().EqualTo(Root().ids.size()));
+      AssertThatDetail(Root().dbLmrks.size(), Is().EqualTo(2));
+      AssertThatDetail(Root().oldIds.size(), Is().EqualTo(Root().ids.size()));
       for (unsigned int i = 0; i < Root().oldIds.size(); ++i)
-	Assert::That(Root().oldIds[i], Is().Not().EqualTo(Root().ids[i]));
+	AssertThatDetail(Root().oldIds[i], Is().Not().EqualTo(Root().ids[i]));
     }
   };
 
@@ -1210,15 +1210,15 @@ When(update_and_add_line_landmarks)
 
     Then(it_should_not_add_landmarks_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBsize));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBsize));
     }
 
     Then(it_should_return_updated_landmarks_with_good_values)
     {
-      Assert::That(Root().lmrks.size(), Is().EqualTo(2));
-      Assert::That(Root().oldIds.size(), Is().EqualTo(Root().ids.size()));
+      AssertThatDetail(Root().lmrks.size(), Is().EqualTo(2));
+      AssertThatDetail(Root().oldIds.size(), Is().EqualTo(Root().ids.size()));
       for (unsigned int i = 0; i < Root().oldIds.size(); ++i)
-	Assert::That(Root().oldIds[i], Is().Not().EqualTo(Root().ids[i]));
+	AssertThatDetail(Root().oldIds[i], Is().Not().EqualTo(Root().ids[i]));
     }
   };
 
@@ -1264,17 +1264,17 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 
     Then(it_should_add_landmarks_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(2));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(2));
     }
 
     Then(it_should_return_updated_landmarks_with_good_values)
     {
-      Assert::That(Root().ldmks.size(), Is().EqualTo(2));
+      AssertThatDetail(Root().ldmks.size(), Is().EqualTo(2));
       for (unsigned int i = 0; i < Root().ldmks.size(); ++i)
 	{
-	  Assert::That(Root().ldmks[i]->id, Is().EqualTo(i));
-	  Assert::That(Root().ldmks[i]->range, Is().EqualTo(1.4));
-	  Assert::That(Root().ldmks[i]->bearing, Is().EqualTo(4));
+	  AssertThatDetail(Root().ldmks[i]->id, Is().EqualTo(i));
+	  AssertThatDetail(Root().ldmks[i]->range, Is().EqualTo(1.4));
+	  AssertThatDetail(Root().ldmks[i]->bearing, Is().EqualTo(4));
 	}
     }
   };
@@ -1307,18 +1307,18 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 
     Then(it_should_not_add_landmarks_to_the_db)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(oldSize));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(oldSize));
     }
 
     Then(it_should_return_updated_landmarks_with_good_values)
     {
-      Assert::That(Root().ldmks.size(), Is().EqualTo(2));
+      AssertThatDetail(Root().ldmks.size(), Is().EqualTo(2));
       for (unsigned int i = 0; i < Root().ldmks.size(); ++i)
 	{
-	  Assert::That(Root().ldmks[i]->id, Is().EqualTo(i));
-	  Assert::That(Root().ldmks[i]->range, Is().EqualTo(1.4));
-	  Assert::That(Root().ldmks[i]->bearing, Is().EqualTo(4));
-	  Assert::That(Root().ldmks[i]->totalTimeObserved, Is().EqualTo(2));
+	  AssertThatDetail(Root().ldmks[i]->id, Is().EqualTo(i));
+	  AssertThatDetail(Root().ldmks[i]->range, Is().EqualTo(1.4));
+	  AssertThatDetail(Root().ldmks[i]->bearing, Is().EqualTo(4));
+	  AssertThatDetail(Root().ldmks[i]->totalTimeObserved, Is().EqualTo(2));
 	}
     }
 
@@ -1384,13 +1384,13 @@ When(Remove_bad_landmarks)
 
     Then(DBSize_should_be_smaller)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize - 1));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize - 1));
     }
 
     Then(landmarkDB_should_not_contain_badlandmark)
     {
       for (int i = 0; i < Root().lms.DBSize; ++i)
-	Assert::That(Root().lms.landmarkDB[i]->id, Is().Not().EqualTo(Root().badLandmarkID));
+	AssertThatDetail(Root().lms.landmarkDB[i]->id, Is().Not().EqualTo(Root().badLandmarkID));
     }
   };
 
@@ -1420,13 +1420,13 @@ When(Remove_bad_landmarks)
 
     Then(DBSize_should_not_change)
     {
-      Assert::That(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
+      AssertThatDetail(Root().lms.DBSize, Is().EqualTo(Root().oldDBSize));
     }
 
     Then(landmarkDB_contains_badlandmark)
     {
-      Assert::That(Root().lms.landmarkDB[3]->pos[0], Is().EqualTo(75.4));
-      Assert::That(Root().lms.landmarkDB[3]->pos[1], Is().EqualTo(90.8));
+      AssertThatDetail(Root().lms.landmarkDB[3]->pos[0], Is().EqualTo(75.4));
+      AssertThatDetail(Root().lms.landmarkDB[3]->pos[1], Is().EqualTo(90.8));
     }
   };
 
@@ -1475,14 +1475,14 @@ When(extracting_line_landmark)
 
   Then(it_should_have_some_landmarks)
   {
-    Assert::That(result.size(), Is().GreaterThan(0));
+    AssertThatDetail(result.size(), Is().GreaterThan(0));
   }
 
   Then(each_landmark_should_have_a_good_id)
   {
     for (std::vector<Landmarks::Landmark *>::iterator it = result.begin(); it != result.end(); ++it)
       {
-	Assert::That((*it)->id, Is().Not().EqualTo(-1));
+	AssertThatDetail((*it)->id, Is().Not().EqualTo(-1));
       }
   }
 

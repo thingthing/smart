@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Landmarks.hh"
 
+#define AssertThatDetail(X,Y) Assert::That(X,Y,__FILE__, __LINE__)
+
 /**
  * Use to compare two landmark
  **/

@@ -15,7 +15,7 @@ When(creating_data_association)
 
   Then(it_should_set_the_db)
     {
-      Assert::That(datas->_landmarkDb, Is().EqualTo(landmarks));
+      AssertThatDetail(datas->_landmarkDb, Is().EqualTo(landmarks));
     }
 
   ::DataAssociation *datas;
@@ -32,7 +32,7 @@ When(getting_db_from_data_association)
 
   Then(it_should_return_the_db)
     {
-      Assert::That(landmarks, Is().EqualTo(datas.getLandmarkDb()));
+      AssertThatDetail(landmarks, Is().EqualTo(datas.getLandmarkDb()));
     }
 
   ::DataAssociation datas;
