@@ -8,7 +8,8 @@ SRCS	=	main.cpp			\
 		../src/Landmarks.cpp		\
 		../src/DataAssociation.cpp	\
 		CustomConstraint.cpp		\
-		test_landmark_extraction.cpp
+		test_landmark_extraction.cpp	\
+		test_data_association.cpp
 
 OBJS	=	$(SRCS:.cpp=.o)
 

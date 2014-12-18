@@ -16,6 +16,9 @@ public:
   Landmarks	*getLandmarkDb() const;
 
 private:
+#ifdef UNITTEST
+public: // ONLY FOR UNIT TESTS
+#endif
   Landmarks	*_landmarkDb;
 
 };
