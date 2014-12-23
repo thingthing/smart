@@ -4,10 +4,10 @@ RM	=	rm -f
 INCLUDE	=	./Include/
 CXXFLAGS	= -W -Wall $(foreach dir, $(INCLUDE), -I$(dir))
 
-SRCS	=	./src/main.cpp		\
-		./src/Landmarks.cpp	\
-		./src/DataAssociation.cpp
-
+SRCS	=	./src/main.cpp			\
+		./src/Landmarks.cpp		\
+		./src/DataAssociation.cpp	\
+		./src/XMatrice.cpp
 
 OBJS	=	$(SRCS:.cpp=.o)
 
