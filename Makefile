@@ -8,6 +8,7 @@ SRCS	=	./src/main.cpp			\
 		./src/Landmarks.cpp		\
 		./src/DataAssociation.cpp	\
 		./src/CovarianceMatrice.cpp	\
+		./src/KalmanGainMatrice.cpp	\
 		./src/SystemStateMatrice.cpp
 
 OBJS	=	$(SRCS:.cpp=.o)
