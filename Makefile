@@ -7,7 +7,7 @@ CXXFLAGS	= -W -Wall $(foreach dir, $(INCLUDE), -I$(dir))
 SRCS	=	./src/main.cpp			\
 		./src/Landmarks.cpp		\
 		./src/DataAssociation.cpp	\
-		./src/XMatrice.cpp
+		./src/SystemStateMatrice.cpp
 
 OBJS	=	$(SRCS:.cpp=.o)
 

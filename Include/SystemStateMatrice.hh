@@ -1,15 +1,15 @@
-#ifndef XMATRICE_H_
-# define XMATRICE_H_
+#ifndef SYSTEMSTATEMATRICE_H_
+# define SYSTEMSTATEMATRICE_H_
 
 #include <vector>
 #include <map>
 
-class XMatrice
+class SystemStateMatrice
 {
 public:
-  XMatrice();
-  XMatrice(double X, double Y, double Teta);
-  virtual ~XMatrice();
+  SystemStateMatrice();
+  SystemStateMatrice(double X, double Y, double Teta);
+  virtual ~SystemStateMatrice();
 
   void addLandmarkPosition(const std::pair<double, double> &position);
   void addLandmarkPosition(double x, double y);
@@ -28,4 +28,4 @@ protected:
   std::vector<std::pair<double, double> > matrice;
 };
 
-#endif /* !XMATRICE_H_ */
+#endif /* !SYSTEMSTATEMATRICE_H_ */
