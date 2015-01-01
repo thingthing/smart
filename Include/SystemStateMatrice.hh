@@ -8,7 +8,7 @@ class SystemStateMatrice
 {
 public:
   SystemStateMatrice();
-  SystemStateMatrice(double X, double Y, double Teta);
+  SystemStateMatrice(double X, double Y, double Theta);
   virtual ~SystemStateMatrice();
 
   void addLandmarkPosition(const std::pair<double, double> &position);
