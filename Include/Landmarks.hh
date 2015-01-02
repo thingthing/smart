@@ -64,7 +64,7 @@ public:
   int addToDB(const Landmark &lm);
 
   //Remove
-  int removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
+  int removeBadLandmarks(pcl::PointXY cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
   int removeBadLandmarks(const std::vector<double> & cameradata, const std::vector<double> & robotPosition); // both to be sure
 
   //Update
