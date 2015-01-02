@@ -95,6 +95,13 @@ double CovarianceMatrice::getRobotTheta() const
   return this->_matrice[2][2].getValue();
 }
 
+void CovarianceMatrice::setRobotPosition(double X, double Y, double theta)
+{
+  this->_matrice[0][0].setValue(X);
+  this->_matrice[1][1].setValue(Y);
+  this->_matrice[2][2].setValue(theta);
+}
+
 void CovarianceMatrice::addLandmark(double x, double y)
 {
   unsigned int oldSize = this->_matrice.size();
