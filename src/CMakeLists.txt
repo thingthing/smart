@@ -1,0 +1,10 @@
+SET(SOURCES
+  ${SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Landmarks.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/DataAssociation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/CovarianceMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/KalmanGainMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/SystemStateMatrice.cpp
+  PARENT_SCOPE
+  )

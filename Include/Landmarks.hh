@@ -4,6 +4,9 @@
 #include <vector>
 #include <map>
 #include <cmath>
+#include <pcl-1.7/pcl/common/common.h>
+#include <pcl-1.7/pcl/impl/point_types.hpp>
+#include <pcl-1.7/pcl/common/projection_matrix.h>
 
 class Landmarks
 {
@@ -27,7 +30,8 @@ static const double MIN_DIFFERENCE; // meter
   class  Landmark
   {
   public:
-    double pos[2]; // landmarks (x, y) position relative to map
+    pcl::PointXY pos; // landmarks (x, y) position relative to map
+    //double pos[2]; // landmarks (x, y) position relative to map
     int id; // lanndmarks unique ID
     int life; // a life counter to determine whether to discard a landmarl
     int totalTimeObserved; // the number of times we have seen the landmark
@@ -79,7 +83,7 @@ public:
   // ranges is an array of double
   // bearings is an array of double
   void alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id,
-			double *&ranges, double *&bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks);
+			   double *&ranges, double *&bearings, std::vector<pcl::PointXY> &lmrks, std::vector<pcl::PointXY> &exlmrks);
 
   int getAssociation(Landmark &lm);
   void getClosestAssociation(Landmark *lm, int &id, int &totalTimeObserved);

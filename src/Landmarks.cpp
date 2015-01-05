@@ -20,8 +20,8 @@ const double Landmarks::MIN_DIFFERENCE = 0.3; // meter
 
 Landmarks::Landmark::Landmark()
 {
-  this->pos[0] = 0.0;
-  this->pos[1] = 0.0;
+  this->pos.x = 0.0;
+  this->pos.y = 0.0;
   this->id = -1;
   this->life = Landmarks::LIFE;
   this->totalTimeObserved = 0;
@@ -101,7 +101,7 @@ double Landmarks::distance(double x1, double y1, double x2, double y2) const
 
 double Landmarks::distance(const Landmark &lm1, const Landmark &lm2) const
 {
-  return (sqrt(pow(lm1.pos[0] - lm2.pos[0], 2) + pow(lm1.pos[1] - lm2.pos[1], 2)));
+  return (sqrt(pow(lm1.pos.x - lm2.pos.x, 2) + pow(lm1.pos.y - lm2.pos.y, 2)));
 }
 
 int Landmarks::addToDB(const Landmark &lm)
@@ -112,8 +112,8 @@ int Landmarks::addToDB(const Landmark &lm)
     {
       new_elem = new Landmarks::Landmark();
 
-      new_elem->pos[0] = lm.pos[0];
-      new_elem->pos[1] = lm.pos[1];
+      new_elem->pos.x = lm.pos.y;
+      new_elem->pos.y = lm.pos.x;
       new_elem->life = Landmarks::LIFE;
       new_elem->id = DBSize;
       new_elem->totalTimeObserved = 1;
@@ -211,9 +211,9 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double 
   int id = -1;
   int totalTimeObserved = 0;
 
-  lm->pos[0] = (cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+  lm->pos.x = (cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
 		    (robotPosition[2] * Landmarks::CONVERSION)) * range) + robotPosition[0];
-  lm->pos[1] = (sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+  lm->pos.y = (sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
 		    (robotPosition[2] * Landmarks::CONVERSION)) * range) + robotPosition[1];
   lm->range = range;
   lm->bearing = readingNo;
@@ -250,9 +250,9 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
       // doesn't exist in the DB/fail to matched, so that, we've to add this sample
       lm = new Landmarks::Landmark();
 
-      lm->pos[0] = cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+      lm->pos.x = cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
 		       (robotPosition[2] * Landmarks::CONVERSION)) * distance + robotPosition[0];
-      lm->pos[1] = sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
+      lm->pos.y = sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
 		       (robotPosition[2] * Landmarks::CONVERSION)) * distance + robotPosition[1];
       lm->bearing = readingNo;
       lm->range = distance;
@@ -277,8 +277,8 @@ Landmarks::Landmark *Landmarks::getOrigin()
   int id = -1;
   int totalTimesObserved = 0;
 
-  lm->pos[0] = 0;
-  lm->pos[1] = 0;
+  lm->pos.x = 0.0;
+  lm->pos.y = 0.0;
   lm->range = -1;
   lm->bearing = -1;
 
@@ -304,8 +304,8 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
   int totalTimesObserved = 0;
 
   //convert landmark to map coordinate
-  lm->pos[0] =x;
-  lm->pos[1] =y;
+  lm->pos.x =x;
+  lm->pos.y =y;
   lm->range = -1;
   lm->bearing = -1;
   lm->a = a;
@@ -343,8 +343,8 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robot
   int totalTimesObserved = 0;
 
   //convert landmark to map coordinate
-  lm->pos[0] = x;
-  lm->pos[1] =y;
+  lm->pos.x = x;
+  lm->pos.y =y;
   lm->range = range;
   lm->bearing = bearing;
   lm->a = a;
@@ -468,7 +468,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
   return (resultUniqueLandmarks);
 }
 
-void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id, double *&ranges, double *&bearings, std::vector<std::pair<double, double> > &lmrks, std::vector<std::pair<double, double> > &exlmrks)
+void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id, double *&ranges, double *&bearings, std::vector<pcl::PointXY> &lmrks, std::vector<pcl::PointXY> &exlmrks)
 {
   std::vector<Landmarks::Landmark *> uniqueLandmarks = this->removeDouble(extractedLandmarks);
 
@@ -476,8 +476,8 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, b
   id = new int[uniqueLandmarks.size()];
   ranges = new double[uniqueLandmarks.size()];
   bearings = new double[uniqueLandmarks.size()];
-  lmrks = std::vector<std::pair<double, double> >(uniqueLandmarks.size());
-  exlmrks = std::vector<std::pair<double, double> >(uniqueLandmarks.size());
+  lmrks = std::vector<pcl::PointXY>(uniqueLandmarks.size());
+  exlmrks = std::vector<pcl::PointXY>(uniqueLandmarks.size());
 
   for(unsigned int i = 0; i < uniqueLandmarks.size(); ++i)
     {
@@ -485,10 +485,10 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, b
       id[i] = uniqueLandmarks[i]->id;
       ranges[i] = uniqueLandmarks[i]->range;
       bearings[i] = uniqueLandmarks[i]->bearing;
-      lmrks[i].first = landmarkDB[uniqueLandmarks[i]->id]->pos[0];
-      lmrks[i].second = landmarkDB[uniqueLandmarks[i]->id]->pos[1];
-      exlmrks[i].first = uniqueLandmarks[i]->pos[0];
-      exlmrks[i].second = uniqueLandmarks[i]->pos[1];
+      lmrks[i].x = landmarkDB[uniqueLandmarks[i]->id]->pos.x;
+      lmrks[i].y = landmarkDB[uniqueLandmarks[i]->id]->pos.y;
+      exlmrks[i].x = uniqueLandmarks[i]->pos.x;
+      exlmrks[i].y = uniqueLandmarks[i]->pos.y;
     }
 }
 
@@ -646,8 +646,8 @@ int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample
 
   for(int k = 0; k < DBSize; ++k)
     {
-      pntx = this->landmarkDB[k]->pos[0];
-      pnty = this->landmarkDB[k]->pos[1];
+      pntx = this->landmarkDB[k]->pos.x;
+      pnty = this->landmarkDB[k]->pos.y;
       int i = 0;
       int j = 0;
       bool inRectangle = (robotPosition[0] < 0 || robotPosition[1] < 0 ? false : true);
