@@ -177,7 +177,7 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
     }
 }
 
-void Landmarks::leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b)
+void Landmarks::leastSquaresLineEstimate(pcl::PointXYZ cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
   double x; //x coordinate
@@ -190,8 +190,8 @@ void Landmarks::leastSquaresLineEstimate(double cameradata[], double robotPositi
   for(int i = 0; i < arraySize; ++i)
     {
       //convert ranges and bearing to coordinates
-      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[0];
-      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[selectPoints[i]]) + robotPosition[1];
+      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + robotPosition[0];
+      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + robotPosition[1];
       sumY += y;
       sumYY += pow(y,2);
       sumX += x;
@@ -360,14 +360,10 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robot
   return (lm);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber, double robotPosition[])
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber, double robotPosition[])
 {
   //have a large array to keep track of found landmarks
 
-  // Je crois que tu peux utiliser le
-  // constructer de vecteur directement: std::vector<Landmarks::Landmark *> tempLandmarks(400)
-  // soit dit en passant, vu qu'on a la taille de cameradata, on a pas vraiment besoin de faire
-  // un vecteur plus grand que sampleNumber + 1 non ?
   std::vector<Landmarks::Landmark *> tempLandmarks;
   for(unsigned int i = 0; i < sampleNumber; ++i)
      tempLandmarks.push_back(new Landmarks::Landmark());
@@ -377,20 +373,15 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(double camer
     {
       // Check for error measurement in laser data
 
-      // Je euh... 8.1, genre comme ça, 8.1 ... euh, non... ou alors on a un static const, ou un define,
-      // mais pas 8.1 dans le vide comme ça. Je sais même pas à quoi ça correspond du coup!
-      // ça vaut aussi pour les autre chiffre: 0.5 et 0.3
-
-      // => 8.1 c'est la valeur qui utilisent pour déterminer si le laser chie ou pas
-      if (cameradata[i - 1] < Landmarks::CAMERAPROBLEM && cameradata[i + 1] < Landmarks::CAMERAPROBLEM)
+      if (cameradata[i - 1].z < Landmarks::CAMERAPROBLEM && cameradata[i + 1].z < Landmarks::CAMERAPROBLEM)
 	{
-  	  if ((cameradata[i - 1] - cameradata[i]) + (cameradata[i + 1] - cameradata[i]) > MAX_DIFFERENCE)
-  	    tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+  	  if ((cameradata[i - 1].z - cameradata[i].z) + (cameradata[i + 1].z - cameradata[i].z) > MAX_DIFFERENCE)
+  	    tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
   	  else
-  	    if((cameradata[i - 1] - cameradata[i]) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
-	    else if((cameradata[i + 1] - cameradata[i]) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cameradata[i], i, robotPosition);
+  	    if((cameradata[i - 1].z - cameradata[i].z) > Landmarks::MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
+	    else if((cameradata[i + 1].z - cameradata[i].z) > Landmarks::MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
 	}
     }
 
@@ -492,7 +483,7 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, b
     }
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[])
+std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[])
 {
   // lignes trouvées
   std::vector<double> la;
@@ -556,8 +547,8 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
       for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
 	  // convert ranges and bearing to coordinates
-	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i]) + robotPosition[0];
-	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i]) + robotPosition[1];
+	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i].z) + robotPosition[0];
+	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i].z) + robotPosition[1];
 	  d = this->distanceToLine(x, y, a, b);
 	  if (d < Landmarks::RANSAC_TOLERANCE)
 	    {
@@ -611,18 +602,17 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(double camera
   return foundLandmarks;
 }
 
-#include <iostream>
-int Landmarks::removeBadLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[])
+int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[])
 {
   double maxrange = 0;
 
   for(unsigned int i = 1; i < numberSample - 1; ++i)
     {
       // we get the camera data with max range
-      if (cameradata[i - 1] < Landmarks::CAMERAPROBLEM
-	  && cameradata[i + 1] < Landmarks::CAMERAPROBLEM
-	  && cameradata[i] > maxrange)
-	maxrange = cameradata[i];
+      if (cameradata[i - 1].z < Landmarks::CAMERAPROBLEM
+	  && cameradata[i + 1].z < Landmarks::CAMERAPROBLEM
+	  && cameradata[i].z > maxrange)
+	maxrange = cameradata[i].z;
     }
   maxrange = Landmarks::MAX_RANGE;
   double *Xbounds = new double[4];

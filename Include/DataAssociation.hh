@@ -10,7 +10,7 @@ public:
   DataAssociation(Landmarks *landmarkDb);
   ~DataAssociation();
 
-  void	validationGate(double cameradata[], int numberSample, double robotPosition[]);
+  void	validationGate(pcl::PointXYZ cameradata[], int numberSample, double robotPosition[]);
   bool	associateLandmarks(Landmarks::Landmark *toAssociate) const;
 
   Landmarks	*getLandmarkDb() const;

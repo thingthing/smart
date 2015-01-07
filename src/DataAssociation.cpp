@@ -21,7 +21,7 @@ Landmarks	*DataAssociation::getLandmarkDb() const
 }
 
 //Will be called after each data gathering to check for new landmarks
-void	DataAssociation::validationGate(double cameradata[], int numberSample,
+void	DataAssociation::validationGate(pcl::PointXYZ cameradata[], int numberSample,
 					double robotPosition[])
 {
   std::vector<Landmarks::Landmark *>	currentLandmarks;

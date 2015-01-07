@@ -7,6 +7,7 @@
 #include <pcl-1.7/pcl/common/common.h>
 #include <pcl-1.7/pcl/impl/point_types.hpp>
 #include <pcl-1.7/pcl/common/projection_matrix.h>
+#include "Agent.hh"
 
 class Landmarks
 {
@@ -64,8 +65,8 @@ public:
   int addToDB(const Landmark &lm);
 
   //Remove
-  int removeBadLandmarks(pcl::PointXY cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
-  int removeBadLandmarks(const std::vector<double> & cameradata, const std::vector<double> & robotPosition); // both to be sure
+  int removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
+  int removeBadLandmarks(const std::vector<pcl::PointXYZ &> & cameradata, const std::vector<double> & robotPosition); // both to be sure
 
   //Update
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
@@ -73,7 +74,7 @@ public:
   int updateLineLandmark(Landmark &lm);
 
   //Extract
-  std::vector<Landmark *> extractLineLandmarks(double cameradata[], unsigned int numberSample, double robotPosition[]);
+  std::vector<Landmark *> extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[]);
 
 
   //Other
@@ -105,13 +106,13 @@ public: // ONLY FOR UNIT TESTS
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
-  std::vector<Landmark *> extractSpikeLandmarks(double cameradata[], unsigned int sampleNumber,
+  std::vector<Landmark *> extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber,
 						double robotPosition[]);
   //Remove
   std::vector<Landmark *> removeDouble(std::vector<Landmark *> extractedLandmarks);
 
   //Other
-  void leastSquaresLineEstimate(double cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(pcl::PointXYZ cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
