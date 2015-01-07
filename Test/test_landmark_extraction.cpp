@@ -18,8 +18,8 @@ When(creating_a_landmark)
       AssertThatDetail(lm.totalTimeObserved, Is().EqualTo(::Landmark_Result::totalTimesObserved));
       AssertThatDetail(lm.range, Is().EqualTo(::Landmark_Result::range));
       AssertThatDetail(lm.bearing, Is().EqualTo(::Landmark_Result::bearing));
-      AssertThatDetail(lm.pos[0], Is().EqualTo(::Landmark_Result::pos[0]));
-      AssertThatDetail(lm.pos[1], Is().EqualTo(::Landmark_Result::pos[1]));
+      AssertThatDetail(lm.pos.x, Is().EqualTo(::Landmark_Result::pos[0]));
+      AssertThatDetail(lm.pos.y, Is().EqualTo(::Landmark_Result::pos[1]));
     }
 
   ::Landmarks::Landmark	lm;
@@ -165,8 +165,8 @@ When(adding_landmark_to_db)
 
   void	SetUp()
   {
-    lm.pos[0] = ::Landmark_Result::pos[0] + 1;
-    lm.pos[1] = ::Landmark_Result::pos[1] + 1;
+    lm.pos.x = ::Landmark_Result::pos[0] + 1;
+    lm.pos.y = ::Landmark_Result::pos[1] + 1;
     lm.life = Landmarks::LIFE - 1;
     lm.bearing = ::Landmark_Result::bearing + 1;
     lm.range = ::Landmark_Result::range + 1;
@@ -184,8 +184,8 @@ When(adding_landmark_to_db)
 
   Then(it_have_the_good_landmark)
   {
-    AssertThatDetail(lms.landmarkDB[idLandmark]->pos[0], Is().EqualTo(lm.pos[0]));
-    AssertThatDetail(lms.landmarkDB[idLandmark]->pos[1], Is().EqualTo(lm.pos[1]));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->pos.x, Is().EqualTo(lm.pos.x));
+    AssertThatDetail(lms.landmarkDB[idLandmark]->pos.y, Is().EqualTo(lm.pos.y));
     AssertThatDetail(lms.landmarkDB[idLandmark]->bearing, Is().EqualTo(lm.bearing));
     AssertThatDetail(lms.landmarkDB[idLandmark]->range, Is().EqualTo(lm.range));
     AssertThatDetail(lms.landmarkDB[idLandmark]->a, Is().EqualTo(lm.a));
@@ -229,15 +229,15 @@ When(getting_LandmarkDB)
 
   Then(it_should_be_a_copy)
   {
-    double oldPos[2] = {lms.landmarkDB[id1]->pos[0], lms.landmarkDB[id1]->pos[1]};
+    double oldPos[2] = {lms.landmarkDB[id1]->pos.x, lms.landmarkDB[id1]->pos.y};
     double oldRange = lms.landmarkDB[id1]->range;
 
-    lms.landmarkDB[id1]->pos[0] = oldPos[0] + 1;
+    lms.landmarkDB[id1]->pos.x = oldPos[0] + 1;
     lms.landmarkDB[id1]->range = oldRange + 1;
 
     AssertThatDetail(db[id1], Is().Not().Fulfilling(IsSameLandmark(lms.landmarkDB[id1])));
 
-    AssertThatDetail(db[id1]->pos[0], Is().EqualTo(oldPos[0]));
+    AssertThatDetail(db[id1]->pos.x, Is().EqualTo(oldPos[0]));
     AssertThatDetail(db[id1]->range, Is().EqualTo(oldRange));
   }
 
@@ -258,8 +258,8 @@ When(getting_association)
 
   void	SetUp()
   {
-    lm1.pos[0] = 4.2;
-    lm1.pos[1] = 2.4;
+    lm1.pos.x = 4.2;
+    lm1.pos.y = 2.4;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
   }
@@ -298,8 +298,8 @@ When(getting_association)
 
     void	SetUp()
     {
-      Root().lm2.pos[0] = 10;
-      Root().lm2.pos[1] = 8;
+      Root().lm2.pos.x = 10;
+      Root().lm2.pos.y = 8;
       Root().oldTimeObserved = Root().lms.landmarkDB[Root().id2]->totalTimeObserved;
     }
 
@@ -328,12 +328,12 @@ When(getting_closest_association_landmark)
 
   void	SetUp()
   {
-    lm1.pos[0] = 24;
-    lm1.pos[1] = 42;
-    lm2.pos[0] = 10;
-    lm2.pos[1] = 8;
-    lm3.pos[0] = 12;
-    lm3.pos[1] = 8;
+    lm1.pos.x = 24;
+    lm1.pos.y = 42;
+    lm2.pos.x = 10;
+    lm2.pos.y = 8;
+    lm3.pos.x = 12;
+    lm3.pos.y = 8;
     timeObservedResult = 0;
   }
 
@@ -571,10 +571,10 @@ When(getting_landmark)
   {
     double	robotPosition[3] = {42, 22, 1};
 
-    lm1.pos[0] = 42;
-    lm1.pos[1] = 24;
-    lm2.pos[0] = 42;
-    lm2.pos[1] = 44;
+    lm1.pos.x = 42;
+    lm1.pos.y = 24;
+    lm2.pos.x = 42;
+    lm2.pos.y = 44;
     range = 4.5;
     bearing = 3;
     id1 = lms.addToDB(lm1);
@@ -618,10 +618,10 @@ When(updating_landmarks_with_a_landmark)
 
   void		SetUp()
   {
-    lm1.pos[0] = 42;
-    lm1.pos[1] = 24;
-    lm2.pos[0] = 12;
-    lm2.pos[1] = 5;
+    lm1.pos.x = 42;
+    lm1.pos.y = 24;
+    lm2.pos.x = 12;
+    lm2.pos.y = 5;
 
     id1 = lms.addToDB(lm1);
   }
@@ -715,8 +715,8 @@ When(updating_landmarks_with_parameters)
       AssertThatDetail(Root().lm1->id, Is().Not().EqualTo(-1));
       AssertThatDetail(Root().lm1->bearing, Is().EqualTo(Root().bearing));
       AssertThatDetail(Root().lm1->range, Is().EqualTo(Root().distance));
-      AssertThatDetail(Root().lm1->pos[0], Is().Not().EqualTo(0));
-      AssertThatDetail(Root().lm1->pos[1], Is().Not().EqualTo(0));
+      AssertThatDetail(Root().lm1->pos.x, Is().Not().EqualTo(0));
+      AssertThatDetail(Root().lm1->pos.y, Is().Not().EqualTo(0));
     }
   };
 
@@ -769,10 +769,10 @@ When(updating_line_landmark)
 
   void	SetUp()
   {
-    lm1.pos[0] = 42;
-    lm1.pos[1] = 24;
-    lm2.pos[0] = 12;
-    lm2.pos[1] = 5;
+    lm1.pos.x = 42;
+    lm1.pos.y = 24;
+    lm2.pos.x = 12;
+    lm2.pos.y = 5;
 
     id1 = lms.addToDB(lm1);
   }
@@ -833,10 +833,10 @@ When(getting_landmark_origin)
 {
   void	SetUp()
   {
-    lm1.pos[0] = 2.5;
-    lm1.pos[1] = 3.5;
-    lm2.pos[0] = 1.5;
-    lm2.pos[1] = 2.5;
+    lm1.pos.x = 2.5;
+    lm1.pos.y = 3.5;
+    lm2.pos.x = 1.5;
+    lm2.pos.y = 2.5;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -852,8 +852,8 @@ When(getting_landmark_origin)
 
   Then(it_should_have_default_value)
   {
-    AssertThatDetail(lm3->pos[0], Is().EqualTo(0));
-    AssertThatDetail(lm3->pos[1], Is().EqualTo(0));
+    AssertThatDetail(lm3->pos.x, Is().EqualTo(0));
+    AssertThatDetail(lm3->pos.y, Is().EqualTo(0));
     AssertThatDetail(lm3->range, Is().EqualTo(-1));
     AssertThatDetail(lm3->bearing, Is().EqualTo(-1));
   }
@@ -874,10 +874,10 @@ When(getting_landmarks_nearest_to_line)
     b = 26.3;
     x = b / ((-1.0 / a) - a);
     y = ((-1.0 / a) * b) / ((-1.0 / a) - a);
-    lm1.pos[0] = 42.5;
-    lm1.pos[1] = 23.5;
-    lm2.pos[0] = x + 0.12;
-    lm2.pos[1] = y - 0.02;
+    lm1.pos.x = 42.5;
+    lm1.pos.y = 23.5;
+    lm2.pos.x = x + 0.12;
+    lm2.pos.y = y - 0.02;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -893,8 +893,8 @@ When(getting_landmarks_nearest_to_line)
 
   Then(it_should_have_default_value)
   {
-    AssertThatDetail(lm3->pos[0], Is().EqualTo(x));
-    AssertThatDetail(lm3->pos[1], Is().EqualTo(y));
+    AssertThatDetail(lm3->pos.x, Is().EqualTo(x));
+    AssertThatDetail(lm3->pos.y, Is().EqualTo(y));
     AssertThatDetail(lm3->a, Is().EqualTo(a));
     AssertThatDetail(lm3->b, Is().EqualTo(b));
     AssertThatDetail(lm3->range, Is().EqualTo(-1));
@@ -936,10 +936,10 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     rangeError = lms.distance(robotPosition[0], robotPosition[1], px, py);
     bearingError = atan((py - robotPosition[1]) / (px - robotPosition[0])) - robotPosition[2];
 
-    lm1.pos[0] = 42.5;
-    lm1.pos[1] = 23.5;
-    lm2.pos[0] = x + 0.12;
-    lm2.pos[1] = y - 0.02;
+    lm1.pos.x = 42.5;
+    lm1.pos.y = 23.5;
+    lm2.pos.x = x + 0.12;
+    lm2.pos.y = y - 0.02;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -955,8 +955,8 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
 
   Then(it_should_have_default_value)
   {
-    AssertThatDetail(lm3->pos[0], Is().EqualTo(x));
-    AssertThatDetail(lm3->pos[1], Is().EqualTo(y));
+    AssertThatDetail(lm3->pos.x, Is().EqualTo(x));
+    AssertThatDetail(lm3->pos.y, Is().EqualTo(y));
     AssertThatDetail(lm3->a, Is().EqualTo(a));
     AssertThatDetail(lm3->b, Is().EqualTo(b));
     AssertThatDetail(lm3->range, Is().EqualTo(range));
@@ -990,15 +990,17 @@ When(extracting_spike_landmark)
     srand(42);
     for (int i = 0; i < 30; ++i)
       {
-	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
       }
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
-    lm1.pos[0] = 42.5;
-    lm1.pos[1] = 24.1;
-    lm2.pos[0] = 12.2;
-    lm2.pos[1] = 2.0;
+    lm1.pos.x = 42.5;
+    lm1.pos.y = 24.1;
+    lm2.pos.x = 12.2;
+    lm2.pos.y = 2.0;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -1024,7 +1026,7 @@ When(extracting_spike_landmark)
   Landmarks::Landmark	lm2;
   int		id1;
   int		id2;
-  double	data[30];
+  pcl::PointXYZ	data[30];
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> result;
 };
@@ -1036,18 +1038,20 @@ When(removing_double_landmarks)
     srand(42);
     for (int i = 0; i < 30; ++i)
       {
-	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
       }
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
-    lm1.pos[0] = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
+    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1].z)
       + robotPosition[0];
-    lm1.pos[1] = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
+    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1].z)
       + robotPosition[1];
-    lm2.pos[0] = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
+    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19].z)
       + robotPosition[0];
-    lm2.pos[1] = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
+    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19].z)
       + robotPosition[1];
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
@@ -1069,7 +1073,7 @@ When(removing_double_landmarks)
   Landmarks::Landmark	lm2;
   int		id1;
   int		id2;
-  double	data[30];
+  pcl::PointXYZ	data[30];
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
@@ -1083,18 +1087,20 @@ When(getting_aligned_landmark_data)
     srand(42);
     for (int i = 0; i < 30; ++i)
       {
-	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
       }
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
-    lm1.pos[0] = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
+    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1].z)
       + robotPosition[0];
-    lm1.pos[1] = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1])
+    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1].z)
       + robotPosition[1];
-    lm2.pos[0] = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
+    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19].z)
       + robotPosition[0];
-    lm2.pos[1] = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19])
+    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19].z)
       + robotPosition[1];
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
@@ -1116,12 +1122,12 @@ When(getting_aligned_landmark_data)
   {
     int	i = 0;
 
-    for(std::vector<std::pair<double, double> >::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
+    for(std::vector<pcl::PointXY>::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
       {
 	AssertThatDetail(id[i], Is().GreaterThan(-1));
 	AssertThatDetail(matched[i], Is().EqualTo(true));
-	AssertThatDetail(lmrk[i].first, Is().EqualTo(lms.landmarkDB[id[i]]->pos[0]));
-	AssertThatDetail(lmrk[i].second, Is().EqualTo(lms.landmarkDB[id[i]]->pos[1]));
+	AssertThatDetail(lmrk[i].x, Is().EqualTo(lms.landmarkDB[id[i]]->pos.x));
+	AssertThatDetail(lmrk[i].y, Is().EqualTo(lms.landmarkDB[id[i]]->pos.y));
 	++i;
       }
   }
@@ -1131,15 +1137,15 @@ When(getting_aligned_landmark_data)
   Landmarks::Landmark	lm2;
   int		id1;
   int		id2;
-  double	data[30];
+  pcl::PointXYZ	data[30];
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> extracted;
   bool		*matched;
   int		*id;
   double	*ranges;
   double	*bearings;
-  std::vector<std::pair<double, double> > lmrk;
-  std::vector<std::pair<double, double> > exlmrk;
+  std::vector<pcl::PointXY> lmrk;
+  std::vector<pcl::PointXY> exlmrk;
 };
 
 
@@ -1152,10 +1158,10 @@ When(update_and_add_line_landmarks)
 
   void SetUp()
   {
-    lmrk1.pos[0] = 21;
-    lmrk1.pos[1] = 42;
-    lmrk2.pos[0] = 12;
-    lmrk2.pos[1] = 24;
+    lmrk1.pos.x = 21;
+    lmrk1.pos.y = 42;
+    lmrk2.pos.x = 12;
+    lmrk2.pos.y = 24;
   }
 
   When(Landmarks_are_not_in_db)
@@ -1345,17 +1351,25 @@ When(Remove_bad_landmarks)
 
   void	SetUp()
   {
-    cameradata[0] = 2.2;
-    cameradata[1] = 4.6;
-    cameradata[2] = 1.8;
-    cameradata[3] = 3.3;
+    cameradata[0].z = 2.2;
+    cameradata[1].z = 4.6;
+    cameradata[2].z = 1.8;
+    cameradata[3].z = 3.3;
+    cameradata[0].x = 0;
+    cameradata[1].x = 0;
+    cameradata[2].x = 0;
+    cameradata[3].x = 0;
+    cameradata[0].y = 0;
+    cameradata[1].y = 0;
+    cameradata[2].y = 0;
+    cameradata[3].y = 0;
 
-    goodLandmark1.pos[0] = 1.2;
-    goodLandmark1.pos[1] = 3.4;
-    goodLandmark2.pos[0] = 0.9;
-    goodLandmark2.pos[1] = 3.6;
-    goodLandmark3.pos[0] = 1.5;
-    goodLandmark3.pos[1] = 3.1;
+    goodLandmark1.pos.x = 1.2;
+    goodLandmark1.pos.y = 3.4;
+    goodLandmark2.pos.x = 0.9;
+    goodLandmark2.pos.y = 3.6;
+    goodLandmark3.pos.x = 1.5;
+    goodLandmark3.pos.y = 3.1;
   }
 
   When(All_Landmarks_are_in_rectangle)
@@ -1364,8 +1378,8 @@ When(Remove_bad_landmarks)
 
     void SetUp()
     {
-      Root().badLandmark1.pos[0] = 1.4;
-      Root().badLandmark1.pos[1] = 3.5;
+      Root().badLandmark1.pos.x = 1.4;
+      Root().badLandmark1.pos.y = 3.5;
 
       Root().robotPosition[0] = 42.0;
       Root().robotPosition[1] = 3.0;
@@ -1400,8 +1414,8 @@ When(Remove_bad_landmarks)
 
     void SetUp()
     {
-      Root().badLandmark1.pos[0] = 75.4;
-      Root().badLandmark1.pos[1] = 90.8;
+      Root().badLandmark1.pos.x = 75.4;
+      Root().badLandmark1.pos.y = 90.8;
 
       Root().robotPosition[0] = 25.7;
       Root().robotPosition[1] = -33.2;
@@ -1425,8 +1439,8 @@ When(Remove_bad_landmarks)
 
     Then(landmarkDB_contains_badlandmark)
     {
-      AssertThatDetail(Root().lms.landmarkDB[3]->pos[0], Is().EqualTo(75.4));
-      AssertThatDetail(Root().lms.landmarkDB[3]->pos[1], Is().EqualTo(90.8));
+      AssertThatDetail(Root().lms.landmarkDB[3]->pos.x, Is().EqualTo(75.4));
+      AssertThatDetail(Root().lms.landmarkDB[3]->pos.y, Is().EqualTo(90.8));
     }
   };
 
@@ -1438,7 +1452,7 @@ When(Remove_bad_landmarks)
   int badLandmarkID;
   unsigned int oldDBSize;
   Landmarks lms;
-  double cameradata[4];
+  pcl::PointXYZ cameradata[4];
   unsigned int numberSample;
   double robotPosition[3];
 };
@@ -1457,15 +1471,17 @@ When(extracting_line_landmark)
     srand(42);
     for (int i = 0; i < 150; ++i)
       {
-	data[i] = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
       }
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
-    lm1.pos[0] = 42.5;
-    lm1.pos[1] = 24.1;
-    lm2.pos[0] = 12.2;
-    lm2.pos[1] = 2.0;
+    lm1.pos.x = 42.5;
+    lm1.pos.y = 24.1;
+    lm2.pos.x = 12.2;
+    lm2.pos.y = 2.0;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -1491,7 +1507,7 @@ When(extracting_line_landmark)
   Landmarks::Landmark	lm2;
   int		id1;
   int		id2;
-  double	data[150];
+  pcl::PointXYZ	data[150];
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> result;
 };
