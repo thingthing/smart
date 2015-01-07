@@ -872,12 +872,12 @@ When(getting_landmarks_nearest_to_line)
   {
     a = 35.5;
     b = 26.3;
-    x = b / ((-1.0 / a) - a);
-    y = ((-1.0 / a) * b) / ((-1.0 / a) - a);
+    point.x = (double)(b / ((-1.0 / a) - a));
+    point.y = (double)(((-1.0 / a) * b) / ((-1.0 / a) - a));
     lm1.pos.x = 42.5;
     lm1.pos.y = 23.5;
-    lm2.pos.x = x + 0.12;
-    lm2.pos.y = y - 0.02;
+    lm2.pos.x = point.x + 0.12;
+    lm2.pos.y = point.y - 0.02;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -893,8 +893,8 @@ When(getting_landmarks_nearest_to_line)
 
   Then(it_should_have_default_value)
   {
-    AssertThatDetail(lm3->pos.x, Is().EqualTo(x));
-    AssertThatDetail(lm3->pos.y, Is().EqualTo(y));
+    AssertThatDetail(lm3->pos.x, Is().EqualTo(point.x));
+    AssertThatDetail(lm3->pos.y, Is().EqualTo(point.y));
     AssertThatDetail(lm3->a, Is().EqualTo(a));
     AssertThatDetail(lm3->b, Is().EqualTo(b));
     AssertThatDetail(lm3->range, Is().EqualTo(-1));
@@ -909,8 +909,7 @@ When(getting_landmarks_nearest_to_line)
   int		id2;
   double	a;
   double	b;
-  double	x;
-  double	y;
+  pcl::PointXY	point;
 };
 
 When(getting_landmarks_nearest_to_line_with_robot_pos)
@@ -924,8 +923,11 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     robotPosition[2] = 0.1;
 
     double ao = -1.0 / a;
-    x = b / (ao - a);
-    y = (ao * b) / (ao - a);
+    point.x = b / (ao - a);
+    point.y = (ao * b) / (ao - a);
+    double x = b / (ao - a);
+    double y = (ao * b) / (ao - a);
+
     range = sqrt(pow(x - robotPosition[0], 2) + pow(y - robotPosition[1], 2));
     bearing = atan((y - robotPosition[1]) / (x - robotPosition[0])) - robotPosition[2];
 
@@ -938,8 +940,8 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
 
     lm1.pos.x = 42.5;
     lm1.pos.y = 23.5;
-    lm2.pos.x = x + 0.12;
-    lm2.pos.y = y - 0.02;
+    lm2.pos.x = point.x + 0.12;
+    lm2.pos.y = point.y - 0.02;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -955,8 +957,8 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
 
   Then(it_should_have_default_value)
   {
-    AssertThatDetail(lm3->pos.x, Is().EqualTo(x));
-    AssertThatDetail(lm3->pos.y, Is().EqualTo(y));
+    AssertThatDetail(lm3->pos.x, Is().EqualTo(point.x));
+    AssertThatDetail(lm3->pos.y, Is().EqualTo(point.y));
     AssertThatDetail(lm3->a, Is().EqualTo(a));
     AssertThatDetail(lm3->b, Is().EqualTo(b));
     AssertThatDetail(lm3->range, Is().EqualTo(range));
@@ -973,8 +975,7 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
   int		id2;
   double	a;
   double	b;
-  double	x;
-  double	y;
+  pcl::PointXY	point;
   double	robotPosition[3];
   double	range;
   double	bearing;
@@ -1439,8 +1440,8 @@ When(Remove_bad_landmarks)
 
     Then(landmarkDB_contains_badlandmark)
     {
-      AssertThatDetail(Root().lms.landmarkDB[3]->pos.x, Is().EqualTo(75.4));
-      AssertThatDetail(Root().lms.landmarkDB[3]->pos.y, Is().EqualTo(90.8));
+      AssertThatDetail(Root().lms.landmarkDB[3]->pos.x, Is().EqualTo(Root().badLandmark1.pos.x));
+      AssertThatDetail(Root().lms.landmarkDB[3]->pos.y, Is().EqualTo(Root().badLandmark1.pos.y));
     }
   };
 

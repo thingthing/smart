@@ -112,8 +112,8 @@ int Landmarks::addToDB(const Landmark &lm)
     {
       new_elem = new Landmarks::Landmark();
 
-      new_elem->pos.x = lm.pos.y;
-      new_elem->pos.y = lm.pos.x;
+      new_elem->pos.x = lm.pos.x;
+      new_elem->pos.y = lm.pos.y;
       new_elem->life = Landmarks::LIFE;
       new_elem->id = DBSize;
       new_elem->totalTimeObserved = 1;
