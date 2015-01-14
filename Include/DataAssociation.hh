@@ -2,6 +2,7 @@
 # define	_DATA_ASSOCIATION_HH_
 
 #include "Landmarks.hh"
+#include "Agent.hh"
 
 class DataAssociation
 {
@@ -10,7 +11,7 @@ public:
   DataAssociation(Landmarks *landmarkDb);
   ~DataAssociation();
 
-  void	validationGate(pcl::PointXYZ cameradata[], int numberSample, double robotPosition[]);
+  void	validationGate(pcl::PointXYZ cameradata[], int numberSample, Agent const &agent);
   bool	associateLandmarks(Landmarks::Landmark *toAssociate) const;
 
   Landmarks	*getLandmarkDb() const;

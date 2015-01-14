@@ -22,12 +22,12 @@ Landmarks	*DataAssociation::getLandmarkDb() const
 
 //Will be called after each data gathering to check for new landmarks
 void	DataAssociation::validationGate(pcl::PointXYZ cameradata[], int numberSample,
-					double robotPosition[])
+					Agent const &agent)
 {
   std::vector<Landmarks::Landmark *>	currentLandmarks;
   std::vector<Landmarks::Landmark *>	newLandmarks;
 
-  newLandmarks = this->_landmarkDb->extractLineLandmarks(cameradata, numberSample, robotPosition);
+  newLandmarks = this->_landmarkDb->extractLineLandmarks(cameradata, numberSample, agent);
   currentLandmarks = this->_landmarkDb->getLandmarkDB();
 
   for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
