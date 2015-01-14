@@ -11,11 +11,15 @@ public:
   Agent();
   ~Agent();
 
-  pcl::PointXYZ	const &getPos() const;
+  pcl::PointXYZ	const	&getPos() const;
+  double		getAngle() const;
+
   void		setPos(pcl::PointXYZ const &pos);
+  void		setAngle(double angle);
 
 private:
   pcl::PointXYZ _pos;
+  double	_angle;
 };
 
 
