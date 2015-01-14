@@ -693,13 +693,14 @@ When(updating_landmarks_with_parameters)
 
   void		SetUp()
   {
-    robotPosition[0] = 42.0;
-    robotPosition[1] = 24.0;
-    robotPosition[2] = 1.0;
+    agent = new Agent();
+    agent->setPos(42.0, 24.0, 0.0);
+    agent->setAngle(1.0);
+
     distance = 2.5;
     bearing = 0.5;
     oldDBSize = lms.DBSize;
-    lm1 = lms.updateLandmark(false, 0, distance, bearing, robotPosition);
+    lm1 = lms.updateLandmark(false, 0, distance, bearing, *agent);
     id1 = lm1->id;
   }
 
@@ -732,7 +733,7 @@ When(updating_landmarks_with_parameters)
       Root().oldDBSize = Root().lms.DBSize;
       Root().oldTimeObserved = Root().lms.landmarkDB[Root().id1]->totalTimeObserved;
       Root().lm2 = Root().lms.updateLandmark(true, Root().id1, Root().distance,
-					     Root().bearing, Root().robotPosition);
+					     Root().bearing, *Root().agent);
     }
 
     Then(it_should_not_add_the_landmark_to_the_db)
@@ -757,7 +758,7 @@ When(updating_landmarks_with_parameters)
   Landmarks::Landmark *lm2;
   double	distance;
   double	bearing;
-  double	robotPosition[3];
+  Agent		*agent;
   int		id1;
   int		oldDBSize;
   int		oldTimeObserved;
