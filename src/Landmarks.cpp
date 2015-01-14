@@ -672,10 +672,10 @@ std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLineLandmarks(std::vec
   return (res);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[])
+std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], Agent const &agent)
 {
   std::vector<Landmarks::Landmark *> res(numberMatched);
   for (unsigned int i = 0; i < numberMatched; ++i)
-    res[i] = this->updateLandmark(matched[i], id[i], ranges[i], bearings[i], robotPosition);
+    res[i] = this->updateLandmark(matched[i], id[i], ranges[i], bearings[i], agent);
   return (res);
 }

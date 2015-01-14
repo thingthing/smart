@@ -67,7 +67,7 @@ public:
 
   //Update
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
-  std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[]);
+  std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], Agent const &agent);
   int updateLineLandmark(Landmark &lm);
 
   //Extract
