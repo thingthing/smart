@@ -482,7 +482,7 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, b
     }
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[])
+std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent)
 {
   // lignes trouvées
   std::vector<double> la;
@@ -532,7 +532,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
       double b = 0;
       // ax + b => ligne
       // cette fonction modifie les valeurs de 'a' et 'b'
-      this->leastSquaresLineEstimate(cameradata, robotPosition, rndSelectedPoints, Landmarks::MAXSAMPLE, a, b);
+      this->leastSquaresLineEstimate(cameradata, agent, rndSelectedPoints, Landmarks::MAXSAMPLE, a, b);
 
 
       //– Determine the consensus set S1* of points is P
@@ -546,8 +546,8 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
       for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
 	  // convert ranges and bearing to coordinates
-	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i].z) + robotPosition[0];
-	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + robotPosition[2] * Landmarks::CONVERSION) * cameradata[i].z) + robotPosition[1];
+	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getAngle() * Landmarks::CONVERSION) * cameradata[i].z) + agent.getPos().x;
+	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getAngle() * Landmarks::CONVERSION) * cameradata[i].z) + agent.getPos().y;
 	  d = this->distanceToLine(x, y, a, b);
 	  if (d < Landmarks::RANSAC_TOLERANCE)
 	    {
@@ -565,7 +565,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
       if(totalConsensusPoints > Landmarks::RANSAC_CONSENSUS)
 	{
 	  // cette fonction modifie les valeurs de 'a' et 'b'
-	  this->leastSquaresLineEstimate(cameradata, robotPosition, consensusPoints, totalConsensusPoints, a, b);
+	  this->leastSquaresLineEstimate(cameradata, agent, consensusPoints, totalConsensusPoints, a, b);
 	  totalLinepoints = totalNewLinePoints;
 
 #ifdef DEBUG
@@ -573,7 +573,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
 	  for(unsigned int i = 0; i < totalConsensusPoints; ++i)
 	    {
 	      //Remove points that have now been associated to this line
-	      tempLandmarks[consensusPoints[i]] = this->getLandmark(cameradata[consensusPoints[i]], consensusPoints[i], robotPosition);
+	      tempLandmarks[consensusPoints[i]] = this->getLandmark(cameradata[consensusPoints[i]], consensusPoints[i], agent);
 	    }
 #endif
 
@@ -596,7 +596,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
   std::vector<Landmarks::Landmark *> foundLandmarks(totalLines);
   for(int i = 0; i < totalLines; ++i)
     {
-      foundLandmarks[i] = this->getLineLandmark(la[i], lb[i], robotPosition);
+      foundLandmarks[i] = this->getLineLandmark(la[i], lb[i], agent);
     }
   return foundLandmarks;
 }

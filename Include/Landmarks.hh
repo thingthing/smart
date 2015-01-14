@@ -71,7 +71,7 @@ public:
   int updateLineLandmark(Landmark &lm);
 
   //Extract
-  std::vector<Landmark *> extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[]);
+  std::vector<Landmark *> extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent);
 
 
   //Other
