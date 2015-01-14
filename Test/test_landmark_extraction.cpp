@@ -1040,22 +1040,19 @@ When(removing_double_landmarks)
     srand(42);
     TestSlamCommon::generateData(data, 30);
 
-    robotPosition[0] = 2.0;
-    robotPosition[1] = 4.0;
-    robotPosition[2] = 0.2;
-    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1].z)
-      + robotPosition[0];
-    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[1].z)
-      + robotPosition[1];
-    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19].z)
-      + robotPosition[0];
-    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * data[19].z)
-      + robotPosition[1];
+    agent = new Agent();
+    agent->setPos(2.0, 4.0, 0.0);
+    agent->setAngle(0.2);
+
+    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().x;
+    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().y;
+    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().x;
+    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().y;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    extracted = lms.extractSpikeLandmarks(data, 30, robotPosition);
+    extracted = lms.extractSpikeLandmarks(data, 30, *agent);
     result = lms.removeDouble(extracted);
   }
 
@@ -1072,7 +1069,7 @@ When(removing_double_landmarks)
   int		id1;
   int		id2;
   pcl::PointXYZ	data[30];
-  double	robotPosition[3];
+  Agent		*agent;
   std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
 };
