@@ -234,7 +234,7 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 }
 
 
-Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[])
+Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, Agent const &agent)
 {
   Landmarks::Landmark *lm;
 
@@ -250,9 +250,9 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
       lm = new Landmarks::Landmark();
 
       lm->pos.x = cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		       (robotPosition[2] * Landmarks::CONVERSION)) * distance + robotPosition[0];
+		      (agent.getAngle() * Landmarks::CONVERSION)) * distance + agent.getPos().x;
       lm->pos.y = sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		       (robotPosition[2] * Landmarks::CONVERSION)) * distance + robotPosition[1];
+		      (agent.getAngle() * Landmarks::CONVERSION)) * distance + agent.getPos().y;
       lm->bearing = readingNo;
       lm->range = distance;
       lm->id = this->addToDB(*lm);

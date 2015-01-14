@@ -99,7 +99,7 @@ public: // ONLY FOR UNIT TESTS
   Landmark *getOrigin();
 
   //Update
-  Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, double robotPosition[]);
+  Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, Agent const &agent);
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
