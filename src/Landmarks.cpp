@@ -4,17 +4,16 @@
 
 const double Landmarks::CONVERSION = (M_PI / 180.0); // Convert to radians
 const unsigned int Landmarks::MAXLANDMARKS = 3000; // Max number of landmarks
-const double Landmarks::MAXERROR = 0.5; // If a landmarks is within this distance of another landmarks, its the same landmarks
+const double Landmarks::MAXERROR = 1.0; // If a landmarks is within this distance of another landmarks, its the same landmarks
 const unsigned int Landmarks::MINOBSERVATIONS = 15; // Number of times a landmark must be observed to be recongnized as a landmark
 const unsigned int Landmarks::LIFE = 40; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
-const float Landmarks::MAX_RANGE = 1.0;
 const unsigned int Landmarks::MAXTRIALS = 1000; // RANSAC: max times to run algorithm
 const unsigned int Landmarks::MAXSAMPLE = 10; // RANSAC: randomly select x points
 const unsigned int Landmarks::MINLINEPOINTS = 30; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
 const double  Landmarks::RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
 const unsigned int Landmarks::RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
 const double Landmarks::DEGREESPERSCAN = 0.5;
-const double Landmarks::CAMERAPROBLEM = 8.1; // meters
+const double Landmarks::CAMERAPROBLEM = 4.1; // meters
 const double Landmarks::MAX_DIFFERENCE = 0.5; // meter
 const double Landmarks::MIN_DIFFERENCE = 0.3; // meter
 
@@ -82,7 +81,9 @@ int Landmarks::getAssociation(Landmark &lm)
 {
   for(int i = 0; i < this->DBSize; ++i)
     {
-      if(this->distance(lm, (*landmarkDB[i])) < Landmarks::MAXERROR && landmarkDB[i]->id != -1)
+      double dist = this->distance(lm, (*landmarkDB[i]));
+
+      if(dist < Landmarks::MAXERROR && landmarkDB[i]->id != -1)
 	{
 	  landmarkDB[i]->life = Landmarks::LIFE;
 	  ++landmarkDB[i]->totalTimeObserved;
@@ -614,7 +615,7 @@ int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numbe
 	  && cameradata[i].z > maxrange)
 	maxrange = cameradata[i].z;
     }
-  maxrange = Landmarks::MAX_RANGE;
+
   double *Xbounds = new double[4];
   double *Ybounds = new double[4];
 

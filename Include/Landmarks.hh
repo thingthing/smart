@@ -17,7 +17,6 @@ static const unsigned int MAXLANDMARKS; // Max number of landmarks
 static const double MAXERROR; // If a landmarks is within this distance of another landmarks, its the same landmarks
 static const unsigned int MINOBSERVATIONS; // Number of times a landmark must be observed to be recongnized as a landmark
 static const unsigned int LIFE; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
-static const float MAX_RANGE;
 static const unsigned int MAXTRIALS; // RANSAC: max times to run algorithm
 static const unsigned int MAXSAMPLE; // RANSAC: randomly select x points
 static const unsigned int MINLINEPOINTS; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)

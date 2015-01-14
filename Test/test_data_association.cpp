@@ -117,3 +117,98 @@ When(associating_landmarks)
   int	totalTimeObserved;
   int	new_id;
 };
+
+When(testing_validation_gate)
+{
+  ScenarioAttribute("hasChild", "true")
+
+    void	SetUp()
+    {
+      robotPosition[0] = 2.0;
+      robotPosition[1] = 4.0;
+      robotPosition[2] = 0.2;
+
+      int	r = 0;
+      int	size = 0;
+      ::Landmarks	*lms = new Landmarks();
+
+      while (size == 0)
+	{
+	  srand(r);
+
+	  for (int i = 0; i < 150; ++i)
+	    {
+	      data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	      data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	      data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
+	    }
+
+	  landmarksTest = lms->extractLineLandmarks(data, 150, robotPosition);
+
+	  size = landmarksTest.size();
+	  ++r;
+	}
+      datas = new DataAssociation(lms);
+    }
+
+  When(no_landmarks_are_in_db)
+  {
+    ScenarioAttribute("hasParent", "\t")
+
+      void	SetUp()
+      {
+	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
+	Root().datas->validationGate(Root().data, 150, Root().robotPosition);
+      }
+
+    Then(it_should_add_landmarks_to_db)
+    {
+      AssertThatDetail(Root().datas->getLandmarkDb()->getDBSize(), Is().GreaterThan(Root().oldDbSize));
+    }
+  };
+
+  When(landmarks_are_already_in_db_and_already_enough_observed)
+  {
+    ScenarioAttribute("hasParent", "\t")
+
+      void	SetUp()
+      {
+	for(std::vector<Landmarks::Landmark *>::iterator it = Root().landmarksTest.begin(); it != Root().landmarksTest.end(); ++it)
+	  {
+	    ids.push_back(Root().datas->getLandmarkDb()->addToDB(**it));
+	  }
+
+	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
+	Root().datas->validationGate(Root().data, 150, Root().robotPosition);
+      }
+
+    Then(it_should_not_change_db_size)
+    {
+      AssertThatDetail(Root().datas->getLandmarkDb()->getDBSize(), Is().EqualTo(Root().oldDbSize));
+    }
+
+    Then(it_shoud_add_observed_time_to_landmarks_observed)
+    {
+      bool	isObserved = false;
+
+      for(std::vector<int>::iterator it = ids.begin(); it != ids.end(); ++it)
+	{
+	  if (Root().datas->getLandmarkDb()->landmarkDB[*it]->totalTimeObserved > 1)
+	    {
+	      isObserved = true;
+	      break;
+	    }
+	}
+      AssertThatDetail(isObserved, Is().EqualTo(true));
+    }
+
+    std::vector<int> ids;
+  };
+
+  ::DataAssociation *datas;
+  std::vector<Landmarks::Landmark *>	landmarksTest;
+  pcl::PointXYZ	data[150];
+  double	robotPosition[3];
+  std::vector<Landmarks::Landmark *> result;
+  int		oldDbSize;
+};
