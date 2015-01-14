@@ -125,9 +125,10 @@ When(testing_validation_gate)
 
     void	SetUp()
     {
-      robotPosition[0] = 2.0;
-      robotPosition[1] = 4.0;
-      robotPosition[2] = 0.2;
+
+      agent = new Agent();
+      agent->setPos(2.0, 4.0, 0.0);
+      agent->setAngle(0.2);
 
       int	r = 0;
       int	size = 0;
@@ -139,7 +140,7 @@ When(testing_validation_gate)
 
 	  TestSlamCommon::generateData(data, numberSample);
 
-	  landmarksTest = lms->extractLineLandmarks(data, numberSample, robotPosition);
+	  landmarksTest = lms->extractLineLandmarks(data, numberSample, *agent);
 
 	  size = landmarksTest.size();
 	  ++r;
@@ -154,7 +155,7 @@ When(testing_validation_gate)
       void	SetUp()
       {
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, Root().numberSample, Root().robotPosition);
+	Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent);
       }
 
     Then(it_should_add_landmarks_to_db)
@@ -175,7 +176,7 @@ When(testing_validation_gate)
 	  }
 
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, Root().numberSample, Root().robotPosition);
+	Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent);
       }
 
     Then(it_should_not_change_db_size)
@@ -205,7 +206,7 @@ When(testing_validation_gate)
   ::DataAssociation *datas;
   std::vector<Landmarks::Landmark *>	landmarksTest;
   pcl::PointXYZ	data[numberSample];
-  double	robotPosition[3];
+  Agent	*agent;
   std::vector<Landmarks::Landmark *> result;
   int		oldDbSize;
 };
