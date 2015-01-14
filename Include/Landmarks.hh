@@ -104,7 +104,7 @@ public: // ONLY FOR UNIT TESTS
 
   //Extract
   std::vector<Landmark *> extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber,
-						double robotPosition[]);
+						Agent const &agent);
   //Remove
   std::vector<Landmark *> removeDouble(std::vector<Landmark *> extractedLandmarks);
 

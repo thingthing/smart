@@ -359,7 +359,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   return (lm);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber, double robotPosition[])
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber, Agent const &agent)
 {
   //have a large array to keep track of found landmarks
 
@@ -372,15 +372,15 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointXY
     {
       // Check for error measurement in laser data
 
-      if (cameradata[i - 1].z < Agent::CAMERAPROBLEM && cameradata[i + 1].z < Agent::CAMERAPROBLEM)
+      if (cameradata[i - 1].z < agent.cameraProblem && cameradata[i + 1].z < agent.cameraProblem)
 	{
   	  if ((cameradata[i - 1].z - cameradata[i].z) + (cameradata[i + 1].z - cameradata[i].z) > MAX_DIFFERENCE)
-  	    tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
+  	    tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, agent);
   	  else
   	    if((cameradata[i - 1].z - cameradata[i].z) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
+	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, agent);
 	    else if((cameradata[i + 1].z - cameradata[i].z) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
+	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, agent);
 	}
     }
 
