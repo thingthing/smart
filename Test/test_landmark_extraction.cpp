@@ -920,11 +920,11 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
 {
   void	SetUp()
   {
+    agent = new Agent();
     a = 35.5;
     b = 26.3;
-    robotPosition[0] = 5.2;
-    robotPosition[1] = 4.2;
-    robotPosition[2] = 0.1;
+    agent->setPos(5.2, 4.2, 0.0);
+    agent->setAngle(0.1);
 
     double ao = -1.0 / a;
     point.x = b / (ao - a);
@@ -932,15 +932,15 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     double x = b / (ao - a);
     double y = (ao * b) / (ao - a);
 
-    range = sqrt(pow(x - robotPosition[0], 2) + pow(y - robotPosition[1], 2));
-    bearing = atan((y - robotPosition[1]) / (x - robotPosition[0])) - robotPosition[2];
+    range = sqrt(pow(x - agent->getPos().x, 2) + pow(y - agent->getPos().y, 2));
+    bearing = atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getAngle();
 
-    double bo = robotPosition[1] - ao * robotPosition[0];
+    double bo = agent->getPos().y - ao * agent->getPos().x;
     double px = (b - bo) / (ao - a);
     double py = ((ao * (b - bo)) / (ao - a)) + bo;
 
-    rangeError = lms.distance(robotPosition[0], robotPosition[1], px, py);
-    bearingError = atan((py - robotPosition[1]) / (px - robotPosition[0])) - robotPosition[2];
+    rangeError = lms.distance(agent->getPos().x, agent->getPos().y, px, py);
+    bearingError = atan((py - agent->getPos().y) / (px - agent->getPos().x)) - agent->getAngle();
 
     lm1.pos.x = 42.5;
     lm1.pos.y = 23.5;
@@ -950,7 +950,7 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    lm3 = lms.getLineLandmark(a, b, robotPosition);
+    lm3 = lms.getLineLandmark(a, b, *agent);
   }
 
   Then(it_should_have_id_of_landmark_closest_from_origin)
@@ -980,7 +980,7 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
   double	a;
   double	b;
   pcl::PointXY	point;
-  double	robotPosition[3];
+  Agent		*agent;
   double	range;
   double	bearing;
   double	rangeError;
