@@ -11,5 +11,6 @@ SET(SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/KalmanGainMatrice.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/SystemStateMatrice.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Agent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Slam.cpp
   PARENT_SCOPE
   )
