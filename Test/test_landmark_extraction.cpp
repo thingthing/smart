@@ -1358,6 +1358,7 @@ When(Remove_bad_landmarks)
     goodLandmark2.pos.y = 3.6;
     goodLandmark3.pos.x = 1.5;
     goodLandmark3.pos.y = 3.1;
+    agent = new Agent();
   }
 
   When(All_Landmarks_are_in_rectangle)
@@ -1369,9 +1370,8 @@ When(Remove_bad_landmarks)
       Root().badLandmark1.pos.x = 1.4;
       Root().badLandmark1.pos.y = 3.5;
 
-      Root().robotPosition[0] = 42.0;
-      Root().robotPosition[1] = 3.0;
-      Root().robotPosition[2] = 60.2;
+      Root().agent->setPos(42.0, 3.0, 0.0);
+      Root().agent->setAngle(60.2);
 
       Root().lms.addToDB(Root().goodLandmark1);
       Root().lms.addToDB(Root().goodLandmark2);
@@ -1381,7 +1381,7 @@ When(Remove_bad_landmarks)
       Root().lms.landmarkDB[3]->life = 1;
 
       Root().oldDBSize = Root().lms.DBSize;
-      Root().lms.removeBadLandmarks(Root().cameradata, 4, Root().robotPosition);
+      Root().lms.removeBadLandmarks(Root().cameradata, 4, *Root().agent);
     }
 
     Then(DBSize_should_be_smaller)
@@ -1405,9 +1405,8 @@ When(Remove_bad_landmarks)
       Root().badLandmark1.pos.x = 75.4;
       Root().badLandmark1.pos.y = 90.8;
 
-      Root().robotPosition[0] = 25.7;
-      Root().robotPosition[1] = -33.2;
-      Root().robotPosition[2] = 160.4;
+      Root().agent->setPos(25.7, -33.2, 0.0);
+      Root().agent->setAngle(160.4);
 
       Root().lms.addToDB(Root().goodLandmark1);
       Root().lms.addToDB(Root().goodLandmark2);
@@ -1417,7 +1416,7 @@ When(Remove_bad_landmarks)
       Root().lms.landmarkDB[3]->life = 1;
 
       Root().oldDBSize =  Root().lms.DBSize;
-      Root().lms.removeBadLandmarks(Root().cameradata, 4, Root().robotPosition);
+      Root().lms.removeBadLandmarks(Root().cameradata, 4, *Root().agent);
     }
 
     Then(DBSize_should_not_change)
@@ -1442,7 +1441,7 @@ When(Remove_bad_landmarks)
   Landmarks lms;
   pcl::PointXYZ cameradata[4];
   unsigned int numberSample;
-  double robotPosition[3];
+  Agent	*agent;
 };
 
 /*
