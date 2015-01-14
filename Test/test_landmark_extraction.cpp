@@ -994,9 +994,11 @@ When(extracting_spike_landmark)
   {
     srand(42);
     TestSlamCommon::generateData(data, 30);
-    robotPosition[0] = 2.0;
-    robotPosition[1] = 4.0;
-    robotPosition[2] = 0.2;
+
+    agent = new Agent();
+    agent->setPos(2.0, 4.0, 0.0);
+    agent->setAngle(0.2);
+
     lm1.pos.x = 42.5;
     lm1.pos.y = 24.1;
     lm2.pos.x = 12.2;
@@ -1005,7 +1007,7 @@ When(extracting_spike_landmark)
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    result = lms.extractSpikeLandmarks(data, 30, robotPosition);
+    result = lms.extractSpikeLandmarks(data, 30, *agent);
   }
 
   Then(it_should_have_some_landmarks)
@@ -1027,7 +1029,7 @@ When(extracting_spike_landmark)
   int		id1;
   int		id2;
   pcl::PointXYZ	data[30];
-  double	robotPosition[3];
+  Agent		*agent;
   std::vector<Landmarks::Landmark *> result;
 };
 
