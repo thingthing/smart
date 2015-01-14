@@ -18,14 +18,14 @@ public:
   ~Agent();
 
   pcl::PointXYZ	const	&getPos() const;
-  double		getAngle() const;
+  double		getBearing() const;
 
-  void		setAngle(double angle);
+  void		setBearing(double bearing);
   void		setPos(pcl::PointXYZ const &pos);
   void		setPos(double x, double y, double z);
 
 private:
-  double	_angle;
+  double	_bearing;
 
 public:
   double const	degreePerScan;

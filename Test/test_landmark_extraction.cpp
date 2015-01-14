@@ -572,7 +572,7 @@ When(getting_landmark)
     Agent		*agent = new Agent();
 
     agent->setPos(42.0, 22.0, 0.0);
-    agent->setAngle(1.0);
+    agent->setBearing(1.0);
 
     lm1.pos.x = 42;
     lm1.pos.y = 24;
@@ -695,7 +695,7 @@ When(updating_landmarks_with_parameters)
   {
     agent = new Agent();
     agent->setPos(42.0, 24.0, 0.0);
-    agent->setAngle(1.0);
+    agent->setBearing(1.0);
 
     distance = 2.5;
     bearing = 0.5;
@@ -924,7 +924,7 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     a = 35.5;
     b = 26.3;
     agent->setPos(5.2, 4.2, 0.0);
-    agent->setAngle(0.1);
+    agent->setBearing(0.1);
 
     double ao = -1.0 / a;
     point.x = b / (ao - a);
@@ -933,14 +933,14 @@ When(getting_landmarks_nearest_to_line_with_robot_pos)
     double y = (ao * b) / (ao - a);
 
     range = sqrt(pow(x - agent->getPos().x, 2) + pow(y - agent->getPos().y, 2));
-    bearing = atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getAngle();
+    bearing = atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getBearing();
 
     double bo = agent->getPos().y - ao * agent->getPos().x;
     double px = (b - bo) / (ao - a);
     double py = ((ao * (b - bo)) / (ao - a)) + bo;
 
     rangeError = lms.distance(agent->getPos().x, agent->getPos().y, px, py);
-    bearingError = atan((py - agent->getPos().y) / (px - agent->getPos().x)) - agent->getAngle();
+    bearingError = atan((py - agent->getPos().y) / (px - agent->getPos().x)) - agent->getBearing();
 
     lm1.pos.x = 42.5;
     lm1.pos.y = 23.5;
@@ -997,7 +997,7 @@ When(extracting_spike_landmark)
 
     agent = new Agent();
     agent->setPos(2.0, 4.0, 0.0);
-    agent->setAngle(0.2);
+    agent->setBearing(0.2);
 
     lm1.pos.x = 42.5;
     lm1.pos.y = 24.1;
@@ -1042,12 +1042,12 @@ When(removing_double_landmarks)
 
     agent = new Agent();
     agent->setPos(2.0, 4.0, 0.0);
-    agent->setAngle(0.2);
+    agent->setBearing(0.2);
 
-    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().x;
-    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().y;
-    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().x;
-    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().y;
+    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().x;
+    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().y;
+    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().x;
+    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().y;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
@@ -1084,15 +1084,15 @@ When(getting_aligned_landmark_data)
 
     agent = new Agent();
     agent->setPos(2.0, 4.0, 0.0);
-    agent->setAngle(0.2);
+    agent->setBearing(0.2);
 
-    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[1].z)
+    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[1].z)
       + agent->getPos().x;
-    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[1].z)
+    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[1].z)
       + agent->getPos().y;
-    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[19].z)
+    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[19].z)
       + agent->getPos().x;
-    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getAngle() * Landmarks::CONVERSION)) * data[19].z)
+    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[19].z)
       + agent->getPos().y;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
@@ -1241,7 +1241,7 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
     {
       agent = new Agent();
       agent->setPos(42.0, 24.0, 0.0);
-      agent->setAngle(1.0);
+      agent->setBearing(1.0);
     }
 
   When(Landmarks_are_not_in_db)
@@ -1375,7 +1375,7 @@ When(Remove_bad_landmarks)
       Root().badLandmark1.pos.y = 3.5;
 
       Root().agent->setPos(42.0, 3.0, 0.0);
-      Root().agent->setAngle(60.2);
+      Root().agent->setBearing(60.2);
 
       Root().lms.addToDB(Root().goodLandmark1);
       Root().lms.addToDB(Root().goodLandmark2);
@@ -1410,7 +1410,7 @@ When(Remove_bad_landmarks)
       Root().badLandmark1.pos.y = 90.8;
 
       Root().agent->setPos(25.7, -33.2, 0.0);
-      Root().agent->setAngle(160.4);
+      Root().agent->setBearing(160.4);
 
       Root().lms.addToDB(Root().goodLandmark1);
       Root().lms.addToDB(Root().goodLandmark2);
@@ -1464,7 +1464,7 @@ When(extracting_line_landmark)
 
     agent = new Agent();
     agent->setPos(2.0, 4.0, 0.0);
-    agent->setAngle(0.2);
+    agent->setBearing(0.2);
 
     lm1.pos.x = 42.5;
     lm1.pos.y = 24.1;

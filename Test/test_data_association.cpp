@@ -128,7 +128,7 @@ When(testing_validation_gate)
 
       agent = new Agent();
       agent->setPos(2.0, 4.0, 0.0);
-      agent->setAngle(0.2);
+      agent->setBearing(0.2);
 
       int	r = 0;
       int	size = 0;

@@ -4,7 +4,7 @@ const double Agent::DEGREESPERSCAN = 0.5;
 const double Agent::CAMERAPROBLEM = 4.1; // meters
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : _angle(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem)
+  : _bearing(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -21,9 +21,9 @@ pcl::PointXYZ	const &Agent::getPos() const
   return (this->_pos);
 }
 
-double		Agent::getAngle() const
+double		Agent::getBearing() const
 {
-  return (this->_angle);
+  return (this->_bearing);
 }
 
 void		Agent::setPos(pcl::PointXYZ const &pos)
@@ -40,8 +40,7 @@ void		Agent::setPos(double x, double y , double z)
   this->_pos.z = z;
 }
 
-
-void		Agent::setAngle(double angle)
+void		Agent::setBearing(double bearing)
 {
-  this->_angle = angle;
+  this->_bearing = bearing;
 }

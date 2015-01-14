@@ -189,8 +189,8 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointXYZ cameradata[], Agent const
   for(int i = 0; i < arraySize; ++i)
     {
       //convert ranges and bearing to coordinates
-      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getAngle() * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + agent.getPos().x;
-      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getAngle() * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + agent.getPos().y;
+      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + agent.getPos().x;
+      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + agent.getPos().y;
       sumY += y;
       sumYY += pow(y,2);
       sumX += x;
@@ -211,9 +211,9 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, Agent c
   int totalTimeObserved = 0;
 
   lm->pos.x = (cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		   (agent.getAngle() * Landmarks::CONVERSION)) * range) + agent.getPos().x;
+		   (agent.getBearing() * Landmarks::CONVERSION)) * range) + agent.getPos().x;
   lm->pos.y = (sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		   (agent.getAngle() * Landmarks::CONVERSION)) * range) + agent.getPos().y;
+		   (agent.getBearing() * Landmarks::CONVERSION)) * range) + agent.getPos().y;
   lm->range = range;
   lm->bearing = readingNo;
   //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème
@@ -250,9 +250,9 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
       lm = new Landmarks::Landmark();
 
       lm->pos.x = cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		      (agent.getAngle() * Landmarks::CONVERSION)) * distance + agent.getPos().x;
+		      (agent.getBearing() * Landmarks::CONVERSION)) * distance + agent.getPos().x;
       lm->pos.y = sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		      (agent.getAngle() * Landmarks::CONVERSION)) * distance + agent.getPos().y;
+		      (agent.getBearing() * Landmarks::CONVERSION)) * distance + agent.getPos().y;
       lm->bearing = readingNo;
       lm->range = distance;
       lm->id = this->addToDB(*lm);
@@ -325,7 +325,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   double x = b / (ao - a);
   double y = (ao * b) / (ao - a);
   double range = sqrt(pow(x - agent.getPos().x, 2) + pow(y - agent.getPos().y, 2));
-  double bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getAngle();
+  double bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing();
   //now do same calculation but get point on wall closest to robot instead
   //y = aox + bo => bo = y - aox
   double bo = agent.getPos().y - ao * agent.getPos().x;
@@ -335,7 +335,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   double py = ((ao * (b - bo)) / (ao - a)) + bo;
   double rangeError = this->distance(agent.getPos().x, agent.getPos().y, px, py);
   double bearingError = atan((py - agent.getPos().y) / (px - agent.getPos().x))
-    - agent.getAngle();  //do you subtract or add robot bearing? I am not sure!
+    - agent.getBearing();  //do you subtract or add robot bearing? I am not sure!
 
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = 0;
@@ -546,8 +546,8 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
       for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
 	  // convert ranges and bearing to coordinates
-	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getAngle() * Landmarks::CONVERSION) * cameradata[i].z) + agent.getPos().x;
-	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getAngle() * Landmarks::CONVERSION) * cameradata[i].z) + agent.getPos().y;
+	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cameradata[i].z) + agent.getPos().x;
+	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cameradata[i].z) + agent.getPos().y;
 	  d = this->distanceToLine(x, y, a, b);
 	  if (d < Landmarks::RANSAC_TOLERANCE)
 	    {
@@ -618,14 +618,14 @@ int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numbe
   double *Ybounds = new double[4];
 
   //get bounds of rectangular box to remove bad landmarks from
-  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
-  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
-  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
-  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
-  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
-  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
+  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
+  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
+  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
+  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
 
   //now check DB for landmarks that are within this box
   //decrease life of all landmarks in box. If the life reaches zero, remove landmark
