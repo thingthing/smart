@@ -109,7 +109,7 @@ public: // ONLY FOR UNIT TESTS
   std::vector<Landmark *> removeDouble(std::vector<Landmark *> extractedLandmarks);
 
   //Other
-  void leastSquaresLineEstimate(pcl::PointXYZ cameradata[], double robotPosition[], int selectPoints[], int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(pcl::PointXYZ cameradata[], Agent const &agent, int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
