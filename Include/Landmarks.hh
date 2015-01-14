@@ -22,8 +22,6 @@ static const unsigned int MAXSAMPLE; // RANSAC: randomly select x points
 static const unsigned int MINLINEPOINTS; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
 static const double RANSAC_TOLERANCE; // RANSAC: if point is within x distance of line, its part of the line
 static const unsigned int RANSAC_CONSENSUS; // RANSAC: at leat x votes required to determine if its a line
-static const double DEGREESPERSCAN;
-static const double CAMERAPROBLEM; // meters
 static const double MAX_DIFFERENCE; // meter
 static const double MIN_DIFFERENCE; // meter
 
@@ -52,7 +50,7 @@ static const double MIN_DIFFERENCE; // meter
 
 public:
   ~Landmarks();
-  Landmarks(double degreePerScan = DEGREESPERSCAN);
+  Landmarks(double degreePerScan = Agent::DEGREESPERSCAN);
 
   // Getters
   int getSLamId(int id) const;

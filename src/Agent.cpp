@@ -1,11 +1,14 @@
 #include "Agent.hh"
 
-Agent::Agent()
+const double Agent::DEGREESPERSCAN = 0.5;
+const double Agent::CAMERAPROBLEM = 4.1; // meters
+
+Agent::Agent(double degreePerScan, double cameraProblem)
+  : _angle(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
   this->_pos.z = 0;
-  this->_angle = 0;
 }
 
 Agent::~Agent()

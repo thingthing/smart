@@ -8,6 +8,7 @@
 #include "KalmanGainMatrice.hh"
 #include "SystemStateMatrice.hh"
 #include "CovarianceMatrice.hh"
+#include "Landmarks.hh"
 #include "Agent.hh"
 
 class		Slam
@@ -16,7 +17,7 @@ public:
   Slam(Agent *agent);
   ~Slam();
 
-  void		updateState(pcl::PointXYZ cameradata[], int numberSample, Agent *agent);
+  void		updateState(pcl::PointXYZ cameradata[], int numberSample);
   void		addLandmarks(pcl::PointXYZ cameradata[], int numberSample);
 
 private:
@@ -24,6 +25,7 @@ private:
 
 private:
   Agent			*_agent;
+  Landmarks		*_landmarkDb;
   DataAssociation	*_data;
   KalmanGainMatrice	*_kg;
   SystemStateMatrice	*_state;

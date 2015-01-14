@@ -12,8 +12,6 @@ const unsigned int Landmarks::MAXSAMPLE = 10; // RANSAC: randomly select x point
 const unsigned int Landmarks::MINLINEPOINTS = 30; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
 const double  Landmarks::RANSAC_TOLERANCE = 0.05; // RANSAC: if point is within x distance of line, its part of the line
 const unsigned int Landmarks::RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
-const double Landmarks::DEGREESPERSCAN = 0.5;
-const double Landmarks::CAMERAPROBLEM = 4.1; // meters
 const double Landmarks::MAX_DIFFERENCE = 0.5; // meter
 const double Landmarks::MIN_DIFFERENCE = 0.3; // meter
 
@@ -374,7 +372,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointXY
     {
       // Check for error measurement in laser data
 
-      if (cameradata[i - 1].z < Landmarks::CAMERAPROBLEM && cameradata[i + 1].z < Landmarks::CAMERAPROBLEM)
+      if (cameradata[i - 1].z < Agent::CAMERAPROBLEM && cameradata[i + 1].z < Agent::CAMERAPROBLEM)
 	{
   	  if ((cameradata[i - 1].z - cameradata[i].z) + (cameradata[i + 1].z - cameradata[i].z) > MAX_DIFFERENCE)
   	    tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, robotPosition);
@@ -610,8 +608,8 @@ int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numbe
   for(unsigned int i = 1; i < numberSample - 1; ++i)
     {
       // we get the camera data with max range
-      if (cameradata[i - 1].z < Landmarks::CAMERAPROBLEM
-	  && cameradata[i + 1].z < Landmarks::CAMERAPROBLEM
+      if (cameradata[i - 1].z < Agent::CAMERAPROBLEM
+	  && cameradata[i + 1].z < Agent::CAMERAPROBLEM
 	  && cameradata[i].z > maxrange)
 	maxrange = cameradata[i].z;
     }

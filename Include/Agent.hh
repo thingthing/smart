@@ -8,7 +8,13 @@
 class		Agent
 {
 public:
-  Agent();
+
+  //Defined in Agent.cpp
+  static const double DEGREESPERSCAN; // meter
+  static const double CAMERAPROBLEM; // meter
+
+
+  Agent(double degreePerScan = DEGREESPERSCAN, double cameraProblem = CAMERAPROBLEM);
   ~Agent();
 
   pcl::PointXYZ	const	&getPos() const;
@@ -18,8 +24,14 @@ public:
   void		setAngle(double angle);
 
 private:
-  pcl::PointXYZ _pos;
   double	_angle;
+
+public:
+  double const	degreePerScan;
+  double const	cameraProblem;
+
+private:
+  pcl::PointXYZ _pos;
 };
 
 
