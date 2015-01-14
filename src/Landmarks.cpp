@@ -204,16 +204,16 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointXYZ cameradata[], double robo
 /**
  * Need to do again, and add some comment
  */
-Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, double robotPosition[])
+Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, Agent const &agent)
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = -1;
   int totalTimeObserved = 0;
 
   lm->pos.x = (cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		    (robotPosition[2] * Landmarks::CONVERSION)) * range) + robotPosition[0];
+		   (agent.getAngle() * Landmarks::CONVERSION)) * range) + agent.getPos().x;
   lm->pos.y = (sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		    (robotPosition[2] * Landmarks::CONVERSION)) * range) + robotPosition[1];
+		   (agent.getAngle() * Landmarks::CONVERSION)) * range) + agent.getPos().y;
   lm->range = range;
   lm->bearing = readingNo;
   //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème

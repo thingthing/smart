@@ -93,8 +93,8 @@ public: // ONLY FOR UNIT TESTS
 #endif
 
   //Getters
-  Landmark *getLandmark(double range, int readingNo, double robotPosition[]);
   Landmark *getLineLandmark(double a, double b, double robotPosition[]);
+  Landmark *getLandmark(double range, int readingNo, Agent const &agent);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();
 
