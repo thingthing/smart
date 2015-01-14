@@ -1231,7 +1231,7 @@ When(update_and_add_line_landmarks)
 };
 
 /**
- * Unit test for updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], double robotPosition[])
+ * Unit test for updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], Agent const &agent)
  **/
 When(Update_And_Add_Landmark_Using_EKF_Results)
 {
@@ -1239,9 +1239,9 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 
     void SetUp()
     {
-      robotPosition[0] = 42.0;
-      robotPosition[1] = 24.0;
-      robotPosition[2] = 1.0;
+      agent = new Agent();
+      agent->setPos(42.0, 24.0, 0.0);
+      agent->setAngle(1.0);
     }
 
   When(Landmarks_are_not_in_db)
@@ -1257,7 +1257,7 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 	Root().ranges[1] = 1.4;
 	Root().bearings[0] = 4;
 	Root().bearings[1] = 4;
-	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, Root().robotPosition);
+	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, *Root().agent);
       }
 
     Then(it_should_add_landmarks_to_the_db)
@@ -1300,7 +1300,7 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 	Root().lms.addToDB(ldmk1);
 	Root().lms.addToDB(ldmk2);
 	oldSize = Root().lms.DBSize;
-	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, Root().robotPosition);
+	Root().ldmks = Root().lms.updateAndAddLandmarkUsingEKFResults(Root().matched, 2, Root().id, Root().ranges, Root().bearings, *Root().agent);
       }
 
     Then(it_should_not_add_landmarks_to_the_db)
@@ -1331,7 +1331,7 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
   int		id[2];
   double	ranges[2];
   double	bearings[2];
-  double	robotPosition[3];
+  Agent		*agent;
 };
 
 /*
