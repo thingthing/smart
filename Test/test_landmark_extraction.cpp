@@ -569,7 +569,10 @@ When(getting_landmark)
 {
   void	SetUp()
   {
-    double	robotPosition[3] = {42, 22, 1};
+    Agent		*agent = new Agent();
+
+    agent->setPos(42.0, 22.0, 0.0);
+    agent->setAngle(1.0);
 
     lm1.pos.x = 42;
     lm1.pos.y = 24;
@@ -581,7 +584,7 @@ When(getting_landmark)
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
-    lm3 = lms.getLandmark(range, bearing, robotPosition);
+    lm3 = lms.getLandmark(range, bearing, *agent);
   }
 
   Then(it_should_return_one_of_the_db_landmark)
