@@ -33,6 +33,13 @@ void		Agent::setPos(pcl::PointXYZ const &pos)
   this->_pos.z = pos.z;
 }
 
+void		Agent::setPos(double x, double y , double z)
+{
+  this->_pos.x = x;
+  this->_pos.y = y;
+  this->_pos.z = z;
+}
+
 
 void		Agent::setAngle(double angle)
 {

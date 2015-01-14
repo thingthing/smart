@@ -20,8 +20,9 @@ public:
   pcl::PointXYZ	const	&getPos() const;
   double		getAngle() const;
 
-  void		setPos(pcl::PointXYZ const &pos);
   void		setAngle(double angle);
+  void		setPos(pcl::PointXYZ const &pos);
+  void		setPos(double x, double y, double z);
 
 private:
   double	_angle;
