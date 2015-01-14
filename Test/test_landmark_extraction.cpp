@@ -1445,7 +1445,7 @@ When(Remove_bad_landmarks)
 };
 
 /*
-** Unit test for extractLineLandmarks(double[], unsigned int, double[])
+** Unit test for extractLineLandmarks(double[], unsigned int, Agent const &)
 */
 When(extracting_line_landmark)
 {
@@ -1458,9 +1458,10 @@ When(extracting_line_landmark)
     srand(42);
     TestSlamCommon::generateData(data, 150);
 
-    robotPosition[0] = 2.0;
-    robotPosition[1] = 4.0;
-    robotPosition[2] = 0.2;
+    agent = new Agent();
+    agent->setPos(2.0, 4.0, 0.0);
+    agent->setAngle(0.2);
+
     lm1.pos.x = 42.5;
     lm1.pos.y = 24.1;
     lm2.pos.x = 12.2;
@@ -1469,7 +1470,7 @@ When(extracting_line_landmark)
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    result = lms.extractLineLandmarks(data, 150, robotPosition);
+    result = lms.extractLineLandmarks(data, 150, *agent);
   }
 
   Then(it_should_have_some_landmarks)
@@ -1493,4 +1494,5 @@ When(extracting_line_landmark)
   pcl::PointXYZ	data[150];
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> result;
+  Agent	*agent;
 };
