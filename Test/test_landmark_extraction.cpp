@@ -1,8 +1,8 @@
 #include <cstdlib> //Rand
 #include "igloo/igloo_alt.h"
 #include "Landmarks.hh"
-#include "test_data.hh"
 #include "CustomConstraint.hh"
+#include "test_slam_common.hh"
 
 using namespace igloo;
 
@@ -989,12 +989,7 @@ When(extracting_spike_landmark)
   void	SetUp()
   {
     srand(42);
-    for (int i = 0; i < 30; ++i)
-      {
-	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
-      }
+    TestSlamCommon::generateData(data, 30);
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
@@ -1037,12 +1032,8 @@ When(removing_double_landmarks)
   void	SetUp()
   {
     srand(42);
-    for (int i = 0; i < 30; ++i)
-      {
-	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
-      }
+    TestSlamCommon::generateData(data, 30);
+
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
@@ -1086,12 +1077,8 @@ When(getting_aligned_landmark_data)
   void	SetUp()
   {
     srand(42);
-    for (int i = 0; i < 30; ++i)
-      {
-	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
-      }
+    TestSlamCommon::generateData(data, 30);
+
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;
@@ -1470,12 +1457,8 @@ When(extracting_line_landmark)
     ** Datasize = 150 = Landmarks::RANSAC_CONSENSUS * 5
     */
     srand(42);
-    for (int i = 0; i < 150; ++i)
-      {
-	data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
-      }
+    TestSlamCommon::generateData(data, 150);
+
     robotPosition[0] = 2.0;
     robotPosition[1] = 4.0;
     robotPosition[2] = 0.2;

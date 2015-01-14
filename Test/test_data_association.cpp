@@ -2,6 +2,7 @@
 #include "Landmarks.hh"
 #include "DataAssociation.hh"
 #include "CustomConstraint.hh"
+#include "test_slam_common.hh"
 
 using namespace igloo;
 
@@ -136,14 +137,9 @@ When(testing_validation_gate)
 	{
 	  srand(r);
 
-	  for (int i = 0; i < 150; ++i)
-	    {
-	      data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	      data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	      data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
-	    }
+	  TestSlamCommon::generateData(data, numberSample);
 
-	  landmarksTest = lms->extractLineLandmarks(data, 150, robotPosition);
+	  landmarksTest = lms->extractLineLandmarks(data, numberSample, robotPosition);
 
 	  size = landmarksTest.size();
 	  ++r;
@@ -158,7 +154,7 @@ When(testing_validation_gate)
       void	SetUp()
       {
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, 150, Root().robotPosition);
+	Root().datas->validationGate(Root().data, Root().numberSample, Root().robotPosition);
       }
 
     Then(it_should_add_landmarks_to_db)
@@ -179,7 +175,7 @@ When(testing_validation_gate)
 	  }
 
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, 150, Root().robotPosition);
+	Root().datas->validationGate(Root().data, Root().numberSample, Root().robotPosition);
       }
 
     Then(it_should_not_change_db_size)
@@ -205,9 +201,10 @@ When(testing_validation_gate)
     std::vector<int> ids;
   };
 
+  static const int numberSample = 150;
   ::DataAssociation *datas;
   std::vector<Landmarks::Landmark *>	landmarksTest;
-  pcl::PointXYZ	data[150];
+  pcl::PointXYZ	data[numberSample];
   double	robotPosition[3];
   std::vector<Landmarks::Landmark *> result;
   int		oldDbSize;

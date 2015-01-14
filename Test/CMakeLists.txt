@@ -19,6 +19,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../Include ${CMAKE_CURRENT_SOURC
 SET(SOURCES
   ${SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_slam_common.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_landmark_extraction.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_data_association.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/CustomConstraint.cpp
