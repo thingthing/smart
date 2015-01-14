@@ -3,7 +3,7 @@
 
 # Except:
 !.gitignore
-!Makefile
+
 
 # Folders
 !*/
@@ -28,3 +28,7 @@
 
 # other legit files
 !*.txt
+
+# Specific exceptions
+CMakeCache.txt
+CMakeFiles/
