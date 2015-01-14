@@ -62,8 +62,8 @@ public:
   int addToDB(const Landmark &lm);
 
   //Remove
-  int removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[]); // Possibly change array to vector ? Depends of the robot
-  int removeBadLandmarks(const std::vector<pcl::PointXYZ &> & cameradata, const std::vector<double> & robotPosition); // both to be sure
+  int removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent); // Possibly change array to vector ? Depends of the robot
+  //int removeBadLandmarks(const std::vector<pcl::PointXYZ &> & cameradata, const std::vector<double> & robotPosition); // both to be sure? For now we use the array everywhere so...
 
   //Update
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value

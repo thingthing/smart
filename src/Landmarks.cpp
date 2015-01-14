@@ -601,15 +601,15 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
   return foundLandmarks;
 }
 
-int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, double robotPosition[])
+int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent)
 {
   double maxrange = 0;
 
   for(unsigned int i = 1; i < numberSample - 1; ++i)
     {
       // we get the camera data with max range
-      if (cameradata[i - 1].z < Agent::CAMERAPROBLEM
-	  && cameradata[i + 1].z < Agent::CAMERAPROBLEM
+      if (cameradata[i - 1].z < agent.cameraProblem
+	  && cameradata[i + 1].z < agent.cameraProblem
 	  && cameradata[i].z > maxrange)
 	maxrange = cameradata[i].z;
     }
@@ -618,14 +618,14 @@ int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numbe
   double *Ybounds = new double[4];
 
   //get bounds of rectangular box to remove bad landmarks from
-  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[0];
-  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[1];
-  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
-  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[0];
-  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange + robotPosition[1];
-  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (robotPosition[2] * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
+  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
+  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
+  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
+  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getAngle() * Landmarks::CONVERSION)) * maxrange;
 
   //now check DB for landmarks that are within this box
   //decrease life of all landmarks in box. If the life reaches zero, remove landmark
@@ -639,7 +639,7 @@ int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numbe
       pnty = this->landmarkDB[k]->pos.y;
       int i = 0;
       int j = 0;
-      bool inRectangle = (robotPosition[0] < 0 || robotPosition[1] < 0 ? false : true);
+      bool inRectangle = (agent.getPos().x < 0 || agent.getPos().y < 0 ? false : true);
       for(i = 0; i < 4; ++i)
 	{
 	  if ((((Ybounds[i] <= pnty) && (pnty < Ybounds[j])) || ((Ybounds[j] <= pnty) && (pnty < Ybounds[i]))) &&
