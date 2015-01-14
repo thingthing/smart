@@ -316,7 +316,7 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
   return (lm);
 }
 
-Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robotPosition[])
+Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const &agent)
 {
   //our goal is to calculate point on line closest to origin (0,0)
   //calculate line perpendicular to input line. a*ao = -1
@@ -324,18 +324,18 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double robot
   //landmark position
   double x = b / (ao - a);
   double y = (ao * b) / (ao - a);
-  double range = sqrt(pow(x - robotPosition[0], 2) + pow(y - robotPosition[1], 2));
-  double bearing = atan((y - robotPosition[1]) / (x-robotPosition[0])) - robotPosition[2];
+  double range = sqrt(pow(x - agent.getPos().x, 2) + pow(y - agent.getPos().y, 2));
+  double bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getAngle();
   //now do same calculation but get point on wall closest to robot instead
   //y = aox + bo => bo = y - aox
-  double bo = robotPosition[1] - ao * robotPosition[0];
+  double bo = agent.getPos().y - ao * agent.getPos().x;
   //get intersection between y = ax + b and y = aox + bo
   //so aox + bo = ax + b => aox - ax = b - bo => x = (b - bo)/(ao - a), y = ao*(b - bo)/(ao - a) + bo
   double px = (b - bo) / (ao - a);
   double py = ((ao * (b - bo)) / (ao - a)) + bo;
-  double rangeError = this->distance(robotPosition[0], robotPosition[1], px, py);
-  double bearingError = atan((py - robotPosition[1]) / (px - robotPosition[0]))
-    - robotPosition[2];  //do you subtract or add robot bearing? I am not sure!
+  double rangeError = this->distance(agent.getPos().x, agent.getPos().y, px, py);
+  double bearingError = atan((py - agent.getPos().y) / (px - agent.getPos().x))
+    - agent.getAngle();  //do you subtract or add robot bearing? I am not sure!
 
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = 0;
