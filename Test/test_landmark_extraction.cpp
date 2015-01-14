@@ -1496,7 +1496,6 @@ When(extracting_line_landmark)
   int		id1;
   int		id2;
   pcl::PointXYZ	data[150];
-  double	robotPosition[3];
   std::vector<Landmarks::Landmark *> result;
   Agent	*agent;
 };
