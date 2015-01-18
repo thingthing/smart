@@ -12,6 +12,7 @@
 !*.sln
 !*.v11.suo
 !*.vcxproj*
+!*.pro
 
 # UML files
 !*.moo
@@ -26,8 +27,12 @@
 !*.hpp
 !*.hh
 
+# C files
+!*.c
+
 # other legit files
 !*.txt
+!Makefile
 
 # Specific exceptions
 CMakeCache.txt

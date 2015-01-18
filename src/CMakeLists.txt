@@ -1,16 +1,16 @@
 IF(NOT DEFINED UNITTEST)
-  SET(MAIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+  SET(MAIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/core/main.cpp)
 ENDIF(NOT DEFINED UNITTEST)
 
 SET(SOURCES
   ${SOURCES}
   ${MAIN_SOURCE}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Landmarks.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/DataAssociation.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/CovarianceMatrice.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/KalmanGainMatrice.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/SystemStateMatrice.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Agent.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Slam.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/slam/Landmarks.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/slam/DataAssociation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/slam/CovarianceMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/slam/KalmanGainMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/slam/SystemStateMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/slam/Slam.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/core/Agent.cpp
   PARENT_SCOPE
   )
