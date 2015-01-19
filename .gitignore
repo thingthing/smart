@@ -32,7 +32,6 @@
 
 # other legit files
 !*.txt
-!Makefile
 
 # Specific exceptions
 CMakeCache.txt
