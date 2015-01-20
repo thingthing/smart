@@ -1,8 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 
-PROJECT(smartapi)
+PROJECT(agent)
 
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -ggdb3 -pthread -std=c++11")
 
 SET(SOURCES)
 

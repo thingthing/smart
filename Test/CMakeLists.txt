@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 
 PROJECT(test)
 
-set(CMAKE_CXX_FLAGS "-W -Wall -std=c++11")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11")
 
 SET(SUBDIR
   core
