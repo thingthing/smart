@@ -1,0 +1,5 @@
+FOREACH(subDir ${SUBDIR})
+  SET(dir ${dir} "${CMAKE_CURRENT_SOURCE_DIR}/${subDir}")
+ENDFOREACH(subDir)
+
+SET(INCLUDE_DIR ${INCLUDE_DIR} ${dir} PARENT_SCOPE)

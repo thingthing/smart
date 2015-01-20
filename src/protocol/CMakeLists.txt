@@ -1,0 +1,5 @@
+SET(SOURCES
+  ${SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/AgentProtocol.cpp
+  PARENT_SCOPE
+  )
