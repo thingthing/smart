@@ -1,7 +1,12 @@
 #ifndef COVARIANCEMATRICE_H_
 # define COVARIANCEMATRICE_H_
 
+#include <pcl-1.7/pcl/common/common.h>
+#include <pcl-1.7/pcl/impl/point_types.hpp>
+#include <pcl-1.7/pcl/common/projection_matrix.h>
+
 # include <vector>
+#include "Agent.hh"
 
 class CovarianceMatrice
 {
@@ -18,26 +23,33 @@ class CovarianceMatrice
     Case();
     Case(State state);
     virtual ~Case();
-    double getValue() const;
-    void setValue(double value);
+    float getValue() const;
+    void setValue(float value);
     State getState() const;
     void setState(State state);
 
   protected:
-    double _value;
+    float _value;
     State _state;
   };
 
 public:
   CovarianceMatrice();
-  CovarianceMatrice(double X, double Y, double theta);
+  CovarianceMatrice(float X, float Y, float theta);
+  CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
+  CovarianceMatrice(Agent const &agent);
   virtual ~CovarianceMatrice();
 
-  void addLandmark(double x, double y);
-  double getRobotX() const;
-  double getRobotY() const;
-  double getRobotTheta() const;
-  void setRobotPosition(double X, double Y, double theta);
+  void addLandmark(float x, float y);
+  void addLandmark(pcl::PointXY const &pos);
+
+  float getRobotX() const;
+  float getRobotY() const;
+  float getRobotTheta() const;
+
+  void setRobotPosition(float X, float Y, float theta);
+  void setRobotPosition(pcl::PointXYZ const &pos, float theta);
+  void setRobotPosition(Agent const &agent);
   void calculationCovariance();
 
 private:
