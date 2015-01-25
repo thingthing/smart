@@ -21,11 +21,20 @@ Slam::~Slam()
     delete this->_covariance;
 }
 
-// void		Slam::updateState(pcl::PointXYZ cameradata[], int numberSample)
-// {
+/**
+ * To be used after agent update odometry
+ **/
+void		Slam::updateState(Agent const &agent)
+{
+  //Update state using odometry
+  this->_state->updateRobotState(agent);
+  //@TODO: update jacobian matrice
+  //@TODO: update process noise matrice
+  this->_covariance->setRobotPosition(agent);
+  this->_covariance->calculationCovariance();
 
-// }
 
+}
 // void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
 // {
 
