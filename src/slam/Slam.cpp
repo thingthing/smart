@@ -35,7 +35,11 @@ void		Slam::updateState(Agent const &agent)
 
 
 }
-// void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
-// {
 
-// }
+/**
+ * @TODO: Add landmark to matrice
+ **/
+void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
+{
+  this->_data->validationGate(cameradata, numberSample, *this->_agent);
+}
