@@ -5,7 +5,7 @@ Slam::Slam(Agent *agent)
   this->_agent = agent;
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
   this->_data = new DataAssociation(this->_landmarkDb);
-  this->_state = new SystemStateMatrice(agent->getPos().x, agent->getPos().y, agent->getBearing());
+  this->_state = new SystemStateMatrice(*agent);
   this->_covariance = new CovarianceMatrice(agent->getPos().x, agent->getPos().y, agent->getBearing());
 }
 
