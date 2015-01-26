@@ -34,7 +34,16 @@ void		Slam::updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numb
   this->_covariance->calculationCovariance();
 
   //Update state using reobserved landmark
+  this->updateStateWithLandmark(agent, cameradata, numberSample);
+}
 
+/**
+ * Search for reobserved landmark and update state with them
+ **/
+void		Slam::updateStateWithLandmark(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample)
+{
+  //@TODO: Function that associate without adding new landmark, and return the vector with only new landmark (to be used after)
+  this->_data->validationGate(cameradata, numberSample, agent);
 }
 
 /**
