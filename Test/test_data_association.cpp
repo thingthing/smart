@@ -154,13 +154,12 @@ When(testing_validation_gate)
 
       void	SetUp()
       {
-	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent);
+	Root().result = Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent);
       }
 
-    Then(it_should_add_landmarks_to_db)
+    Then(it_should_add_landmarks_to_result)
     {
-      AssertThatDetail(Root().datas->getLandmarkDb()->getDBSize(), Is().GreaterThan(Root().oldDbSize));
+      AssertThatDetail(Root().result.size(), Is().GreaterThan(0));
     }
   };
 
@@ -176,12 +175,12 @@ When(testing_validation_gate)
 	  }
 
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent);
+	Root().result = Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent);
       }
 
-    Then(it_should_not_change_db_size)
+    Then(it_should_have_less_landmark_in_result_than_in_db)
     {
-      AssertThatDetail(Root().datas->getLandmarkDb()->getDBSize(), Is().EqualTo(Root().oldDbSize));
+      AssertThatDetail(Root().result.size(), Is().LessThan(Root().landmarksTest.size()));
     }
 
     Then(it_shoud_add_observed_time_to_landmarks_observed)
