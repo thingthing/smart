@@ -21,14 +21,13 @@ Landmarks	*DataAssociation::getLandmarkDb() const
 }
 
 //Will be called after each data gathering to check for new landmarks
-void	DataAssociation::validationGate(pcl::PointXYZ cameradata[], int numberSample,
+std::vector<Landmarks::Landmark *>	DataAssociation::validationGate(pcl::PointXYZ cameradata[], int numberSample,
 					Agent const &agent)
 {
-  std::vector<Landmarks::Landmark *>	currentLandmarks;
+  std::vector<Landmarks::Landmark *>	resultLandmarks;
   std::vector<Landmarks::Landmark *>	newLandmarks;
 
   newLandmarks = this->_landmarkDb->extractLineLandmarks(cameradata, numberSample, agent);
-  currentLandmarks = this->_landmarkDb->getLandmarkDB();
 
   for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
     {
@@ -38,9 +37,11 @@ void	DataAssociation::validationGate(pcl::PointXYZ cameradata[], int numberSampl
       if (this->_landmarkDb->getAssociation(*(*it)) == -1)
 	{
 	  //Landmark not found, should add it
-	  this->_landmarkDb->addToDB(*(*it));
+	  resultLandmarks.push_back(*it);
+	  //this->_landmarkDb->addToDB(*(*it));
 	}
     }
+  return (resultLandmarks);
 }
 
 //Set id and timeObserved for landamark base on closer landmark in db
