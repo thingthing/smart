@@ -24,7 +24,7 @@ Slam::~Slam()
 /**
  * To be used after agent update odometry
  **/
-void		Slam::updateState(Agent const &agent)
+void		Slam::updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample)
 {
   //Update state using odometry
   this->_state->updateRobotState(agent);
@@ -33,6 +33,7 @@ void		Slam::updateState(Agent const &agent)
   this->_covariance->setRobotPosition(agent);
   this->_covariance->calculationCovariance();
 
+  //Update state using reobserved landmark
 
 }
 

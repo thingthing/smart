@@ -1,9 +1,9 @@
 #ifndef		_SLAM_HH_
 # define	_SLAM_HH_
 
-#include <pcl-1.7/pcl/common/common.h>
-#include <pcl-1.7/pcl/impl/point_types.hpp>
-#include <pcl-1.7/pcl/common/projection_matrix.h>
+#include <pcl/common/common.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/common/projection_matrix.h>
 #include "DataAssociation.hh"
 #include "KalmanGainMatrice.hh"
 #include "SystemStateMatrice.hh"
@@ -17,7 +17,7 @@ public:
   Slam(Agent *agent);
   ~Slam();
 
-  void		updateState(Agent const &agent);
+  void		updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample);
   void		addLandmarks(pcl::PointXYZ cameradata[], int numberSample);
 
 private:

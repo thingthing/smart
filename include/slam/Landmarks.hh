@@ -4,9 +4,9 @@
 #include <vector>
 #include <map>
 #include <cmath>
-#include <pcl-1.7/pcl/common/common.h>
-#include <pcl-1.7/pcl/impl/point_types.hpp>
-#include <pcl-1.7/pcl/common/projection_matrix.h>
+#include <pcl/common/common.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/common/projection_matrix.h>
 #include "Agent.hh"
 
 class Landmarks
