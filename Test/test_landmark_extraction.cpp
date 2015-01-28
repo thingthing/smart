@@ -1038,21 +1038,21 @@ When(removing_double_landmarks)
   void	SetUp()
   {
     srand(42);
-    TestSlamCommon::generateData(data, 30);
+    TestSlamCommon::generateData(cloud, 500);
 
     agent = new Agent();
     agent->setPos(2.0, 4.0, 0.0);
     agent->setBearing(0.2);
 
-    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().x;
-    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[1].z) + agent->getPos().y;
-    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().x;
-    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * data[19].z) + agent->getPos().y;
+    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[1].z) + agent->getPos().x;
+    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[1].z) + agent->getPos().y;
+    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[19].z) + agent->getPos().x;
+    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[19].z) + agent->getPos().y;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    extracted = lms.extractSpikeLandmarks(data, 30, *agent);
+    extracted = lms.extractSpikeLandmarks(cloud, *agent);
     result = lms.removeDouble(extracted);
   }
 
@@ -1068,7 +1068,7 @@ When(removing_double_landmarks)
   Landmarks::Landmark	lm2;
   int		id1;
   int		id2;
-  pcl::PointXYZ	data[30];
+  pcl::PointCloud<pcl::PointXYZ> cloud;
   Agent		*agent;
   std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
