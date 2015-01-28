@@ -1343,24 +1343,6 @@ When(Remove_bad_landmarks)
 
   void	SetUp()
   {
-    cloud.width    = 4;
-    cloud.height   = 1;
-    cloud.is_dense = false;
-    cloud.points.resize(cloud.width * cloud.height);
-
-    cloud.points[0].z = 2.2;
-    cloud.points[1].z = 4.6;
-    cloud.points[2].z = 1.8;
-    cloud.points[3].z = 3.3;
-    cloud.points[0].x = 0;
-    cloud.points[1].x = 0;
-    cloud.points[2].x = 0;
-    cloud.points[3].x = 0;
-    cloud.points[0].y = 0;
-    cloud.points[1].y = 0;
-    cloud.points[2].y = 0;
-    cloud.points[3].y = 0;
-
     goodLandmark1.pos.x = 1.2;
     goodLandmark1.pos.y = 3.4;
     goodLandmark2.pos.x = 0.9;
@@ -1376,6 +1358,26 @@ When(Remove_bad_landmarks)
 
     void SetUp()
     {
+      pcl::PointCloud<pcl::PointXYZ> cloud;
+
+      cloud.width    = 4;
+      cloud.height   = 1;
+      cloud.is_dense = false;
+      cloud.points.resize(cloud.width * cloud.height);
+
+      cloud.points[0].z = 2.2;
+      cloud.points[1].z = 4.6;
+      cloud.points[2].z = 1.8;
+      cloud.points[3].z = 3.3;
+      cloud.points[0].x = 0;
+      cloud.points[1].x = 0;
+      cloud.points[2].x = 0;
+      cloud.points[3].x = 0;
+      cloud.points[0].y = 0;
+      cloud.points[1].y = 0;
+      cloud.points[2].y = 0;
+      cloud.points[3].y = 0;
+
       Root().badLandmark1.pos.x = 1.4;
       Root().badLandmark1.pos.y = 3.5;
 
@@ -1390,7 +1392,7 @@ When(Remove_bad_landmarks)
       Root().lms.landmarkDB[3]->life = 1;
 
       Root().oldDBSize = Root().lms.DBSize;
-      Root().lms.removeBadLandmarks(Root().cameradata, 4, *Root().agent);
+      Root().lms.removeBadLandmarks(cloud, *Root().agent);
     }
 
     Then(DBSize_should_be_smaller)
@@ -1411,6 +1413,26 @@ When(Remove_bad_landmarks)
 
     void SetUp()
     {
+      pcl::PointCloud<pcl::PointXYZ> cloud;
+
+      cloud.width    = 4;
+      cloud.height   = 1;
+      cloud.is_dense = false;
+      cloud.points.resize(cloud.width * cloud.height);
+
+      cloud.points[0].z = 2.2;
+      cloud.points[1].z = 4.6;
+      cloud.points[2].z = 1.8;
+      cloud.points[3].z = 3.3;
+      cloud.points[0].x = 0;
+      cloud.points[1].x = 0;
+      cloud.points[2].x = 0;
+      cloud.points[3].x = 0;
+      cloud.points[0].y = 0;
+      cloud.points[1].y = 0;
+      cloud.points[2].y = 0;
+      cloud.points[3].y = 0;
+
       Root().badLandmark1.pos.x = 75.4;
       Root().badLandmark1.pos.y = 90.8;
 
@@ -1425,7 +1447,7 @@ When(Remove_bad_landmarks)
       Root().lms.landmarkDB[3]->life = 1;
 
       Root().oldDBSize =  Root().lms.DBSize;
-      Root().lms.removeBadLandmarks(Root().cameradata, 4, *Root().agent);
+      Root().lms.removeBadLandmarks(cloud, *Root().agent);
     }
 
     Then(DBSize_should_not_change)
@@ -1448,8 +1470,6 @@ When(Remove_bad_landmarks)
   int badLandmarkID;
   unsigned int oldDBSize;
   Landmarks lms;
-  pcl::PointXYZ cameradata[4];
-  unsigned int numberSample;
   Agent	*agent;
 };
 
