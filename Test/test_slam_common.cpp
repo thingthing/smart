@@ -23,12 +23,19 @@ const int			Landmarks_Result::sizelandmarkDB = Landmarks::MAXLANDMARKS;
 const std::pair<int, int>	Landmarks_Result::goodSlamId = std::make_pair(42,84);
 const std::pair<int, int>	Landmarks_Result::wrongSlamId = std::make_pair(13,12);
 
-void	TestSlamCommon::generateData(pcl::PointXYZ data[], int numberSample)
+void	TestSlamCommon::generateData(pcl::PointCloud<pcl::PointXYZ> &cloud, int numberSample)
 {
-  for (int i = 0; i < numberSample; ++i)
+  cloud.width    = numberSample;
+  cloud.height   = 1;
+  cloud.is_dense = false;
+  cloud.points.resize (cloud.width * cloud.height);
+  for (unsigned int i = 0; i < cloud.points.size(); ++i)
     {
-      data[i].z = (double)(rand() % 10) / (rand() % 10 + 1.0);
-      data[i].x = (double)(rand() % 10) / (rand() % 10 + 1.0);
-      data[i].y = (double)(rand() % 10) / (rand() % 10 + 1.0);
+      cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+      cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
+      if(i % 2 == 0)
+	cloud.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
+      else
+	cloud.points[i].z = -1 * (cloud.points[i].x + cloud.points[i].y);
     }
 }

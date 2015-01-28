@@ -36,7 +36,7 @@ extern const std::pair<int, int> wrongSlamId;
 
 namespace	TestSlamCommon
 {
-void	generateData(pcl::PointXYZ data[], int numberSample);
+void	generateData(pcl::PointCloud<pcl::PointXYZ> &cloud, int numberSample);
 }
 
 #endif		/* !_TEST_SLAM_COMMON_HH_ */
