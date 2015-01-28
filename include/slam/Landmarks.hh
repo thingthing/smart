@@ -62,9 +62,7 @@ public:
   int addToDB(const Landmark &lm);
 
   //Remove
-  int removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent); // Possibly change array to vector ? Depends of the robot
-  //int removeBadLandmarks(const std::vector<pcl::PointXYZ &> & cameradata, const std::vector<double> & robotPosition); // both to be sure? For now we use the array everywhere so...
-
+  int removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent);
   //Update
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], Agent const &agent);

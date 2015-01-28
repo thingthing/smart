@@ -601,17 +601,17 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointXYZ
   return foundLandmarks;
 }
 
-int Landmarks::removeBadLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent)
+int Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
 {
   double maxrange = 0;
 
-  for(unsigned int i = 1; i < numberSample - 1; ++i)
+  for(unsigned int i = 1; i < cloud.points.size() - 1; ++i)
     {
       // we get the camera data with max range
-      if (cameradata[i - 1].z < agent.cameraProblem
-	  && cameradata[i + 1].z < agent.cameraProblem
-	  && cameradata[i].z > maxrange)
-	maxrange = cameradata[i].z;
+      if (cloud.points[i - 1].z < agent.cameraProblem
+	  && cloud.points[i + 1].z < agent.cameraProblem
+	  && cloud.points[i].z > maxrange)
+	maxrange = cloud.points[i].z;
     }
 
   double *Xbounds = new double[4];
