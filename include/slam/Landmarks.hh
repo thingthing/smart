@@ -69,7 +69,7 @@ public:
   int updateLineLandmark(Landmark &lm);
 
   //Extract
-  std::vector<Landmark *> extractLineLandmarks(pcl::PointXYZ cameradata[], unsigned int numberSample, Agent const &agent);
+  std::vector<Landmark *> extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent);
 
 
   //Other
