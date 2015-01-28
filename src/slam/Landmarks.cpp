@@ -359,28 +359,29 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   return (lm);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber, Agent const &agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
 {
-  //have a large array to keep track of found landmarks
+  unsigned int sampleNumber = cloud.points.size();
 
+  //have a large array to keep track of found landmarks
   std::vector<Landmarks::Landmark *> tempLandmarks;
   for(unsigned int i = 0; i < sampleNumber; ++i)
      tempLandmarks.push_back(new Landmarks::Landmark());
 
 
-  for (unsigned int i = 1; i < sampleNumber - 1 /* == cameradata.Length - 1 */; i++)
+  for (unsigned int i = 1; i < sampleNumber - 1; i++)
     {
       // Check for error measurement in laser data
 
-      if (cameradata[i - 1].z < agent.cameraProblem && cameradata[i + 1].z < agent.cameraProblem)
+      if (cloud.points[i - 1].z < agent.cameraProblem && cloud.points[i + 1].z < agent.cameraProblem)
 	{
-  	  if ((cameradata[i - 1].z - cameradata[i].z) + (cameradata[i + 1].z - cameradata[i].z) > MAX_DIFFERENCE)
-  	    tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, agent);
+  	  if ((cloud.points[i - 1].z - cloud.points[i].z) + (cloud.points[i + 1].z - cloud.points[i].z) > Landmarks::MAX_DIFFERENCE)
+  	    tempLandmarks[i] = this->getLandmark(cloud.points[i].z, i, agent);
   	  else
-  	    if((cameradata[i - 1].z - cameradata[i].z) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, agent);
-	    else if((cameradata[i + 1].z - cameradata[i].z) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cameradata[i].z, i, agent);
+  	    if((cloud.points[i - 1].z - cloud.points[i].z) > Landmarks::MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cloud.points[i].z, i, agent);
+	    else if((cloud.points[i + 1].z - cloud.points[i].z) > Landmarks::MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cloud.points[i].z, i, agent);
 	}
     }
 

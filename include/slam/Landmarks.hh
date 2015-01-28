@@ -101,7 +101,7 @@ public: // ONLY FOR UNIT TESTS
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
-  std::vector<Landmark *> extractSpikeLandmarks(pcl::PointXYZ cameradata[], unsigned int sampleNumber,
+  std::vector<Landmark *> extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
 						Agent const &agent);
   //Remove
   std::vector<Landmark *> removeDouble(std::vector<Landmark *> extractedLandmarks);
