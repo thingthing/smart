@@ -1335,7 +1335,7 @@ When(Update_And_Add_Landmark_Using_EKF_Results)
 };
 
 /*
-** Unit test for removeBadLandmarks(double[], unsigned int, double[])
+** Unit test for removeBadLandmarks
 */
 When(Remove_bad_landmarks)
 {
@@ -1343,18 +1343,23 @@ When(Remove_bad_landmarks)
 
   void	SetUp()
   {
-    cameradata[0].z = 2.2;
-    cameradata[1].z = 4.6;
-    cameradata[2].z = 1.8;
-    cameradata[3].z = 3.3;
-    cameradata[0].x = 0;
-    cameradata[1].x = 0;
-    cameradata[2].x = 0;
-    cameradata[3].x = 0;
-    cameradata[0].y = 0;
-    cameradata[1].y = 0;
-    cameradata[2].y = 0;
-    cameradata[3].y = 0;
+    cloud.width    = 4;
+    cloud.height   = 1;
+    cloud.is_dense = false;
+    cloud.points.resize(cloud.width * cloud.height);
+
+    cloud.points[0].z = 2.2;
+    cloud.points[1].z = 4.6;
+    cloud.points[2].z = 1.8;
+    cloud.points[3].z = 3.3;
+    cloud.points[0].x = 0;
+    cloud.points[1].x = 0;
+    cloud.points[2].x = 0;
+    cloud.points[3].x = 0;
+    cloud.points[0].y = 0;
+    cloud.points[1].y = 0;
+    cloud.points[2].y = 0;
+    cloud.points[3].y = 0;
 
     goodLandmark1.pos.x = 1.2;
     goodLandmark1.pos.y = 3.4;
