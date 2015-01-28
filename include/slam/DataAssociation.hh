@@ -11,7 +11,7 @@ public:
   DataAssociation(Landmarks *landmarkDb);
   ~DataAssociation();
 
-  std::vector<Landmarks::Landmark *> validationGate(pcl::PointXYZ cameradata[], int numberSample, Agent const &agent);
+  void validationGate(pcl::PointXYZ cameradata[], int numberSample, Agent const &agent, std::vector<Landmarks::Landmark *> &resultLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
   bool	associateLandmarks(Landmarks::Landmark *toAssociate) const;
 
   Landmarks	*getLandmarkDb() const;

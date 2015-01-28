@@ -34,22 +34,24 @@ void		Slam::updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numb
   this->_covariance->calculationCovariance();
 
   //Update state using reobserved landmark
-  this->updateStateWithLandmark(agent, cameradata, numberSample);
+  std::vector<Landmarks::Landmark *> newLandmarks;
+  std::vector<Landmarks::Landmark *> reobservedLandmarks;
+  this->updateStateWithLandmark(agent, cameradata, numberSample, newLandmarks, reobservedLandmarks);
 }
 
 /**
  * Search for reobserved landmark and update state with them
  **/
-void		Slam::updateStateWithLandmark(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample)
+void		Slam::updateStateWithLandmark(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
 {
   //@TODO: Function that associate without adding new landmark, and return the vector with only new landmark (to be used after)
-  this->_data->validationGate(cameradata, numberSample, agent);
+  this->_data->validationGate(cameradata, numberSample, agent, newLandmarks, reobservedLandmarks);
 }
 
 /**
  * @TODO: Add landmark to matrice
  **/
-void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
-{
-  this->_data->validationGate(cameradata, numberSample, *this->_agent);
-}
+// void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
+// {
+//   this->_data->validationGate(cameradata, numberSample, *this->_agent);
+// }

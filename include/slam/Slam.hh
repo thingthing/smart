@@ -21,7 +21,7 @@ public:
   void		addLandmarks(pcl::PointXYZ cameradata[], int numberSample);
 
 private:
-  void		updateStateWithLandmark(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample);
+  void		updateStateWithLandmark(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
   Slam();
 
 private:
