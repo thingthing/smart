@@ -176,7 +176,7 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
     }
 }
 
-void Landmarks::leastSquaresLineEstimate(pcl::PointXYZ cameradata[], Agent const &agent, int selectPoints[], int arraySize, double &a, double &b)
+void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
   double x; //x coordinate
@@ -189,8 +189,8 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointXYZ cameradata[], Agent const
   for(int i = 0; i < arraySize; ++i)
     {
       //convert ranges and bearing to coordinates
-      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + agent.getPos().x;
-      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cameradata[selectPoints[i]].z) + agent.getPos().y;
+      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cloud.points[selectPoints[i]].z) + agent.getPos().x;
+      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cloud.points[selectPoints[i]].z) + agent.getPos().y;
       sumY += y;
       sumYY += pow(y,2);
       sumX += x;
