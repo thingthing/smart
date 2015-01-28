@@ -21,12 +21,11 @@ Landmarks	*DataAssociation::getLandmarkDb() const
 }
 
 //Will be called after each data gathering to check for new landmarks
-void		DataAssociation::validationGate(pcl::PointXYZ cameradata[], int numberSample, Agent const &agent, std::vector<Landmarks::Landmark *> &resultLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
+void		DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &resultLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
 {
   std::vector<Landmarks::Landmark *>	newLandmarks;
 
-  newLandmarks = this->_landmarkDb->extractLineLandmarks(cameradata, numberSample, agent);
-
+  newLandmarks = this->_landmarkDb->extractLineLandmarks(cloud, agent);
   for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
     {
       //First associate landmark
