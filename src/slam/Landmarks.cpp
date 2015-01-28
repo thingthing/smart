@@ -176,6 +176,15 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
     }
 }
 
+// Parametric convert equation:
+// x = (x_view * cos(bearing) - y_view * sin(bearing)) + agentx
+// y = (x_view * sin(bearing) + y_view * cos(bearing)) + agenty
+static void	parametricConvert(Agent const &agent, double x_view, double y_view, double &x, double &y)
+{
+  x = (cos(agent.getBearing() * Landmarks::CONVERSION) * x_view - sin(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().x;
+      y = (sin(agent.getBearing() * Landmarks::CONVERSION) * x_view + cos(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().y;
+}
+
 void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
@@ -189,8 +198,7 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &c
   for(int i = 0; i < arraySize; ++i)
     {
       //convert ranges and bearing to coordinates
-      x = (cos((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cloud.points[selectPoints[i]].z) + agent.getPos().x;
-      y = (sin((selectPoints[i] * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cloud.points[selectPoints[i]].z) + agent.getPos().y;
+      parametricConvert(agent, cloud.points[selectPoints[i]].x, cloud.points[selectPoints[i]].y, x, y);
       sumY += y;
       sumYY += pow(y,2);
       sumX += x;
@@ -202,7 +210,8 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &c
 }
 
 /**
- * Need to do again, and add some comment
+ * @TODO
+ * Need to do again, and add some comment : do not use range only, use point
  */
 Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, Agent const &agent)
 {
@@ -233,7 +242,9 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
   return (lm);
 }
 
-
+/**
+ * @TODO: Same as getLandmark
+ **/
 Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, Agent const &agent)
 {
   Landmarks::Landmark *lm;
@@ -548,8 +559,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
       for(unsigned int i = 0; i < totalLinepoints; ++i) // totalLinepoint = numberSample - 1
 	{
 	  // convert ranges and bearing to coordinates
-	  x = (cos((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cloud.points[i].z) + agent.getPos().x;
-	  y = (sin((i * this->degreePerScan * Landmarks::CONVERSION) + agent.getBearing() * Landmarks::CONVERSION) * cloud.points[i].z) + agent.getPos().y;
+	  parametricConvert(agent, cloud.points[i].x, cloud.points[i].y, x, y);
 	  d = this->distanceToLine(x, y, a, b);
 	  if (d < Landmarks::RANSAC_TOLERANCE)
 	    {
