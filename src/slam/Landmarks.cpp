@@ -324,7 +324,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   //landmark position
   double x = b / (ao - a);
   double y = (ao * b) / (ao - a);
-  double range = sqrt(pow(x - agent.getPos().x, 2) + pow(y - agent.getPos().y, 2));
+  double range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
   double bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing();
   //now do same calculation but get point on wall closest to robot instead
   //y = aox + bo => bo = y - aox
