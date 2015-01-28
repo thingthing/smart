@@ -1485,7 +1485,7 @@ When(extracting_line_landmark)
     ** Datasize = 150 = Landmarks::RANSAC_CONSENSUS * 5
     */
     srand(42);
-    TestSlamCommon::generateData(data, 150);
+    TestSlamCommon::generateData(cloud, 500);
 
     agent = new Agent();
     agent->setPos(2.0, 4.0, 0.0);
@@ -1499,7 +1499,7 @@ When(extracting_line_landmark)
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    result = lms.extractLineLandmarks(data, 150, *agent);
+    result = lms.extractLineLandmarks(cloud, *agent);
   }
 
   Then(it_should_have_some_landmarks)
@@ -1520,7 +1520,7 @@ When(extracting_line_landmark)
   Landmarks::Landmark	lm2;
   int		id1;
   int		id2;
-  pcl::PointXYZ	data[150];
+  pcl::PointCloud<pcl::PointXYZ> cloud;
   std::vector<Landmarks::Landmark *> result;
   Agent	*agent;
 };
