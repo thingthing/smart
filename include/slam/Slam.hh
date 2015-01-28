@@ -18,10 +18,10 @@ public:
   ~Slam();
 
   void		updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent);
-  void		addLandmarks(pcl::PointXYZ cameradata[], int numberSample);
+  void		addLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud);
 
 private:
-  void		updateStateWithLandmark(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
+  void		updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
   Slam();
 
 private:
