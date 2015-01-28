@@ -24,7 +24,7 @@ Slam::~Slam()
 /**
  * To be used after agent update odometry
  **/
-void		Slam::updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample)
+void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
 {
   //Update state using odometry
   this->_state->updateRobotState(agent);
@@ -36,7 +36,7 @@ void		Slam::updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numb
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
-  this->updateStateWithLandmark(agent, cameradata, numberSample, newLandmarks, reobservedLandmarks);
+  this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
 }
 
 /**

@@ -17,7 +17,7 @@ public:
   Slam(Agent *agent);
   ~Slam();
 
-  void		updateState(Agent const &agent, pcl::PointXYZ cameradata[], int numberSample);
+  void		updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent);
   void		addLandmarks(pcl::PointXYZ cameradata[], int numberSample);
 
 private:
