@@ -129,23 +129,6 @@ When(testing_validation_gate)
       agent = new Agent();
       agent->setPos(2.0, 4.0, 0.0);
       agent->setBearing(0.2);
-
-      int	r = 0;
-      int	size = 0;
-      ::Landmarks	*lms = new Landmarks();
-
-      while (size == 0)
-	{
-	  srand(r);
-
-	  TestSlamCommon::generateData(data, numberSample);
-
-	  landmarksTest = lms->extractLineLandmarks(data, numberSample, *agent);
-
-	  size = landmarksTest.size();
-	  ++r;
-	}
-      datas = new DataAssociation(lms);
     }
 
   When(no_landmarks_are_in_db)
@@ -154,7 +137,15 @@ When(testing_validation_gate)
 
       void	SetUp()
       {
-	Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent, Root().result, Root().reobservedLandmark);
+	pcl::PointCloud<pcl::PointXYZ> cloud;
+	::Landmarks	*lms = new Landmarks();
+
+	srand(42);
+	TestSlamCommon::generateData(cloud, Root().numberSample);
+	Root().landmarksTest = lms->extractLineLandmarks(cloud, *Root().agent);
+	Root().datas = new DataAssociation(lms);
+
+	Root().datas->validationGate(cloud, *Root().agent, Root().result, Root().reobservedLandmark);
       }
 
     Then(it_should_add_landmarks_to_result)
@@ -169,13 +160,21 @@ When(testing_validation_gate)
 
       void	SetUp()
       {
+	pcl::PointCloud<pcl::PointXYZ> cloud;
+	::Landmarks	*lms = new Landmarks();
+
+	srand(42);
+	TestSlamCommon::generateData(cloud, Root().numberSample);
+	Root().landmarksTest = lms->extractLineLandmarks(cloud, *Root().agent);
+	Root().datas = new DataAssociation(lms);
+
 	for(std::vector<Landmarks::Landmark *>::iterator it = Root().landmarksTest.begin(); it != Root().landmarksTest.end(); ++it)
 	  {
 	    ids.push_back(Root().datas->getLandmarkDb()->addToDB(**it));
 	  }
 
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
-	Root().datas->validationGate(Root().data, Root().numberSample, *Root().agent, Root().result, Root().reobservedLandmark);
+	Root().datas->validationGate(cloud, *Root().agent, Root().result, Root().reobservedLandmark);
       }
 
     Then(it_should_have_less_landmark_in_result_than_in_db)
@@ -203,12 +202,12 @@ When(testing_validation_gate)
 
   //@TODO: add test to verify reobservedLandmarks
 
-  static const int numberSample = 150;
+  static const int numberSample = 500;
   ::DataAssociation *datas;
   std::vector<Landmarks::Landmark *>	landmarksTest;
-  pcl::PointXYZ	data[numberSample];
   Agent	*agent;
   std::vector<Landmarks::Landmark *> result;
   std::vector<Landmarks::Landmark *> reobservedLandmark;
   int		oldDbSize;
+  int r;
 };
