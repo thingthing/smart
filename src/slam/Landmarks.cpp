@@ -389,21 +389,23 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCl
   for(unsigned int i = 0; i < sampleNumber; ++i)
      tempLandmarks.push_back(new Landmarks::Landmark());
 
-
+  double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent.getPos().x, agent.getPos().y);
+  double range = this->distance(cloud.points[1].x, cloud.points[1].y, agent.getPos().x, agent.getPos().y);
   for (unsigned int i = 1; i < sampleNumber - 1; i++)
     {
+      double rangeAfter = this->distance(cloud.points[i + 1].x, cloud.points[i + 1].y, agent.getPos().x, agent.getPos().y);
+      //@TODO: Change to use true camera mesurement issue
       // Check for error measurement in laser data
-
-      if (cloud.points[i - 1].z < agent.cameraProblem && cloud.points[i + 1].z < agent.cameraProblem)
+      if (rangeBefore < agent.cameraProblem && rangeAfter < agent.cameraProblem)
 	{
-  	  if ((cloud.points[i - 1].z - cloud.points[i].z) + (cloud.points[i + 1].z - cloud.points[i].z) > Landmarks::MAX_DIFFERENCE)
-  	    tempLandmarks[i] = this->getLandmark(cloud.points[i].z, i, agent);
-  	  else
-  	    if((cloud.points[i - 1].z - cloud.points[i].z) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cloud.points[i].z, i, agent);
-	    else if((cloud.points[i + 1].z - cloud.points[i].z) > Landmarks::MIN_DIFFERENCE)
-	      tempLandmarks[i] = this->getLandmark(cloud.points[i].z, i, agent);
+  	  if ((rangeBefore - range) + (rangeAfter - range) > Landmarks::MAX_DIFFERENCE)
+  	    tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, agent);
+  	  else if((rangeBefore - range) > Landmarks::MIN_DIFFERENCE ||
+		  (rangeAfter - range) > Landmarks::MIN_DIFFERENCE)
+	      tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, agent);
 	}
+      rangeBefore = range;
+      range = rangeAfter;
     }
 
   // copy landmarks into another vector
