@@ -481,7 +481,37 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 
 void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id, double *&ranges, double *&bearings, std::vector<pcl::PointXY> &lmrks, std::vector<pcl::PointXY> &exlmrks)
 {
-  std::vector<Landmarks::Landmark *> uniqueLandmarks = this->removeDouble(extractedLandmarks);
+  std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size(), NULL);
+
+  //Remove doubles form extracted, can't use removeDouble function because it's usiing the getAssociation function
+  size_t	uniqueSize = 0;
+  unsigned int	leastDistance = 99999; // A big enough distance
+
+  for(size_t i = 0; i < extractedLandmarks.size(); ++i)
+    {
+      if(extractedLandmarks[i]->id != -1)
+	{
+	  leastDistance = 99999;
+	  //remove doubles in extractedLandmarks
+	  //if two observations match same landmark, take closest landmark
+	  for(size_t j = i; j < extractedLandmarks.size(); ++j)
+	    {
+	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
+		{
+		  double temp = this->distance(*extractedLandmarks[j],
+					       *this->landmarkDB[extractedLandmarks[j]->id]);
+		  if(temp < leastDistance)
+		    {
+		      leastDistance = temp;
+		      uniqueLandmarks[uniqueSize] = extractedLandmarks[j];
+		    }
+		}
+	    }
+	  if (leastDistance != 99999)
+	    ++uniqueSize;
+	}
+    }
+  uniqueLandmarks.resize(uniqueSize);
 
   matched = new bool[uniqueLandmarks.size()];
   id = new int[uniqueLandmarks.size()];
@@ -676,6 +706,7 @@ int Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, A
 	  //in rectangle so decrease life and maybe remove
 	  if((--(this->landmarkDB[k]->life)) <= 0)
 	    {
+	      //@TODO: Change id of all landmarks to be continued: id is DBSize so we'll have more than one id
 	      delete (this->landmarkDB[k]);
 	      this->landmarkDB.erase(this->landmarkDB.begin() + k);
 	      --DBSize;
