@@ -255,9 +255,11 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 /**
  * @TODO: Same as getLandmark
  **/
-Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double distance, double readingNo, Agent const &agent)
+Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, Agent const &agent)
 {
   Landmarks::Landmark *lm;
+  double x;
+  double y;
 
   if (matched && this->landmarkDB.size() > static_cast<unsigned int>(id))
     {
@@ -269,13 +271,11 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
     {
       // doesn't exist in the DB/fail to matched, so that, we've to add this sample
       lm = new Landmarks::Landmark();
-
-      lm->pos.x = cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		      (agent.getBearing() * Landmarks::CONVERSION)) * distance + agent.getPos().x;
-      lm->pos.y = sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		      (agent.getBearing() * Landmarks::CONVERSION)) * distance + agent.getPos().y;
-      lm->bearing = readingNo;
-      lm->range = distance;
+      parametricConvert(agent, x_view, y_view, x, y);
+      lm->pos.x = x;
+      lm->pos.y = y;
+      lm->range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
+      lm->bearing = this->calculateBearing(x, y, agent);
       lm->robotPos = agent.getPos();
       lm->id = this->addToDB(*lm);
     }

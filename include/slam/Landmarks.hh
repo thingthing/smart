@@ -98,7 +98,7 @@ public: // ONLY FOR UNIT TESTS
   Landmark *getOrigin();
 
   //Update
-  Landmark *updateLandmark(bool matched, int id, double distance, double readingNo, Agent const &agent);
+  Landmark *updateLandmark(bool matched, int id, double x_view, double y_view, Agent const &agent);
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
