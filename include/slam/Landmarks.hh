@@ -35,6 +35,7 @@ static const double MIN_DIFFERENCE; // meter
     int totalTimeObserved; // the number of times we have seen the landmark
     double range; // last observed range to landmark
     double bearing; // last observed bearing to landmark
+    pcl::PointXYZ robotPos;
 
     // RANSAC : Store equation of a line to be reused
     double a;

@@ -24,6 +24,7 @@ Landmarks::Landmark::Landmark()
   this->totalTimeObserved = 0;
   this->range = -1;
   this->bearing = -1;
+  this->robotPos = pcl::PointXYZ(0.0, 0.0, 0.0);
 }
 
 Landmarks::Landmark::~Landmark()
@@ -87,6 +88,7 @@ int Landmarks::getAssociation(Landmark &lm)
 	  ++landmarkDB[i]->totalTimeObserved;
 	  landmarkDB[i]->bearing = lm.bearing;
 	  landmarkDB[i]->range = lm.range;
+	  landmarkDB[i]->robotPos = lm.robotPos;
 	  return (landmarkDB[i]->id);
 	}
     }
@@ -118,6 +120,7 @@ int Landmarks::addToDB(const Landmark &lm)
       new_elem->totalTimeObserved = 1;
       new_elem->bearing = lm.bearing;
       new_elem->range = lm.range;
+      new_elem->robotPos = lm.robotPos;
       new_elem->a = lm.a;
       new_elem->b = lm.b;
 
@@ -211,7 +214,7 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &c
 
 /**
  * @TODO
- * Need to do again, and add some comment : do not use range only, use point
+ * Do not use range only, use point
  */
 Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, Agent const &agent)
 {
@@ -225,6 +228,7 @@ Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, Agent c
 		   (agent.getBearing() * Landmarks::CONVERSION)) * range) + agent.getPos().y;
   lm->range = range;
   lm->bearing = readingNo;
+  lm->robotPos = agent.getPos();
   //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème
   this->getClosestAssociation(lm, id, totalTimeObserved);
   lm->id = id;
@@ -266,12 +270,14 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double dist
 		      (agent.getBearing() * Landmarks::CONVERSION)) * distance + agent.getPos().y;
       lm->bearing = readingNo;
       lm->range = distance;
+      lm->robotPos = agent.getPos();
       lm->id = this->addToDB(*lm);
     }
   return (lm);
 }
 
-int Landmarks::updateLineLandmark(Landmark &lm) // cannot be const, getassociation modify it
+// cannot be const, getassociation modify it
+int Landmarks::updateLineLandmark(Landmark &lm)
 {
   int id = this->getAssociation(lm);
 
@@ -287,10 +293,11 @@ Landmarks::Landmark *Landmarks::getOrigin()
   int id = -1;
   int totalTimesObserved = 0;
 
-  lm->pos.x = 0.0;
-  lm->pos.y = 0.0;
-  lm->range = -1;
-  lm->bearing = -1;
+  // Already default landmark value
+  // lm->pos.x = 0.0;
+  // lm->pos.y = 0.0;
+  // lm->range = -1;
+  // lm->bearing = -1;
 
   //associate landmark to closest landmark.
   this->getClosestAssociation(lm, id, totalTimesObserved);
@@ -314,10 +321,11 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
   int totalTimesObserved = 0;
 
   //convert landmark to map coordinate
-  lm->pos.x =x;
-  lm->pos.y =y;
-  lm->range = -1;
-  lm->bearing = -1;
+  lm->pos.x = x;
+  lm->pos.y = y;
+  // Already default value
+  // lm->range = -1;
+  // lm->bearing = -1;
   lm->a = a;
   lm->b = b;
   //associate landmark to closest landmark.
@@ -354,11 +362,12 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
 
   //convert landmark to map coordinate
   lm->pos.x = x;
-  lm->pos.y =y;
+  lm->pos.y = y;
   lm->range = range;
   lm->bearing = bearing;
   lm->a = a;
   lm->b = b;
+  lm->robotPos = agent.getPos();
   lm->rangeError = rangeError;
   lm->bearingError = bearingError;
 
