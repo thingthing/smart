@@ -569,22 +569,25 @@ When(getting_landmark)
 {
   void	SetUp()
   {
-    Agent		*agent = new Agent();
+    Agent	*agent = new Agent();
+    double	x_view = 12.5;
+    double	y_view = 36.2;
 
     agent->setPos(42.0, 22.0, 0.0);
     agent->setBearing(1.0);
 
-    lm1.pos.x = 42;
-    lm1.pos.y = 24;
+    lm1.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * x_view - sin(agent->getBearing() * Landmarks::CONVERSION) * y_view) + agent->getPos().x;
+    lm1.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * x_view + cos(agent->getBearing() * Landmarks::CONVERSION) * y_view) + agent->getPos().y;
+;
     lm2.pos.x = 42;
     lm2.pos.y = 44;
-    range = 4.5;
-    bearing = 3;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
-    lm3 = lms.getLandmark(range, bearing, *agent);
+    range = lms.distance(lm1.pos.x, lm1.pos.y, agent->getPos().x, agent->getPos().y);
+    bearing = atan((lm1.pos.y - agent->getPos().y) / (lm1.pos.x - agent->getPos().x)) - agent->getBearing();
+    lm3 = lms.getLandmark(x_view, y_view, *agent);
   }
 
   Then(it_should_return_one_of_the_db_landmark)
@@ -594,22 +597,22 @@ When(getting_landmark)
 
   Then(it_should_set_range)
   {
-    AssertThatDetail(lm3->range, Is().EqualTo(range));
+    AssertThatDetail(lm3->range, Is().EqualToWithDelta(range, 0.0001));
   }
 
   Then(it_should_set_bearing)
   {
-    AssertThatDetail(lm3->bearing, Is().EqualTo(bearing));
+    AssertThatDetail(lm3->bearing, Is().EqualToWithDelta(bearing, 0.0001));
   }
 
   Landmarks	lms;
   Landmarks::Landmark	lm1;
   Landmarks::Landmark	lm2;
   Landmarks::Landmark	*lm3;
-  int		id1;
-  int		id2;
   double	range;
   double	bearing;
+  int		id1;
+  int		id2;
 };
 
 /**
@@ -1044,10 +1047,12 @@ When(removing_double_landmarks)
     agent->setPos(2.0, 4.0, 0.0);
     agent->setBearing(0.2);
 
-    lm1.pos.x = (cos((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[1].z) + agent->getPos().x;
-    lm1.pos.y = (sin((1 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[1].z) + agent->getPos().y;
-    lm2.pos.x = (cos((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[19].z) + agent->getPos().x;
-    lm2.pos.y = (sin((19 * lms.degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * cloud.points[19].z) + agent->getPos().y;
+    lm1.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].x - sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].y) + agent->getPos().x;
+    lm1.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].x + cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].y) + agent->getPos().y;
+
+    lm2.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[19].x - sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[19].y) + agent->getPos().x;
+    lm2.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[19].x + cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[19].y) + agent->getPos().y;
+;
     id1 = lms.addToDB(lm1);
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
