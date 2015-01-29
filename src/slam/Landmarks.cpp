@@ -188,6 +188,11 @@ static void	parametricConvert(Agent const &agent, double x_view, double y_view, 
   y = (sin(agent.getBearing() * Landmarks::CONVERSION) * x_view + cos(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().y;
 }
 
+double Landmarks::calculateBearing(double x, double y, Agent const &agent) const
+{
+  return (atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing());
+}
+
 void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
@@ -228,7 +233,7 @@ Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, Agent 
   lm->pos.x = x;
   lm->pos.y = y;
   lm->range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
-  lm->bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing();
+  lm->bearing = this->calculateBearing(x, y, agent);
   lm->robotPos = agent.getPos();
   //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème
   this->getClosestAssociation(lm, id, totalTimeObserved);
@@ -345,7 +350,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   double x = b / (ao - a);
   double y = (ao * b) / (ao - a);
   double range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
-  double bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing();
+  double bearing = this->calculateBearing(x, y, agent);
   //now do same calculation but get point on wall closest to robot instead
   //y = aox + bo => bo = y - aox
   double bo = agent.getPos().y - ao * agent.getPos().x;
@@ -354,9 +359,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   double px = (b - bo) / (ao - a);
   double py = ((ao * (b - bo)) / (ao - a)) + bo;
   double rangeError = this->distance(agent.getPos().x, agent.getPos().y, px, py);
-  double bearingError = atan((py - agent.getPos().y) / (px - agent.getPos().x))
-    - agent.getBearing();  //do you subtract or add robot bearing? I am not sure!
-
+  double bearingError = this->calculateBearing(px, py, agent);
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = 0;
   int totalTimesObserved = 0;

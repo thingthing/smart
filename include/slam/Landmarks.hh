@@ -112,6 +112,7 @@ public: // ONLY FOR UNIT TESTS
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
+  double calculateBearing(double x, double y, Agent const &agent) const;
 
 private: // PRIVATE OTHER CASES
 #ifdef UNITTEST
