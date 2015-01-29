@@ -4,6 +4,22 @@ PROJECT(agent)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -ggdb3 -pthread -std=c++11")
 
+
+add_custom_target(clean-cmake-files
+  COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
+  )
+
+add_custom_target(fclean
+  COMMAND ${CMAKE_BUILD_TOOL} clean
+  COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
+  )
+
+add_custom_target(re
+  COMMAND ${CMAKE_BUILD_TOOL} fclean
+  COMMAND ${CMAKE_BUILD_TOOL} all
+  )
+
+
 SET(SOURCES)
 
 SET(SUBDIR
@@ -15,7 +31,7 @@ SET(SUBDIR
 
 SET(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
-FIND_PACKAGE(PCL 1.3 REQUIRED COMPONENTS common io)
+FIND_PACKAGE(PCL 1.7 REQUIRED COMPONENTS common io)
 INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
 ADD_DEFINITIONS(${PCL_DEFINITIONS})
