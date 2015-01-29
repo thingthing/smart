@@ -696,14 +696,17 @@ When(updating_landmarks_with_parameters)
 
   void		SetUp()
   {
+    double x_view = 2.6;
+    double y_view = 15.24;
+
     agent = new Agent();
     agent->setPos(42.0, 24.0, 0.0);
     agent->setBearing(1.0);
 
-    distance = 2.5;
-    bearing = 0.5;
     oldDBSize = lms.DBSize;
-    lm1 = lms.updateLandmark(false, 0, distance, bearing, *agent);
+    lm1 = lms.updateLandmark(false, 0, x_view, y_view, *agent);
+    distance = lms.distance(lm1->pos.x, lm1->pos.y, agent->getPos().x, agent->getPos().y);
+    bearing = lms.calculateBearing(lm1->pos.x, lm1->pos.y, *agent);
     id1 = lm1->id;
   }
 
@@ -720,8 +723,8 @@ When(updating_landmarks_with_parameters)
     Then(it_should_return_the_new_landmark)
     {
       AssertThatDetail(Root().lm1->id, Is().Not().EqualTo(-1));
-      AssertThatDetail(Root().lm1->bearing, Is().EqualTo(Root().bearing));
-      AssertThatDetail(Root().lm1->range, Is().EqualTo(Root().distance));
+      AssertThatDetail(Root().lm1->bearing, Is().EqualToWithDelta(Root().bearing, 0.0001));
+      AssertThatDetail(Root().lm1->range, Is().EqualToWithDelta(Root().distance, 0.0001));
       AssertThatDetail(Root().lm1->pos.x, Is().Not().EqualTo(0));
       AssertThatDetail(Root().lm1->pos.y, Is().Not().EqualTo(0));
     }
@@ -733,10 +736,13 @@ When(updating_landmarks_with_parameters)
 
     void	SetUp()
     {
+      double x_view = 2.6;
+      double y_view = 15.24;
+
       Root().oldDBSize = Root().lms.DBSize;
       Root().oldTimeObserved = Root().lms.landmarkDB[Root().id1]->totalTimeObserved;
-      Root().lm2 = Root().lms.updateLandmark(true, Root().id1, Root().distance,
-					     Root().bearing, *Root().agent);
+      Root().lm2 = Root().lms.updateLandmark(true, Root().id1, x_view,
+					     y_view, *Root().agent);
     }
 
     Then(it_should_not_add_the_landmark_to_the_db)
