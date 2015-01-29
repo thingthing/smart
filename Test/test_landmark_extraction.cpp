@@ -1102,14 +1102,6 @@ When(getting_aligned_landmark_data)
     lms.alignLandmarkData(extracted, matched, id, ranges, bearings, lmrk, exlmrk);
   }
 
-  Then(it_should_not_have_more_data_than_landmarks_in_db)
-  {
-    AssertThatDetail(lmrk.size(), Is().Not().EqualTo(0));
-    AssertThatDetail(exlmrk.size(), Is().Not().EqualTo(0));
-    AssertThatDetail(lmrk.size(), Is().LessThan(lms.DBSize + 1));
-    AssertThatDetail(exlmrk.size(), Is().LessThan(lms.DBSize + 1));
-  }
-
   Then(it_should_have_good_values)
   {
     int	i = 0;
