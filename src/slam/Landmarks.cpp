@@ -437,7 +437,7 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 	  leastDistance = 99999;
 	  foundDoublon = false;
 	  doublon = NULL;
-	  for(unsigned int j = i + 1; j < extractedLandmarks.size(); ++j)
+	  for(unsigned int j = i; j < extractedLandmarks.size(); ++j)
 	    {
 	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
 		{
