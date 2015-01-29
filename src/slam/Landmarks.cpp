@@ -730,10 +730,10 @@ std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLineLandmarks(std::vec
   return (res);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], double ranges[], double bearings[], Agent const &agent)
+std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], std::vector<pcl::PointXYZ> const &pos, Agent const &agent)
 {
   std::vector<Landmarks::Landmark *> res(numberMatched);
   for (unsigned int i = 0; i < numberMatched; ++i)
-    res[i] = this->updateLandmark(matched[i], id[i], ranges[i], bearings[i], agent);
+    res[i] = this->updateLandmark(matched[i], id[i], pos[i].x, pos[i].y, agent);
   return (res);
 }
