@@ -92,7 +92,7 @@ public: // ONLY FOR UNIT TESTS
 #endif
 
   //Getters
-  Landmark *getLandmark(double range, int readingNo, Agent const &agent);
+  Landmark *getLandmark(double x_view, double y_view, Agent const &agent);
   Landmark *getLineLandmark(double a, double b, Agent const &agent);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();

@@ -185,7 +185,7 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
 static void	parametricConvert(Agent const &agent, double x_view, double y_view, double &x, double &y)
 {
   x = (cos(agent.getBearing() * Landmarks::CONVERSION) * x_view - sin(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().x;
-      y = (sin(agent.getBearing() * Landmarks::CONVERSION) * x_view + cos(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().y;
+  y = (sin(agent.getBearing() * Landmarks::CONVERSION) * x_view + cos(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().y;
 }
 
 void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b)
@@ -216,18 +216,19 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &c
  * @TODO
  * Do not use range only, use point
  */
-Landmarks::Landmark *Landmarks::getLandmark(double range, int readingNo, Agent const &agent)
+Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, Agent const &agent)
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = -1;
   int totalTimeObserved = 0;
+  double x;
+  double y;
 
-  lm->pos.x = (cos((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		   (agent.getBearing() * Landmarks::CONVERSION)) * range) + agent.getPos().x;
-  lm->pos.y = (sin((readingNo * this->degreePerScan * Landmarks::CONVERSION) +
-		   (agent.getBearing() * Landmarks::CONVERSION)) * range) + agent.getPos().y;
-  lm->range = range;
-  lm->bearing = readingNo;
+  parametricConvert(agent, x_view, y_view, x, y);
+  lm->pos.x = x;
+  lm->pos.y = y;
+  lm->range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
+  lm->bearing = atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing();
   lm->robotPos = agent.getPos();
   //Possiblement envoyé une exception si on ne trouve pas de landmark, sinon ça risque de poser problème
   this->getClosestAssociation(lm, id, totalTimeObserved);
@@ -624,7 +625,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
 	  for(unsigned int i = 0; i < totalConsensusPoints; ++i)
 	    {
 	      //Remove points that have now been associated to this line
-	      tempLandmarks[consensusPoints[i]] = this->getLandmark(cloud.points[consensusPoints[i]], consensusPoints[i], agent);
+	      tempLandmarks[consensusPoints[i]] = this->getLandmark(cloud.points[consensusPoints[i]].x, cloud.points[consensusPoints[i]].y, agent);
 	    }
 #endif
 
