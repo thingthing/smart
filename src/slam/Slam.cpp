@@ -5,7 +5,7 @@ Slam::Slam(Agent *agent)
   this->_agent = agent;
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
   this->_data = new DataAssociation(this->_landmarkDb);
-  this->_state = new SystemStateMatrice(agent->getPos().x, agent->getPos().y, agent->getBearing());
+  this->_state = new SystemStateMatrice(*agent);
   this->_covariance = new CovarianceMatrice(agent->getPos().x, agent->getPos().y, agent->getBearing());
 }
 
@@ -21,12 +21,38 @@ Slam::~Slam()
     delete this->_covariance;
 }
 
-// void		Slam::updateState(pcl::PointXYZ cameradata[], int numberSample)
-// {
+/**
+ * To be used after agent update odometry
+ **/
+void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+{
+  //Update state using odometry
+  this->_state->updateRobotState(agent);
+  //@TODO: update jacobian matrice
+  //@TODO: update process noise matrice
+  this->_covariance->setRobotPosition(agent);
+  this->_covariance->calculationCovariance();
 
-// }
+  //Update state using reobserved landmark
+  std::vector<Landmarks::Landmark *> newLandmarks;
+  std::vector<Landmarks::Landmark *> reobservedLandmarks;
+  this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
+}
 
+/**
+ * Search for reobserved landmark and update state with them
+ **/
+void		Slam::updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
+{
+  //@TODO: Function that associate without adding new landmark, and return the vector with only new landmark (to be used after)
+  //@See alignLandmarkData
+  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
+}
+
+/**
+ * @TODO: Add landmark to matrice
+ **/
 // void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
 // {
-
+//   this->_data->validationGate(cameradata, numberSample, *this->_agent);
 // }

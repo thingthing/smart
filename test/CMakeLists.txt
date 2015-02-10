@@ -1,0 +1,55 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+
+PROJECT(test)
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11")
+
+add_custom_target(clean-cmake-files
+  COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
+  )
+
+add_custom_target(fclean
+  COMMAND ${CMAKE_BUILD_TOOL} clean
+  COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
+  )
+
+add_custom_target(re
+  COMMAND ${CMAKE_BUILD_TOOL} fclean
+  COMMAND ${CMAKE_BUILD_TOOL} all
+  )
+
+SET(SUBDIR
+  core
+  network
+  protocol
+  slam
+  )
+
+SET(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../include")
+
+FIND_PACKAGE(PCL 1.7 REQUIRED COMPONENTS common io)
+INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
+ADD_DEFINITIONS(${PCL_DEFINITIONS} -DUNITTEST)
+
+#Set unittest variable for cmakelists in src
+SET(UNITTEST 0)
+
+ADD_SUBDIRECTORY("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DIR}/src")
+ADD_SUBDIRECTORY(${INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/include")
+
+INCLUDE_DIRECTORIES(${INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/igloo-igloo.1.1.1/)
+
+SET(SOURCES
+  ${SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_slam_common.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_landmark_extraction.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_data_association.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/CustomConstraint.cpp
+  )
+
+ADD_EXECUTABLE(test ${SOURCES})
+
+TARGET_LINK_LIBRARIES(test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
