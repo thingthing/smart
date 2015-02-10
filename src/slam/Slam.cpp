@@ -37,6 +37,7 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
+  this->addLandmarks(newLandmarks);
 }
 
 /**
