@@ -87,6 +87,8 @@ int Landmarks::getAssociation(Landmark &lm)
 	  landmarkDB[i]->life = Landmarks::LIFE;
 	  ++landmarkDB[i]->totalTimeObserved;
 	  landmarkDB[i]->bearing = lm.bearing;
+    landmarkDB[i]->pos.x = lm.pos.x;
+    landmarkDB[i]->pos.y = lm.pos.y;
 	  landmarkDB[i]->range = lm.range;
 	  landmarkDB[i]->robotPos = lm.robotPos;
 	  return (landmarkDB[i]->id);
