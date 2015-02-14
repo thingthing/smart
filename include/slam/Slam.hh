@@ -18,7 +18,7 @@ public:
   ~Slam();
 
   void		updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent);
-  void		addLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud);
+  void		addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks);
 
 private:
   void		updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);

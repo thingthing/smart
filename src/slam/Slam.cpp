@@ -37,6 +37,7 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
+  this->addLandmarks(newLandmarks);
 }
 
 /**
@@ -50,9 +51,17 @@ void		Slam::updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud,
 }
 
 /**
- * @TODO: Add landmark to matrice
+ * Add landmark to matrice
  **/
-// void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
-// {
-//   this->_data->validationGate(cameradata, numberSample, *this->_agent);
-// }
+void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
+{
+  for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+  {
+    int landmarkId = this->_landmarkDb->addToDB(**it);
+    int slamId = this->_state->addLandmarkPosition((*it)->pos);
+    this->_landmarkDb->addSlamId(landmarkId, slamId);
+
+    this->_covariance->addLandmark((*it)->pos);
+    this->_covariance->calculationCovariance();
+  }
+}
