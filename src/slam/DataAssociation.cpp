@@ -30,15 +30,20 @@ void		DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZ> const &clou
     {
       //First associate landmark
       this->associateLandmarks(*it);
-      //Then pass through the gate
+    }
+  //Remove Doubles
+  newLandmarks = this->_landmarkDb->removeDouble(newLandmarks, resultLandmarks);
+  //Pass non doubles through gate
+  for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+    {
       if (this->_landmarkDb->getAssociation(*(*it)) == -1)
-	{
-	  //Landmark not found, should add it
-	  resultLandmarks.push_back(*it);
-	  //this->_landmarkDb->addToDB(*(*it));
-	}
+  {
+    //Landmark not found, should add it
+    resultLandmarks.push_back(*it);
+    //this->_landmarkDb->addToDB(*(*it));
+  }
       else
-	reobservedLandmarks.push_back(*it);
+  reobservedLandmarks.push_back(*it);
     }
 }
 
