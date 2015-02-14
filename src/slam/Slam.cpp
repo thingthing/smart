@@ -24,7 +24,7 @@ Slam::~Slam()
 /**
  * To be used after agent update odometry
  **/
-void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
 {
   //Update state using odometry
   this->_state->updateRobotState(agent);
