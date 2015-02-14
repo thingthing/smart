@@ -64,6 +64,8 @@ public:
 
   //Remove
   int removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent);
+  std::vector<Landmark *> removeDouble(std::vector<Landmark *> const &extractedLandmarks, std::vector<Landmark *> &nonAssociatedLandmarks);
+
   //Update
   std::vector<Landmark *> updateAndAddLineLandmarks(std::vector<Landmark *> extractedLandmarks); // bad return value
   std::vector<Landmark *> updateAndAddLandmarkUsingEKFResults(bool matched[], unsigned int numberMatched, int id[], std::vector<pcl::PointXYZ> const &pos, Agent const &agent);
@@ -104,8 +106,6 @@ public: // ONLY FOR UNIT TESTS
   //Extract
   std::vector<Landmark *> extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
 						Agent const &agent);
-  //Remove
-  std::vector<Landmark *> removeDouble(std::vector<Landmark *> extractedLandmarks);
 
   //Other
   void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b);
