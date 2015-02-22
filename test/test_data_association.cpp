@@ -170,7 +170,9 @@ When(testing_validation_gate)
 
 	for(std::vector<Landmarks::Landmark *>::iterator it = Root().landmarksTest.begin(); it != Root().landmarksTest.end(); ++it)
 	  {
-	    ids.push_back(Root().datas->getLandmarkDb()->addToDB(**it));
+      int id = Root().datas->getLandmarkDb()->addToDB(**it);
+	    ids.push_back(id);
+      Root().datas->getLandmarkDb()->landmarkDB[id]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
 	  }
 
 	Root().oldDbSize = Root().datas->getLandmarkDb()->getDBSize();
@@ -186,9 +188,10 @@ When(testing_validation_gate)
     {
       bool	isObserved = false;
 
-      for(std::vector<int>::iterator it = ids.begin(); it != ids.end(); ++it)
+      AssertThatDetail(Root().reobservedLandmark.size(), Is().GreaterThan(0));
+      for(std::vector<Landmarks::Landmark *>::iterator it = Root().reobservedLandmark.begin(); it != Root().reobservedLandmark.end(); ++it)
 	{
-	  if (Root().datas->getLandmarkDb()->landmarkDB[*it]->totalTimeObserved > 1)
+	  if (Root().datas->getLandmarkDb()->landmarkDB[(*it)->id]->totalTimeObserved > 1)
 	    {
 	      isObserved = true;
 	      break;
@@ -199,8 +202,6 @@ When(testing_validation_gate)
 
     std::vector<int> ids;
   };
-
-  //@TODO: add test to verify reobservedLandmarks
 
   static const int numberSample = 500;
   ::DataAssociation *datas;

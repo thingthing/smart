@@ -17,8 +17,8 @@ public:
   SystemStateMatrice(Agent const &agent);
   virtual ~SystemStateMatrice();
 
-  void addLandmarkPosition(const pcl::PointXY &position);
-  void addLandmarkPosition(float x, float y);
+  unsigned int addLandmarkPosition(const pcl::PointXY &position);
+  unsigned int addLandmarkPosition(float x, float y);
   void updateLandmarkPosition(unsigned int landmarkNumber, float x, float y);
   void updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXY &position);
   void updateRobotState(Agent const &agent);

@@ -24,7 +24,7 @@ Slam::~Slam()
 /**
  * To be used after agent update odometry
  **/
-void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
 {
   //Update state using odometry
   this->_state->updateRobotState(agent);
@@ -37,6 +37,17 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
+  this->addLandmarks(newLandmarks);
+
+  for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
+  {
+    //@TODO: Caculate kalman gain and uncertainity
+    //@TODO: Update state using kalman gain and uncertainity
+  }
+  
+  agent.setPos(this->_state->getRobotPos());
+  //After all, remove abd landmarks
+  this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
 /**
@@ -50,9 +61,17 @@ void		Slam::updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud,
 }
 
 /**
- * @TODO: Add landmark to matrice
+ * Add landmark to matrice
  **/
-// void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
-// {
-//   this->_data->validationGate(cameradata, numberSample, *this->_agent);
-// }
+void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
+{
+  for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+  {
+    int landmarkId = this->_landmarkDb->addToDB(**it);
+    int slamId = this->_state->addLandmarkPosition((*it)->pos);
+    this->_landmarkDb->addSlamId(landmarkId, slamId);
+
+    this->_covariance->addLandmark((*it)->pos);
+    this->_covariance->calculationCovariance();
+  }
+}

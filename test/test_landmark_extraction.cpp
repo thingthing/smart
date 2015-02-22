@@ -1063,16 +1063,53 @@ When(removing_double_landmarks)
     id2 = lms.addToDB(lm2);
     lms.landmarkDB[id1]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 1;
     lms.landmarkDB[id2]->totalTimeObserved = Landmarks::MINOBSERVATIONS + 2;
-    extracted = lms.extractSpikeLandmarks(cloud, *agent);
-    result = lms.removeDouble(extracted);
+    Landmarks::Landmark lmd1;
+    Landmarks::Landmark lmd2;
+    Landmarks::Landmark lm3;
+    Landmarks::Landmark lm4;
+
+    lmd1.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].x - sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].y) + agent->getPos().x;
+    lmd1.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].x + cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].y) + agent->getPos().y;
+
+    lmd2.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].x - sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].y) + agent->getPos().x;
+    lmd2.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].x + cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[1].y) + agent->getPos().y;
+;
+    lm3.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[17].x - sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[17].y) + agent->getPos().x;
+    lm3.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[17].x + cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[17].y) + agent->getPos().y;
+
+    lm4.pos.x = (cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[190].x - sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[190].y) + agent->getPos().x;
+    lm4.pos.y = (sin(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[190].x + cos(agent->getBearing() * Landmarks::CONVERSION) * cloud.points[190].y) + agent->getPos().y;
+;
+    extracted.push_back(&lmd1);
+    extracted.push_back(&lmd2);
+    for (std::vector<Landmarks::Landmark *>::iterator it = extracted.begin(); it != extracted.end(); ++it)
+    {
+      lms.getClosestAssociation(*it, (*it)->id, (*it)->totalTimeObserved);
+    }
+    extracted.push_back(&lm3);
+    extracted.push_back(&lm4);
+    result = lms.removeDouble(extracted, nonAssociatedLandmark);
   }
 
-  Then(it_should_not_have_more_landmarks_than_db)
+  Then(it_should_return_non_double)
   {
     AssertThatDetail(result.size(), Is().Not().EqualTo(0));
-    AssertThatDetail(result.size(), Is().LessThan(lms.DBSize + 1));
   }
 
+  Then(it_should_remove_double)
+  {
+    AssertThatDetail(result.size(), Is().LessThan(2));
+  }
+
+  Then(it_should_keep_the_closest)
+  {
+    //@TODO
+  }
+
+  Then(it_should_return_non_associated_landmarks)
+  {
+     AssertThatDetail(nonAssociatedLandmark.size(), Is().EqualTo(2));
+  }
 
   Landmarks	lms;
   Landmarks::Landmark	lm1;
@@ -1083,6 +1120,7 @@ When(removing_double_landmarks)
   Agent		*agent;
   std::vector<Landmarks::Landmark *> extracted;
   std::vector<Landmarks::Landmark *> result;
+  std::vector<Landmarks::Landmark *> nonAssociatedLandmark;
 };
 
 

@@ -24,17 +24,25 @@ SystemStateMatrice::~SystemStateMatrice()
 {
 }
 
-void SystemStateMatrice::addLandmarkPosition(const pcl::PointXY &position)
+/**
+* Add landmark to matrice and return id
+**/
+unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXY &position)
 {
   this->matrice.push_back(pcl::PointXY(position));
+  return (this->matrice.size() - 1);
 }
 
-void SystemStateMatrice::addLandmarkPosition(float x, float y)
+/**
+* Add landmark to matrice and return id
+**/
+unsigned int SystemStateMatrice::addLandmarkPosition(float x, float y)
 {
   pcl::PointXY pos;
   pos.x = x;
   pos.y = y;
   this->matrice.push_back(pcl::PointXY(pos));
+  return (this->matrice.size() - 1);
 }
 
 void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, float x, float y)

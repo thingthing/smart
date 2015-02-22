@@ -87,6 +87,8 @@ int Landmarks::getAssociation(Landmark &lm)
 	  landmarkDB[i]->life = Landmarks::LIFE;
 	  ++landmarkDB[i]->totalTimeObserved;
 	  landmarkDB[i]->bearing = lm.bearing;
+    landmarkDB[i]->pos.x = lm.pos.x;
+    landmarkDB[i]->pos.y = lm.pos.y;
 	  landmarkDB[i]->range = lm.range;
 	  landmarkDB[i]->robotPos = lm.robotPos;
 	  return (landmarkDB[i]->id);
@@ -422,67 +424,58 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCl
   return (foundLandmarks);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks::Landmark *> extractedLandmarks)
+std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks::Landmark *> const &extractedLandmarks, std::vector<Landmarks::Landmark *> &nonAssociatedLandmarks)
 {
   int uniquelmrks = 0;
   double leastDistance = 99999;
-  double temp;
-  bool foundDoublon = false;
-  Landmarks::Landmark *doublon;
+  std::vector<int> doubleId;
   std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size(), NULL);
-  std::vector<Landmarks::Landmark *> resultUniqueLandmarks;
 
   for(unsigned int i = 0; i < extractedLandmarks.size(); ++i)
     {
-      //remove landmarks that didn't get associated and also pass
-      //landmarks through our temporary landmark validation gate
-      if(extractedLandmarks[i]->id != -1 && this->getAssociation(*extractedLandmarks[i]) != -1)
+      //remove landmarks that didn't get associated
+      if(extractedLandmarks[i]->id != -1)
 	{
+    bool isDouble = false;
+    for (size_t c = 0; c < doubleId.size(); ++c)
+    {
+      if (doubleId[c] == extractedLandmarks[i]->id)
+      {
+        isDouble = true;
+        break;
+      }
+    }
+    if (isDouble == true)
+      continue;
+    
+    leastDistance = 99999;
 	  //remove doubles in extractedLandmarks
 	  //if two observations match same landmark, take closest landmark
-	  leastDistance = 99999;
-	  foundDoublon = false;
-	  doublon = NULL;
-	  for(unsigned int j = i; j < extractedLandmarks.size(); ++j)
-	    {
-	      if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
-		{
-		  foundDoublon = true;
-		  temp = this->distance(*extractedLandmarks[j], *landmarkDB[extractedLandmarks[j]->id]);
-		  if(temp < leastDistance)
-		    {
-		      leastDistance = temp;
-		      doublon = extractedLandmarks[j];
-		    }
-		}
-	    }
-	  if (foundDoublon)
-	    {
-	      for (unsigned int i = 0; i < uniqueLandmarks.size(); ++i)
-		{
-		  if (uniqueLandmarks[i] != NULL && uniqueLandmarks[i]-> id == doublon->id)
-		    foundDoublon = false;
-		}
-	      if (foundDoublon)
-	      	uniqueLandmarks[uniquelmrks] = doublon;
-	    }
-	}
-      // NOTE SURE
-      // Du coup faut laisser ça
-      if (leastDistance != 99999)
-	++uniquelmrks;
-    }
-  // return (uniqueLandmarks);
-  // Obliger de faire ça sinon la taille du tableau de sortie n'est pas la bonne
-  // copy landmarks over into an array of correct dimensions
-
-  for (std::vector<Landmarks::Landmark *>::iterator it = uniqueLandmarks.begin();
-       it != uniqueLandmarks.end(); ++it)
+    for(size_t j = i; j < extractedLandmarks.size(); ++j)
+      {
+        if(extractedLandmarks[i]->id == extractedLandmarks[j]->id)
     {
-      if (*it != NULL)
-	resultUniqueLandmarks.push_back(*it);
+      doubleId.push_back(extractedLandmarks[i]->id);
+      double temp = this->distance(*extractedLandmarks[j],
+                 *this->landmarkDB[extractedLandmarks[j]->id]);
+      if(temp < leastDistance)
+        {
+          leastDistance = temp;
+          uniqueLandmarks[uniquelmrks] = extractedLandmarks[j];
+        }
     }
-  return (resultUniqueLandmarks);
+      }
+    if (leastDistance != 99999)
+      ++uniquelmrks;
+	}
+      else
+        nonAssociatedLandmarks.push_back(extractedLandmarks[i]);
+    }
+  // Obliger de faire ça sinon la taille du tableau de sortie n'est pas la bonne
+  // resize landmarks into an array of correct dimensions
+
+  uniqueLandmarks.resize(uniquelmrks);
+  return (uniqueLandmarks);
 }
 
 void Landmarks::alignLandmarkData(std::vector<Landmark *> &extractedLandmarks, bool *&matched, int *&id, double *&ranges, double *&bearings, std::vector<pcl::PointXY> &lmrks, std::vector<pcl::PointXY> &exlmrks)
