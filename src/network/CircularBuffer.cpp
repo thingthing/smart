@@ -81,4 +81,9 @@ const void          *CircularBuffer::peek(size_t moveReadCursor)
     return (tmp);
 }
 
+void CircularBuffer::poke(size_t pos, const void *data, size_t size)        // totally unsafe. for demo purposes.
+{
+    memcpy(_buffer + _readCursor + pos, data, size);
+}
+
 }

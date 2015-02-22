@@ -18,7 +18,7 @@ public:
     }
 
     virtual void        connectedEvent() = 0;
-    virtual void        receivePacketEvent(Network::Packet &packet) = 0;
+    virtual void        receivePacketEvent(Network::CircularBuffer &packet) = 0;
     virtual void        disconnectEvent() = 0;
 
 private:
