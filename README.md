@@ -24,7 +24,7 @@ to smartly scan the environment around him.
 * After the first compilation you just have to type `make` to compile
 * You can always delete all cache files and recompile all the project by typing `make re`
 * You may have to download and install PointCloud library if not done already
-* You may have to download and install JsonCPP (libjsoncpp) library if not done already
+* You may have to download and install JsonCPP (libjsoncpp) library if not done already. Via repository or at https://github.com/open-source-parsers/jsoncpp
 
 ### How to run Tests ###
 
