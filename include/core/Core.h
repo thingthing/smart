@@ -3,6 +3,7 @@
 
 #include "protocol/AgentProtocol.h"
 #include "network/TCPConnector.h"
+#include "core/Agent.hh"
 
 class           Core
 {
@@ -13,6 +14,7 @@ public:
     void        run();
 
 protected:
+    Agent                       _agent;
     Network::TCPConnector       &_networkAdapter;
     AgentProtocol               _protocol;
 };
