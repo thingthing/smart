@@ -15,7 +15,8 @@ SOURCES += \
     src/slam/KalmanGainMatrice.cpp \
     src/slam/Landmarks.cpp \
     src/slam/Slam.cpp \
-    src/slam/SystemStateMatrice.cpp
+    src/slam/SystemStateMatrice.cpp \
+    src/utils/AThread.cpp
 
 HEADERS += \
     include/network/CircularBuffer.h \
@@ -35,13 +36,16 @@ HEADERS += \
     include/slam/Slam.hh \
     include/slam/SystemStateMatrice.hh \
     include/core/Agent.hh \
-    include/core/Core.h
+    include/core/Core.h \
+    include/utils/AThread.h
 
 INCLUDEPATH += include \
               include/core \
               include/network \
               include/protocol  \
-                include/slam
+              include/slam    \
+              include/utils    \
+              /usr/include/jsoncpp
 
 OTHER_FILES += \
     Makefile \

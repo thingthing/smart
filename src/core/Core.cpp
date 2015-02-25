@@ -5,11 +5,10 @@
 #include <thread> // test, to be removed
 
 // TODO : try to reconnect when disconnected
-// make the ANetwork thing as thread
 
 Core::Core() :
     _networkAdapter(*(new Network::TCPConnector(NULL))),
-    _protocol(_networkAdapter)
+    _protocol(_networkAdapter, _agent)
 {
     _networkAdapter.setProtocol(_protocol);
 }
@@ -21,18 +20,21 @@ Core::~Core()
 
 void        Core::run()
 {
-    if (_networkAdapter.connectTo("127.0.0.1", 1337) == false)
-        std::cout << "faaaailed to connect" << std::endl;
+    if (_networkAdapter.connectTo("54.148.17.11", 4200) == false)
+        std::cout << "failed to connect" << std::endl;
     else
     {
-        std::thread     test([this]()
-        {
-            _networkAdapter.start();
-        });           // THIS IS JUST FOR TESTS. WILL BE CHANGED.
-
+        _networkAdapter.start();
         while (1)
         {
-            usleep(100000);
+            usleep(1000000);
+          /*  if (_agent.getPos() != _agent.getGoalPos())
+            {
+                _agent.goTowardsTheGoalFakeTest();
+                _protocol.sendMovement();
+            }
+            */
         }
     }
 }
+

@@ -22,6 +22,7 @@ public:
     size_t          getBufferSize();
     void            reset();
     const void      *peek(size_t moveReadCursor = 0);                // Get a pointer on the begging of the buffer, to peek data without consuming data.
+    void            poke(size_t pos, const void *data, size_t size);   // force some data in the buffer. Ugly hack made to make the test app
 
     // ######################## read ####################
     template<typename T>
@@ -40,7 +41,6 @@ public:
     template<typename T>
     bool        read(T *data, const size_t size)
     {
-        std::cout << "trying to read : " << size << " actually in buf : " << getSpaceUsed() << std::endl;
         if (size > getSpaceUsed())
             return (false);        // Cannot read that much data now
         memcpy(data, _buffer + _readCursor, size);

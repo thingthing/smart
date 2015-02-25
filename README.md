@@ -23,7 +23,8 @@ to smartly scan the environment around him.
 
 * After the first compilation you just have to type `make` to compile
 * You can always delete all cache files and recompile all the project by typing `make re`
-* You may have to download and install PointCloud libary if not done already
+* You may have to download and install PointCloud library if not done already
+* You may have to download and install JsonCPP (libjsoncpp) library if not done already
 
 ### How to run Tests ###
 
@@ -46,7 +47,7 @@ to smartly scan the environment around him.
 
 ### Who do I talk to? ###
 
-* **Robots Functionalities**: Maxime Croizer (*?@?.?*), Maxence Frère (*maxence.frere@epitech.eu*)
+* **Robots Functionalities**: Maxime Croizer (*maxime.croizer@epitech.eu*), Maxence Frère (*maxence.frere@epitech.eu*)
 * **SLAM**: Nicolas Thing-leoh (*nicolas1.thing-leoh@epitech.eu*), Martin Fouks (*martin.fouks@epitech.eu*)
 
 ### More Informations ###
