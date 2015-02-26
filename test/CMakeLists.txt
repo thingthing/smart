@@ -4,6 +4,8 @@ PROJECT(test)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11")
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+
 add_custom_target(clean-cmake-files
   COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
   )
@@ -23,6 +25,7 @@ SET(SUBDIR
   network
   protocol
   slam
+  utils
   )
 
 SET(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../include")
@@ -31,6 +34,13 @@ FIND_PACKAGE(PCL 1.7 REQUIRED COMPONENTS common io)
 INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
 ADD_DEFINITIONS(${PCL_DEFINITIONS} -DUNITTEST)
+
+include(LibFindMacros)
+set(Jsoncpp_PROCESS_INCLUDES Jsoncpp_INCLUDE_DIR)
+set(Jsoncpp_PROCESS_LIBS Jsoncpp_LIBRARY)
+FIND_PACKAGE(JsonCpp)
+INCLUDE_DIRECTORIES(${Jsoncpp_INCLUDE_DIR})
+LINK_DIRECTORIES(${Jsoncpp_LIBRARY})
 
 #Set unittest variable for cmakelists in src
 SET(UNITTEST 0)
@@ -52,4 +62,4 @@ SET(SOURCES
 
 ADD_EXECUTABLE(test ${SOURCES})
 
-TARGET_LINK_LIBRARIES(test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+TARGET_LINK_LIBRARIES(test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${Jsoncpp_LIBRARIES})
