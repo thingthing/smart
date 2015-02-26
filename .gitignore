@@ -1,5 +1,5 @@
 # Ignore everything
-#*
+*
 
 # Except:
 !.gitignore
@@ -32,8 +32,9 @@
 
 # other legit files
 !*.txt
-!clean-all.cmake
+!*.cmake
 
 # Specific exceptions
 CMakeCache.txt
 CMakeFiles/
+cmake_install.cmake
