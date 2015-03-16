@@ -36,7 +36,7 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agen
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
-  this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
+  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
   this->addLandmarks(newLandmarks);
 
   for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
@@ -48,16 +48,6 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agen
   agent.setPos(this->_state->getRobotPos());
   //After all, remove abd landmarks
   this->_landmarkDb->removeBadLandmarks(cloud, agent);
-}
-
-/**
- * Search for reobserved landmark and update state with them
- **/
-void		Slam::updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
-{
-  //@TODO: Function that associate without adding new landmark, and return the vector with only new landmark (to be used after)
-  //@See alignLandmarkData
-  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
 }
 
 /**
