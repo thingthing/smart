@@ -15,7 +15,7 @@ public:
   const std::pair<double, double> &getXLandmarkKalmanGain(unsigned int landmarkNumber) const;
   const std::pair<double, double> &getYLandmarkKalmanGain(unsigned int landmarkNumber) const;
 
-  void addLandmark(std::pair<double, double> pairX, std::pair<double,double> pairY);
+  void addLandmark(std::pair<double, double> pairX, std::pair<double,double> pairY, unsigned int slamId);
   void eraseLandmark(unsigned int landmarkNumber);
   void refresh(const std::vector<Landmarks *> &landmarks, double x, double y, double theta);
   void updateLandmark(unsigned int landmarkNumber, std::pair<double, double> pairX, std::pair<double, double> pairY);
