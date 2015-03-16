@@ -3,6 +3,10 @@
 KalmanGainMatrice::KalmanGainMatrice()
 {
   this->_matrice = std::vector<std::pair<double, double > >(3);
+  //By default assume that robotPosition is perfect
+  this->_matrice[0] = std::make_pair(0.0, 0.0);
+  this->_matrice[1] = std::make_pair(0.0, 0.0);
+  this->_matrice[2] = std::make_pair(0.0, 0.0);
 }
 
 KalmanGainMatrice::~KalmanGainMatrice()

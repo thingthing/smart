@@ -31,8 +31,9 @@ void		DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZ> const &clou
       //First associate landmark
       this->associateLandmarks(*it);
     }
-  //Remove Doubles
-  newLandmarks = this->_landmarkDb->removeDouble(newLandmarks, resultLandmarks);
+  //Can't remove Doubles because not really associated yet
+  //@TODO: Find where we can removeDouble
+  //newLandmarks = this->_landmarkDb->removeDouble(newLandmarks, resultLandmarks);
   //Pass non doubles through gate
   for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
     {
