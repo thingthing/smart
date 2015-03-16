@@ -71,7 +71,7 @@ void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
     int slamId = this->_state->addLandmarkPosition((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
 
-    this->_covariance->addLandmark((*it)->pos);
+    this->_covariance->addLandmark((*it)->pos, slamId);
     this->_covariance->calculationCovariance();
   }
 }
