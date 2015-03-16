@@ -5,7 +5,7 @@
 #include <pcl/impl/point_types.hpp>
 #include <pcl/common/projection_matrix.h>
 
-# include <vector>
+#include <vector>
 #include "Agent.hh"
 
 class CovarianceMatrice
@@ -33,6 +33,10 @@ class CovarianceMatrice
     State _state;
   };
 
+
+private:
+  static const unsigned int SIZEINIT;
+
 public:
   CovarianceMatrice();
   CovarianceMatrice(float X, float Y, float theta);
@@ -40,8 +44,8 @@ public:
   CovarianceMatrice(Agent const &agent);
   virtual ~CovarianceMatrice();
 
-  void addLandmark(float x, float y);
-  void addLandmark(pcl::PointXY const &pos);
+  void addLandmark(float x, float y, unsigned int slamId);
+  void addLandmark(pcl::PointXY const &pos, unsigned int slamId);
 
   float getRobotX() const;
   float getRobotY() const;
