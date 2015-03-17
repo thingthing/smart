@@ -23,9 +23,16 @@ public:
   void		setBearing(double bearing);
   void		setPos(pcl::PointXYZ const &pos);
   void		setPos(double x, double y, double z);
+	void		setTheta(double _theta);
+	void		setThrust(double _thrust);
+	double	getTheta() const;
+	double	getThrust() const;
 
 private:
   double	_bearing;
+	double	thrust;
+	double	theta;
+	double	deltaTheta;
 
 public:
   double const	degreePerScan;
