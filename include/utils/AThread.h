@@ -7,7 +7,7 @@ class       AThread
 {
 public:
     AThread();
-    ~AThread();
+    virtual ~AThread();
 
     void                start();
     void                stop();

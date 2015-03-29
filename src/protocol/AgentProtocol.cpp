@@ -35,13 +35,14 @@ void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)  
             std::cout << "error while parsing order : " << reader.getFormatedErrorMessages()<< std::endl;
             */
     }
+    this->dispatch("AGivenCommand"/*, params*/); // And the agent subscribes to the events.
 }
-
+/*
 void        AgentProtocol::sendMovement()       // Only for test, do something more generic
 {
    // _networkAdapter->send("position:{\"x\":" + std::to_string(_agent.getPos().x) + ", \"y\":" + std::to_string(_agent.getPos().y) + ", \"z\":" + std::to_string(_agent.getPos().z) + "}\n");
 
-}
+}*/
 
 void        AgentProtocol::disconnectEvent()
 {

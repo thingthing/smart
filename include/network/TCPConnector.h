@@ -24,7 +24,7 @@ namespace   Network
 class       TCPConnector : public ANetworkAdapter
 {
 public:
-    TCPConnector(AProtocol *protocol = NULL);
+    TCPConnector();
     virtual ~TCPConnector();
 
     bool            connectTo(const std::string &ip, unsigned short port);
@@ -32,8 +32,6 @@ public:
 
 protected:
     virtual void    run();
-
-    TCPConnector();
     bool            initSockAddr(const std::string &ip, unsigned short port);
 
     struct sockaddr_in          _sa;
