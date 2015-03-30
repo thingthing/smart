@@ -7,6 +7,7 @@
 
 # include <vector>
 #include "Agent.hh"
+#include "JacobianMatriceA.hh"
 
 class CovarianceMatrice
 {

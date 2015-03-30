@@ -1,21 +1,21 @@
 #ifndef JACOBIANMATRICEA_H_
-# define JACOBIANMATRICEA_H_
+#	define JACOBIANMATRICEA_H_
 
-# include <vector>
-# include <tuple>
-# include <cmath>
+#	include <vector>
+#	include <tuple>
+#	include <cmath>
 #	include <pcl/common/common.h>
 #	include <pcl/impl/point_types.hpp>
 #	include <pcl/common/projection_matrix.h>
-# include "Landmarks.hh"
+#	include "Landmarks.hh"
 #	include	"Agent.hh"
 
-class JacobianMatriceH
+class JacobianMatriceA
 {
 public:
 	JacobianMatriceA();
 	virtual ~JacobianMatriceA();
-	void JacobiMath(pcl::PointXYZ const &posRobot, float teta);
+	void JacobiMath(Agent const &agent;
 	const std::vector<double> &getMatrice() const;
 	const std::tuple<double,double,double> &getPrediction() const;
 
