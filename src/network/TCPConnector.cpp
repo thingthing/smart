@@ -8,12 +8,10 @@
 namespace   Network
 {
 
-TCPConnector::TCPConnector(AProtocol *protocol) :
+TCPConnector::TCPConnector() :
     _rxBuffer(MAX_RX_BUFFER_SIZE),
     _txBuffer(MAX_TX_BUFFER_SIZE)
 {
-    if (protocol)
-        this->setProtocol(*protocol);
 }
 
 TCPConnector::~TCPConnector()
@@ -40,15 +38,16 @@ bool    TCPConnector::connectTo(const std::string &ip, unsigned short port)
     if (connect(_socket, (const sockaddr*)&_sa, sizeof(_sa)) < 0)
         return (false);
     _fdset = (struct pollfd){_socket, POLLIN, 0};
+    this->dispatch("ConnectedEvent");
     return (true);
 }
 
-bool            TCPConnector::send(const Packet &packet)
+bool            TCPConnector::send(const std::string &data)
 {
-    if ((packet.getDataSize() + sizeof(int)) <= _txBuffer.getSpaceLeft())
+    if (data.size() <= _txBuffer.getSpaceLeft())
     {
-        _txBuffer << packet.getDataSize();
-        _txBuffer.write(packet.getData(), packet.getDataSize());
+        _txBuffer.write(&(data[0]), data.size());
+        _fdset.events |= POLLOUT;
         return (true);
     }
     return (false);
@@ -56,81 +55,48 @@ bool            TCPConnector::send(const Packet &packet)
 
 void            TCPConnector::run()
 {
-    int         byteRead;
-    int         byteWritten;
-    int         tmpRxPacketSize = -1;
-    Packet      tmpRxPacket;
-
-    // TODO : try to reconnect in case it fails ?
-
-    while (_socket != -1)
+    // TODO one day : try to reconnect in case it fails ?
+    if (_socket != -1)
     {
         if (poll(&_fdset, 1, 100) > 0)
         {
             if (_fdset.revents & POLLIN)
             {
-                if ((byteRead = _rxBuffer.readFrom(_socket)) > 0)
+                if ((_byteRead = _rxBuffer.readFrom(_socket)) > 0)
                 {
-                    byteRead = _rxBuffer.getSpaceUsed();
-                    if ((tmpRxPacketSize == -1) && ((unsigned int)byteRead >= sizeof(int)))
+                    _byteRead = _rxBuffer.getSpaceUsed();
+                    for (unsigned int i = 0; i < _rxBuffer.getSpaceUsed(); ++i) // This is horrible. And we have to change that when we will deal with data blobs w/ the server anyway.
                     {
-                        _rxBuffer >> tmpRxPacketSize;
-                        byteRead -= sizeof(tmpRxPacketSize);
-                        std::cout << "read the size of the pckt:" << tmpRxPacketSize << std::endl;
-                    }
-                    if ((byteRead) && (tmpRxPacketSize != -1))
-                    {
-                        const int bytesToWriteInPacket = (byteRead > tmpRxPacketSize) ? tmpRxPacketSize : byteRead;
-                        tmpRxPacket.append(_rxBuffer.peek(bytesToWriteInPacket), bytesToWriteInPacket);
-                        tmpRxPacketSize -= bytesToWriteInPacket;
-                        if (tmpRxPacketSize == 0)                           // packet reception complete
+                        if (*(((const char *)_rxBuffer.peek()) + i) == '\n')
                         {
-                            _protocol->receivePacketEvent(tmpRxPacket);
-                            tmpRxPacketSize = -1;
-                            tmpRxPacket.clear();
-                            std::cout << "packet complet" << std::endl;
+                            _rxBuffer.poke(i, "\0", 1);
+                            this->dispatch("ReceivePacketEvent", _rxBuffer); // Horrible, but it will do the trick for now.
                         }
-                        std::cout << "bytesToWriteInPacket:" << bytesToWriteInPacket << std::endl;
                     }
                     if (_rxBuffer.getSpaceLeft() == 0)              // Some random data, drop it. Should not happen.
-                    {
                         _rxBuffer.reset();
-                    }
                 }
                 else
                 {
-                    std::cerr << "DISCONNECT" << std::endl; // DEBUG
+                    std::cerr << "DISCONNECTED" << std::endl; // THIS IS DEBUG
                     ::close(_socket);
                     _socket = -1;
-                    _protocol->disconnectEvent();
-                    continue;
+                    this->dispatch("DisconnectEvent");
                 }
             }
             else if (_fdset.revents & POLLOUT)
             {
-                if ((byteWritten = _txBuffer.writeTo(_socket)) > 0)
+                if ((_byteWritten = _txBuffer.writeTo(_socket)) > 0)
                 {
                     if (_txBuffer.getSpaceUsed() == 0)
                     {
-                        _fdset.events ^= POLLOUT;
+                        _fdset.events &= ~POLLOUT;              // A race condition with send may arise here, but we don't care for now
                         _txBuffer.reset();
                     }
                 }
             }
         }
     }
-}
-
-// TODO TODO TODO TODO TODO
-
-void            TCPConnector::start()       // put this in ANetworkAdapter ?
-{
-    run(); // will be changed
-}
-
-void            TCPConnector::stop()
-{
-    //disconnect
 }
 
 }

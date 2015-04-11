@@ -2,24 +2,25 @@
 # define	INETWORKADAPTER_H_
 
 #include "AProtocol.h"
-
-// TODO : make this inherit from thread instead.
+#include "AThread.h"
+#include "utils/NonCopyable.h"
+#include "utils/event/Dispatcher.h"
 
 namespace   Network
 {
 
-class		ANetworkAdapter
+class		ANetworkAdapter : public AThread, public Utils::Dispatcher
 {
 public:
+    ANetworkAdapter(){}
     virtual ~ANetworkAdapter(){}
 
-    void            setProtocol(AProtocol &protocol) {_protocol = &protocol;}
-    virtual bool    send(const Packet &packet) = 0;
-    virtual void    start() = 0;
-    virtual void    stop() = 0;
+    virtual bool    send(const std::string &data) = 0;
 
 protected:
-    AProtocol       *_protocol;
+    NON_COPYABLE(ANetworkAdapter)
+
+    virtual void    run() = 0; // From AThread
 };
 
 }

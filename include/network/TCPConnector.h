@@ -24,19 +24,14 @@ namespace   Network
 class       TCPConnector : public ANetworkAdapter
 {
 public:
-    TCPConnector(AProtocol *protocol = NULL);
+    TCPConnector();
     virtual ~TCPConnector();
 
     bool            connectTo(const std::string &ip, unsigned short port);
-    virtual bool    send(const Packet &packet);
-
-    virtual void    start();
-    virtual void    stop();
+    virtual bool    send(const std::string &data);
 
 protected:
-    void            run();
-
-    TCPConnector();
+    virtual void    run();
     bool            initSockAddr(const std::string &ip, unsigned short port);
 
     struct sockaddr_in          _sa;
@@ -44,6 +39,8 @@ protected:
     CircularBuffer              _rxBuffer;
     CircularBuffer              _txBuffer;
     pollfd                      _fdset;
+    int                         _byteRead;
+    int                         _byteWritten;
 
     static const unsigned int   MAX_RX_BUFFER_SIZE = (64*1024);
     static const unsigned int   MAX_TX_BUFFER_SIZE = (64*1024);

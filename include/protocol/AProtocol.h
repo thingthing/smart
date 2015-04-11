@@ -3,27 +3,26 @@
 
 #include "CircularBuffer.h"
 #include "Packet.h"
+#include "utils/NonCopyable.h"
+#include "utils/event/Dispatcher.h"
 
 namespace Network { class ANetworkAdapter; }
 
-class       AProtocol
+class       AProtocol : public Utils::Dispatcher
 {
 public:
-    AProtocol(Network::ANetworkAdapter &networkAdapter) :
-        _networkAdapter(&networkAdapter)
-    {}
-    virtual void        setNetHandler(Network::ANetworkAdapter &handler)
-    {
-        _networkAdapter = &handler;
-    }
+    AProtocol(Network::ANetworkAdapter &networkAdapter);
+    virtual ~AProtocol();
 
     virtual void        connectedEvent() = 0;
-    virtual void        receivePacketEvent(Network::Packet &packet) = 0;
+    virtual void        receivePacketEvent(Network::CircularBuffer &packet) = 0;
     virtual void        disconnectEvent() = 0;
 
 private:
-    AProtocol(){}
-    Network::ANetworkAdapter          *_networkAdapter;
+    AProtocol() = delete;
+    NON_COPYABLE(AProtocol)
+
+    Network::ANetworkAdapter          &_networkAdapter;
 };
 
 #endif

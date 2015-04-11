@@ -3,6 +3,7 @@
 
 #include "AProtocol.h"
 #include "Packet.h"
+#include "Agent.hh"
 
 class       AgentProtocol : public AProtocol
 {
@@ -11,18 +12,10 @@ public:
         AProtocol(networkAdapter)
     {}
 
-    enum            e_events
-    {
-        HANDSHAKE = 0,
-        HANDSHAKE_ACK,
-        START_ACK,
-        e_events_count
-    };
-
     virtual ~AgentProtocol(){}
 
     virtual void        connectedEvent();
-    virtual void        receivePacketEvent(Network::Packet &packet);
+    virtual void        receivePacketEvent(Network::CircularBuffer &packet);
     virtual void        disconnectEvent();
 
 protected:

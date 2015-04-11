@@ -24,7 +24,7 @@ Slam::~Slam()
 /**
  * To be used after agent update odometry
  **/
-void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
 {
   //Update state using odometry
   this->_state->updateRobotState(agent);
@@ -36,23 +36,33 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
-  this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
-}
-
-/**
- * Search for reobserved landmark and update state with them
- **/
-void		Slam::updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
-{
-  //@TODO: Function that associate without adding new landmark, and return the vector with only new landmark (to be used after)
-  //@See alignLandmarkData
   this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
+  this->addLandmarks(newLandmarks);
+
+  for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
+  {
+    //@TODO: Caculate kalman gain and uncertainity
+    //@TODO: Update state using kalman gain and uncertainity
+  }
+  
+  agent.setPos(this->_state->getRobotPos());
+  //After all, remove abd landmarks
+  this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
 /**
- * @TODO: Add landmark to matrice
+ * Add landmark to matrice
  **/
-// void		Slam::addLandmarks(pcl::PointXYZ cameradata[], int numberSample)
-// {
-//   this->_data->validationGate(cameradata, numberSample, *this->_agent);
-// }
+void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
+{
+  for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+  {
+    int landmarkId = this->_landmarkDb->addToDB(**it);
+    int slamId = this->_state->addLandmarkPosition((*it)->pos);
+    this->_landmarkDb->addSlamId(landmarkId, slamId);
+    //By default assume that landmark is perfectly observed
+    this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
+    this->_covariance->addLandmark((*it)->pos, slamId);
+    this->_covariance->calculationCovariance();
+  }
+}

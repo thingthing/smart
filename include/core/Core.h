@@ -3,18 +3,23 @@
 
 #include "protocol/AgentProtocol.h"
 #include "network/TCPConnector.h"
+#include "core/Agent.hh"
+#include "utils/NonCopyable.h"
 
 class           Core
 {
 public:
-    Core();
+    Core(AgentProtocol &protocol);
     ~Core();
 
     void        run();
 
 protected:
-    Network::TCPConnector       &_networkAdapter;
-    AgentProtocol               _protocol;
+    Core() = delete;
+    NON_COPYABLE(Core)
+
+    Agent                       _agent;
+    AgentProtocol               &_protocol;
 };
 
 #endif
