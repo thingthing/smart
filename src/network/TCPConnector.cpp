@@ -8,12 +8,10 @@
 namespace   Network
 {
 
-TCPConnector::TCPConnector(AProtocol *protocol) :
+TCPConnector::TCPConnector() :
     _rxBuffer(MAX_RX_BUFFER_SIZE),
     _txBuffer(MAX_TX_BUFFER_SIZE)
 {
-    if (protocol)
-        this->setProtocol(*protocol);
 }
 
 TCPConnector::~TCPConnector()
@@ -40,6 +38,7 @@ bool    TCPConnector::connectTo(const std::string &ip, unsigned short port)
     if (connect(_socket, (const sockaddr*)&_sa, sizeof(_sa)) < 0)
         return (false);
     _fdset = (struct pollfd){_socket, POLLIN, 0};
+    this->dispatch("ConnectedEvent");
     return (true);
 }
 
@@ -71,7 +70,7 @@ void            TCPConnector::run()
                         if (*(((const char *)_rxBuffer.peek()) + i) == '\n')
                         {
                             _rxBuffer.poke(i, "\0", 1);
-                            _protocol->receivePacketEvent(_rxBuffer);       // Horrible, but it will do the trick for now.
+                            this->dispatch("ReceivePacketEvent", _rxBuffer); // Horrible, but it will do the trick for now.
                         }
                     }
                     if (_rxBuffer.getSpaceLeft() == 0)              // Some random data, drop it. Should not happen.
@@ -82,7 +81,7 @@ void            TCPConnector::run()
                     std::cerr << "DISCONNECTED" << std::endl; // THIS IS DEBUG
                     ::close(_socket);
                     _socket = -1;
-                    _protocol->disconnectEvent();
+                    this->dispatch("DisconnectEvent");
                 }
             }
             else if (_fdset.revents & POLLOUT)

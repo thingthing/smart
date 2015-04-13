@@ -36,7 +36,7 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agen
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
-  this->updateStateWithLandmark(cloud, agent, newLandmarks, reobservedLandmarks);
+  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
   this->addLandmarks(newLandmarks);
 
   for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
@@ -51,16 +51,6 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agen
 }
 
 /**
- * Search for reobserved landmark and update state with them
- **/
-void		Slam::updateStateWithLandmark(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, std::vector<Landmarks::Landmark *> &newLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
-{
-  //@TODO: Function that associate without adding new landmark, and return the vector with only new landmark (to be used after)
-  //@See alignLandmarkData
-  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
-}
-
-/**
  * Add landmark to matrice
  **/
 void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
@@ -70,8 +60,9 @@ void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
     int landmarkId = this->_landmarkDb->addToDB(**it);
     int slamId = this->_state->addLandmarkPosition((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
-
-    this->_covariance->addLandmark((*it)->pos);
+    //By default assume that landmark is perfectly observed
+    this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
+    this->_covariance->addLandmark((*it)->pos, slamId);
     this->_covariance->calculationCovariance();
   }
 }

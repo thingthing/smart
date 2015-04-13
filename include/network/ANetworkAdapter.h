@@ -3,24 +3,24 @@
 
 #include "AProtocol.h"
 #include "AThread.h"
-
-// TODO : make this inherit from thread instead.
+#include "utils/NonCopyable.h"
+#include "utils/event/Dispatcher.h"
 
 namespace   Network
 {
 
-class		ANetworkAdapter : public AThread
+class		ANetworkAdapter : public AThread, public Utils::Dispatcher
 {
 public:
+    ANetworkAdapter(){}
     virtual ~ANetworkAdapter(){}
 
-    void            setProtocol(AProtocol &protocol) {_protocol = &protocol;}
     virtual bool    send(const std::string &data) = 0;
 
 protected:
-    virtual void    run() = 0; // From AThread
+    NON_COPYABLE(ANetworkAdapter)
 
-    AProtocol       *_protocol;
+    virtual void    run() = 0; // From AThread
 };
 
 }
