@@ -1,10 +1,14 @@
 SET(SOURCES
   ${SOURCES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Landmarks.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/DataAssociation.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/CovarianceMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/DataAssociation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/JacobianMatriceA.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/JacobianMatriceH.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/JacobianMatriceJxr.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/JacobianMatriceJz.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/KalmanGainMatrice.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/SystemStateMatrice.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Landmarks.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Slam.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/SystemStateMatrice.cpp
   PARENT_SCOPE
   )
