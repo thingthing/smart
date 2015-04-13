@@ -17,14 +17,12 @@ public:
 	virtual ~JacobianMatriceA();
 	void JacobiMath(Agent const &agent);
 	const std::vector<double> &getMatrice() const;
-	const std::tuple<double,double,double> &getPrediction() const;
 
 private:
 	JacobianMatriceA(const JacobianMatriceA &);
 	JacobianMatriceA &operator=(const JacobianMatriceA &);
 
 protected:
-	std::tuple<double,double,double> predictionF;
 	std::vector<double> matrice;
 };
 

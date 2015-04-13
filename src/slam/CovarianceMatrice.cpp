@@ -200,7 +200,7 @@ void CovarianceMatrice::addLandmark(pcl::PointXY const &pos, unsigned int slamId
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
 }
 
-void CovarianceMatrice::calculateRobotCovariance(SystemStateMatrice state, JacobianMatriceA JA)
+void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA JA)
 {
 	//Step1
 	//Prr = A * Prr * A + Q

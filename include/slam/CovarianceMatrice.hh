@@ -57,7 +57,7 @@ public:
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);
   void setRobotPosition(Agent const &agent);
   void calculationCovariance();
-  void calculateRobotCovariance(SystemStateMatrice state, JacobianMatriceA JA);
+  void step1RobotCovariance(JacobianMatriceA JA);
 
 
 private:
