@@ -1,7 +1,9 @@
 # README #
 
-There is only one dependency for the Agent part at the moment, which is PointClouds (PCL)  
-You can find this package following this link: [Download Pointclouds](http://pointclouds.org/downloads/)
+### Dependencies ###
+
+ * PointClouds (PCL)  [Download Pointclouds](http://pointclouds.org/downloads/)
+ * Jsoncpp [How to install on unix](http://ask.xmodulo.com/fix-fatal-error-jsoncpp.html)
 
 We are using [Igloo](http://igloo-testing.org/) for the Tests.
 
