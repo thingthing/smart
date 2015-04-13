@@ -200,7 +200,7 @@ void CovarianceMatrice::addLandmark(pcl::PointXY const &pos, unsigned int slamId
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
 }
 
-void CovarianceMatrice::robotRobotCovariance(SystemStateMatrice state, JacobianMatriceA JA)
+void CovarianceMatrice::calculateRobotCovariance(SystemStateMatrice state, JacobianMatriceA JA)
 {
 	//Step1
 	//Prr = A * Prr * A + Q
@@ -240,7 +240,7 @@ void CovarianceMatrice::robotRobotCovariance(SystemStateMatrice state, JacobianM
 
 	//Pri = A * Pri
 	std::vector<double> APri(9,0);
-	for (unisgned int j = 3; j < this->_matrice.size() - 2; j += 3)
+	for (unsigned int j = 3; j < this->_matrice.size() - 2; j += 3)
 	{
 		APri.at(0) = JA.getMatrice().at(0) * this->_matrice[0][j].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j].getValue();
 		APri.at(1) = JA.getMatrice().at(0) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j+1].getValue();

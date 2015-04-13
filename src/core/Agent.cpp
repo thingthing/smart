@@ -4,7 +4,7 @@ const double Agent::DEGREESPERSCAN = 0.5;
 const double Agent::CAMERAPROBLEM = 4.1; // meters
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : _bearing(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem), thrust(0), theta(0), deltaTheta(0)
+  : _bearing(0), thrust(0), theta(0), deltaTheta(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -31,9 +31,9 @@ double		Agent::getThrust() const
 	return (this->thrust);
 }
 
-double	Agent::setThrust(double _thrust)
+void	Agent::setThrust(double thrust)
 {
-	this->thrust = _thurst;
+	this->thrust = thrust;
 }
 
 double	Agent::getTheta() const
@@ -46,7 +46,7 @@ double	Agent::getDeltaTheta() const
 	return (this->deltaTheta);
 }
 
-double	Agent::setTheta(double _theta)
+void	Agent::setTheta(double _theta)
 {
 	this->deltaTheta = _theta - this->theta;
 	this->theta = _theta;

@@ -2,8 +2,8 @@
 
 JacobianMatriceH::JacobianMatriceH()
 {
-	this->bearingH = 0;
-	this->rangeH = 0;
+	this->bearingH = std::tuple<double,double,double>(0.0, 0.0, 0.0);
+	this->rangeH = std::tuple<double,double,double>(0.0, 0.0, 0.0);
 }
 
 JacobianMatriceH::~JacobianMatriceH()
@@ -21,10 +21,13 @@ const std::tuple<double,double,double> &JacobianMatriceH::getJacobianBearing(uns
 
 void JacobianMatriceH::JacobiMath(unsigned int landmarkNumber, SystemStateMatrice stateM)
 {
-	float range = sqrt(pow(stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x, 2.0) + 
+	double range_innovation = 0;
+	double bearing_innovation = 0;
+
+	double range = sqrt(pow(stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x, 2.0) + 
 		pow(stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y, 2.0))
 		+ range_innovation;
-	float bearing = atan((stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) /
+	double bearing = atan((stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) /
 		(stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x)) - 
 		stateM.getRobotTeta() + bearing_innovation;
 

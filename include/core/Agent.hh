@@ -27,6 +27,7 @@ public:
 	void		setThrust(double _thrust);
 	double	getTheta() const;
 	double	getThrust() const;
+  double  getDeltaTheta() const;
 
 private:
   double	_bearing;

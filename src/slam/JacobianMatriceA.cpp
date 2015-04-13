@@ -17,7 +17,7 @@ void JacobianMatriceA::JacobiMath(Agent const &agent)
 	//we need the noise
 	double x = agent.getPos().x + agent.getThrust() * cos(agent.getTheta());//+ 'noise' * thrust *cos(theta)
 	double y = agent.getPos().y + agent.getThrust() * sin(agent.getTheta());//+ 'noise' * thrust *sin(theta)
-	double angle = theta + agent.getDeltaTheta();//+ 'noise' * deltaTheta
+	double angle = agent.getTheta() + agent.getDeltaTheta();//+ 'noise' * deltaTheta
 
 	std::get<0>(predictionF) = x;
 	std::get<1>(predictionF) = y;

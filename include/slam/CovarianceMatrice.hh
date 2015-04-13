@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "Agent.hh"
+#include "SystemStateMatrice.hh"
 #include "JacobianMatriceA.hh"
 
 class CovarianceMatrice
@@ -56,6 +57,8 @@ public:
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);
   void setRobotPosition(Agent const &agent);
   void calculationCovariance();
+  void calculateRobotCovariance(SystemStateMatrice state, JacobianMatriceA JA);
+
 
 private:
   CovarianceMatrice(const CovarianceMatrice &);
