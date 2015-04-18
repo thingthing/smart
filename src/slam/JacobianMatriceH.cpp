@@ -2,44 +2,55 @@
 
 JacobianMatriceH::JacobianMatriceH()
 {
-	this->bearingH = std::tuple<double,double,double>(0.0, 0.0, 0.0);
-	this->rangeH = std::tuple<double,double,double>(0.0, 0.0, 0.0);
+	/*this->bearingH = std::tuple<double,double,double>(0.0, 0.0, 0.0);
+	this->rangeH = std::tuple<double,double,double>(0.0, 0.0, 0.0);*/
 }
 
 JacobianMatriceH::~JacobianMatriceH()
 {}
 
-const std::tuple<double,double,double> &JacobianMatriceH::getJacobianRange(unsigned int landmarkNumber) const
-{
-  return this->rangeH;
-}
-
-const std::tuple<double,double,double> &JacobianMatriceH::getJacobianBearing(unsigned int landmarkNumber) const
-{
-  return this->bearingH;
-}
-
-void JacobianMatriceH::JacobiMath(unsigned int landmarkNumber, SystemStateMatrice stateM)
+void JacobianMatriceH::setRnBMatrice(unsigned int landmarkNumber, SystemStateMatrice stateM)
 {
 	double range_innovation = 0;
 	double bearing_innovation = 0;
 
 	double range = sqrt(pow(stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x, 2.0) + 
-		pow(stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y, 2.0))
-		+ range_innovation;
-	double bearing = atan((stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) /
-		(stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x)) - 
-		stateM.getRobotTeta() + bearing_innovation;
+	pow(stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y, 2.0)) + range_innovation;
 
+	double bearing = atan((stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) /
+	(stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x)) - 
+	stateM.getRobotTeta() + bearing_innovation;
+
+	std::pair<double,double> pairing (range, bearing);
+	this->rnbMatrice.push_back(pairing);
+}
+
+std::pair<double, double> JacobianMatriceH::getRnBMatrice(unsigned int landmarkNumber) const
+{
+	return this->rnbMatrice.at(landmarkNumber);
+}
+
+void JacobianMatriceH::JacobiMath(unsigned int landmarkNumber, SystemStateMatrice stateM, double range)
+{
 	double rangeX = (stateM.getRobotPos().x - stateM.getLandmarkXPosition(landmarkNumber)) / range;
 	double rangeY = (stateM.getRobotPos().y - stateM.getLandmarkYPosition(landmarkNumber)) / range;
-	std::get<0>(rangeH) = rangeX;
-	std::get<1>(rangeH) = rangeY;
-	std::get<2>(rangeH) = 0.0;
+	std::pair<double,double> pairRange (-rangeX, -rangeY);
 
-	double bearingX = (stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x) / bearing;
-	double bearingY = (stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) / bearing;
-	std::get<0>(bearingH) = bearingX;
-	std::get<1>(bearingH) = bearingY;
-	std::get<2>(bearingH) = -1.0;
+	this->matrice.push_back(pairRange);
+
+	double bearingX = (stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x) / pow(range,2.0);
+	double bearingY = (stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) / pow(range,2.0);
+	std::pair<double,double> pairBearing (-bearingX, -bearingY);
+
+	this->matrice.push_back(pairBearing);
+}
+
+std::pair<double,double> JacobianMatriceH::getJacobianRange(unsigned int landmarkNumber) const
+{
+	return this->matrice.at(landmarkNumber*2);
+}
+
+std::pair<double,double> JacobianMatriceH::getJacobianBearing(unsigned int landmarkNumber) const
+{
+	return this->matrice.at(landmarkNumber*2 + 1);
 }
