@@ -1,5 +1,5 @@
-#ifndef     NETWORK_MANAGER_H_
-# define    NETWORK_MANAGER_H_
+#ifndef     TCP_CONNECTOR_H_
+# define    TCP_CONNECTOR_H_
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -10,40 +10,33 @@
 #include <netinet/in.h>
 #include <sys/sendfile.h>
 #include <arpa/inet.h>
-#include <poll.h>
 
 #include <string>
 #include <vector>
 
 #include "AProtocol.h"
-#include "CircularBuffer.h"
-#include "ANetworkAdapter.h"
+#include "IConnector.hh"
 
 namespace   Network
 {
-class       TCPConnector : public ANetworkAdapter
+class       TCPConnector : public IConnector
 {
 public:
     TCPConnector();
     virtual ~TCPConnector();
 
-    bool            connectTo(const std::string &ip, unsigned short port);
-    virtual bool    send(const std::string &data);
+    virtual bool    connectTo(const std::string &ip, unsigned short port);
+    virtual void    disconnect();
+    virtual bool    isConnected() const;
+    virtual int     getSocket() const;
+
 
 protected:
-    virtual void    run();
-    bool            initSockAddr(const std::string &ip, unsigned short port);
+    bool    initSockAddr(const std::string &ip, unsigned short port);
 
     struct sockaddr_in          _sa;
     int                         _socket;
-    CircularBuffer              _rxBuffer;
-    CircularBuffer              _txBuffer;
-    pollfd                      _fdset;
-    int                         _byteRead;
-    int                         _byteWritten;
 
-    static const unsigned int   MAX_RX_BUFFER_SIZE = (64*1024);
-    static const unsigned int   MAX_TX_BUFFER_SIZE = (64*1024);
 };
 }
 #endif
