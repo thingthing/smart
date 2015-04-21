@@ -3,8 +3,8 @@
 
 #include "CircularBuffer.h"
 #include "Packet.h"
-#include "utils/NonCopyable.h"
-#include "utils/event/Dispatcher.h"
+#include "NonCopyable.h"
+#include "event/Dispatcher.h"
 #include "NetworkManager.hh"
 
 namespace Network { class NetworkManager; }

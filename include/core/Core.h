@@ -1,10 +1,10 @@
 #ifndef             CORE_H_
 # define            CORE_H_
 
-#include "protocol/AgentProtocol.h"
-#include "network/TCPConnector.h"
-#include "core/Agent.hh"
-#include "utils/NonCopyable.h"
+#include "AgentProtocol.h"
+#include "TCPConnector.h"
+#include "Agent.hh"
+#include "NonCopyable.h"
 
 class           Core
 {
