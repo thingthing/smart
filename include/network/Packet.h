@@ -169,19 +169,19 @@ public:
     /// Overloads of operator << to write data into the packet
     ///
     ////////////////////////////////////////////////////////////
-    Packet  &operator <<(bool           data);
-    Packet  &operator <<(char           data);
-    Packet  &operator <<(unsigned char  data);
-    Packet  &operator <<(short          data);
-    Packet  &operator <<(unsigned short data);
-    Packet  &operator <<(int            data);
-    Packet  &operator <<(unsigned int   data);
-    Packet  &operator <<(long           data);
-    Packet  &operator <<(unsigned long  data);
-    Packet  &operator <<(float          data);
-    Packet  &operator <<(double         data);
-    Packet  &operator <<(const char    *data);
-    Packet  &operator <<(const std::string    &data);
+    Packet  &operator <<(bool               data);
+    Packet  &operator <<(char               data);
+    Packet  &operator <<(unsigned char      data);
+    Packet  &operator <<(short              data);
+    Packet  &operator <<(unsigned short     data);
+    Packet  &operator <<(int                data);
+    Packet  &operator <<(unsigned int       data);
+    Packet  &operator <<(long long          data);
+    Packet  &operator <<(unsigned long long data);
+    Packet  &operator <<(float              data);
+    Packet  &operator <<(double             data);
+    Packet  &operator <<(const char    *    data);
+    Packet  &operator <<(const std::string  &data);
 
 protected:
     ////////////////////////////////////////////////////////////
