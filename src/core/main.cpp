@@ -3,7 +3,7 @@
 
 int     main(int argc, char **argv)
 {
-    Network::TCPConnector    networkAdapter;
+    Network::NetworkManager  networkAdapter(new Network::TCPConnector());
     AgentProtocol            protocol(networkAdapter);
     Core                     core(protocol);
 

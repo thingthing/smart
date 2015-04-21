@@ -1,9 +1,17 @@
 #include <string>
 
 #include "AgentProtocol.h"
-
 #include "json/json.h"
-#include "network/ANetworkAdapter.h"
+#include "NetworkManager.hh"
+
+AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
+    : AProtocol(networkAdapter)
+{
+}
+
+AgentProtocol::~AgentProtocol()
+{
+}
 
 void        AgentProtocol::connectedEvent()
 {

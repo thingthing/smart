@@ -5,13 +5,14 @@
 #include "Packet.h"
 #include "utils/NonCopyable.h"
 #include "utils/event/Dispatcher.h"
+#include "NetworkManager.hh"
 
-namespace Network { class ANetworkAdapter; }
+namespace Network { class NetworkManager; }
 
 class       AProtocol : public Utils::Dispatcher
 {
 public:
-    AProtocol(Network::ANetworkAdapter &networkAdapter);
+    AProtocol(Network::NetworkManager &networkAdapter);
     virtual ~AProtocol();
 
     virtual void        connectedEvent() = 0;
@@ -22,7 +23,7 @@ private:
     AProtocol() = delete;
     NON_COPYABLE(AProtocol)
 
-    Network::ANetworkAdapter          &_networkAdapter;
+    Network::NetworkManager          &_networkAdapter;
 };
 
 #endif

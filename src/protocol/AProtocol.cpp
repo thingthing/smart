@@ -1,10 +1,8 @@
 #include <string>
 
 #include "AProtocol.h"
-#include "network/ANetworkAdapter.h"
 
-
-AProtocol::AProtocol(Network::ANetworkAdapter &networkAdapter) :
+AProtocol::AProtocol(Network::NetworkManager &networkAdapter) :
     _networkAdapter(networkAdapter)
 {
     _networkAdapter.registerCallback("ConnectedEvent", [this](){connectedEvent();});

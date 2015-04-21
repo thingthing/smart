@@ -4,5 +4,6 @@ SET(SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/Packet.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/TCPConnector.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ChunkFactory.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/NetworkManager.cpp
   PARENT_SCOPE
   )
