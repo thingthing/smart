@@ -40,6 +40,9 @@ public:
   void  processData(const pcl::pointcloud<pcl::PointXYZ>&);
   void  processData(const pcl::pointcloud<pcl::PointXY>&);
 
+  bool  isFullChunkReady() const;
+  bool  isChunkReady() const;
+
   std::string   getChunk();
 
 private:

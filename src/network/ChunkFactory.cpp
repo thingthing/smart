@@ -49,6 +49,10 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXY >& points)
     // TODO
 }
 
+// Getters
+bool ChunkFactory::isFullChunkReady() const { return fullChunkReadiness; }
+bool ChunkFactory::isChunkReady() const     { return chunkReadiness; }
+
 std::string ChunkFactory::getChunk()
 {
     // TODO
