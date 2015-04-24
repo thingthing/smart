@@ -1,25 +1,20 @@
 #include "network/ChunkFactory.h"
 
 /*
- * Structure de "pcl::PointXYZ structure" 3 float
+ * Class used :
+ * "pcl::PointCloud::PointXYZ"
  *      float x
  *      float y
- *      float z // non disponible dans "pcl::PointXY"
- */
-
-/*
- * Structure de "Landmarks::Landmark" 1 PointXY, 1 PointXYZ, 3 int, 6 double
- *  pcl::PointXY pos;
- *  pcl::PointXYZ robotPos;
+ *      float z // not avaible in "pcl::PointCloud::PointXY"
+ *
+ * "Landmarks::Landmark"
+ *  pcl::PointCloud::PointXY pos;
+ *  pcl::PointCloud::PointXYZ robotPos;
  *  int id;
  *  int life;
  *  int totalTimeObserved;
  *  double bearing;
  *  double range;
- *  double a;
- *  double b;
- *  double rangeError;
- *  double bearingError;
  */
 
 
@@ -29,6 +24,7 @@ ChunkFactory::ChunkFactory():   fullChunkReadiness(false),
                                 chunkReadiness(false),
                                 sizeChunks(0) {}
 
+// TODO clean the deque if needed?
 ChunkFactory::~ChunkFactory() {}
 
 void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)

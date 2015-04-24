@@ -12,17 +12,17 @@
 namespace Network { ChunkFactory; }
 
 /*
- * Definition d'un CHUNK
+ * Definition of a CHUNK
  *
- * Un Chunk fait maximum 512 Bytes
- * Commence est termine par '[' ']'
+ * The maximum Chunk's size is 512 Bytes
+ * It begins and finish with '[' ']'
  *
- * Contient uniquement des parties entieres d'objets
- * (pcl::PointXYZ 'P' ou Landmarks::Landmark 'L')
+ * Only contain complete class (no fragmentation)
+ * (pcl::PointCloud::PointXYZ 'P' or Landmarks::Landmark 'L')
  *
  * int:    4 Bytes = 4 char
- * float:  4 Bytes = 4 char  // voir le wiki/doc pour l'encodage
- * double  8 Bytes = 8 char  // des float et des double
+ * float:  4 Bytes = 4 char  // see the wiki/doc for the encoding process
+ * double  8 Bytes = 8 char  // of float and double
  *
  * Exemple:
  *   [L(cccc|cccc|cccccccc|...)P(cccc|cccc|cccc)....]
