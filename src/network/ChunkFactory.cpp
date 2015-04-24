@@ -77,35 +77,30 @@ void ChunkFactory::pushChunk(const std::string& chunk)
     // update sizeChunks
 }
 
-// Return a string like "L(cccc|cccc|cccccccc|....)"
 std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
     // TODO
     return "";
 }
 
-// Return a string like "P(cccc|cccc|cccccccc|....)" FOR PointXY
 std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
     return "";
 }
 
-// Return a string without 'P('.....')' FOR PointXY
 std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
     return "";
 }
 
-// Return a string like "P(cccc|cccc|cccccccc|....)" FOR PointXYZ
 std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO
     return "";
 }
 
-// Return a string without 'P('.....')' FOR PointXYZ
 std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO

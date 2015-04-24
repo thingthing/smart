@@ -17,7 +17,6 @@ namespace Network
  * Definition of a CHUNK
  *
  * The maximum Chunk's size is 512 Bytes
- * It begins and finish with '[' ']'
  *
  * Only contain complete class (no fragmentation)
  * (pcl::PointCloud::PointXYZ 'P' or Landmarks::Landmark 'L')
@@ -27,7 +26,7 @@ namespace Network
  * double  8 Bytes = 8 char  // of float and double
  *
  * Exemple:
- *   [L(cccciiiioooooooo...)P(cccciiiioooo)....]
+ *   L(cccciiiioooooooo...)P(cccciiiioooo)....
  *
  */
 
@@ -42,6 +41,7 @@ public:
   void  processData(const pcl::PointCloud<pcl::PointXYZ>&);
   void  processData(const pcl::PointCloud<pcl::PointXY>&);
 
+  // Getters
   bool  isFullChunkReady() const;
   bool  isChunkReady() const;
 
@@ -66,11 +66,11 @@ private:
   NON_COPYABLE(ChunkFactory)
 
   // ATTRIBUTES
-  std::deque<std::string>       _chunks; // taille max 1Mo?
+  std::deque<std::string>       _chunks; // max size 1Mo?
   std::string                   _tmpChunk; // fill it, push it to _chunks
 
-  bool          _fullChunkReadiness;
-  bool          _chunkReadiness;
+  bool          _fullChunkReadiness; // true: there is at least 1 chunk in _chunks
+  bool          _chunkReadiness; // true: _tmpChunk is not empty neither full
   unsigned int  _sizeChunks;
   unsigned int  _maxSizeChunk; // can also depend on the MTU
 };
