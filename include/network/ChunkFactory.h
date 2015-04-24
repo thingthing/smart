@@ -67,10 +67,12 @@ private:
 
   // ATTRIBUTES
   std::deque<std::string>       _chunks; // taille max 1Mo?
+  std::string                   _tmpChunk; // fill it, push it to _chunks
 
   bool          _fullChunkReadiness;
   bool          _chunkReadiness;
   unsigned int  _sizeChunks;
+  unsigned int  _maxSizeChunk; // can also depend on the MTU
 };
 
 } // end of namespace

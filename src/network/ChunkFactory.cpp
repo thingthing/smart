@@ -24,7 +24,8 @@ namespace Network
 
 ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
                                 _chunkReadiness(false),
-                                _sizeChunks(0) {}
+                                _sizeChunks(0),
+                                _maxSizeChunk(512) {}
 
 // TODO clean the deque if needed?
 ChunkFactory::~ChunkFactory() {}
