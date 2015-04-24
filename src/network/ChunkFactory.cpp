@@ -1,5 +1,8 @@
 #include "network/ChunkFactory.h"
 
+namespace Network
+{
+
 /*
  * Class used :
  * "pcl::PointCloud::PointXYZ"
@@ -17,7 +20,6 @@
  *  double range;
  */
 
-
 // PUBLIC
 
 ChunkFactory::ChunkFactory():   fullChunkReadiness(false),
@@ -29,8 +31,8 @@ ChunkFactory::~ChunkFactory() {}
 
 void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
 {
-    std::vector<Landmarks::Landmark>::iterator it = landmarks_.begin();
-    for (it; it != landmarks_.end(); ++it)
+    std::vector<Landmarks::Landmark>::const_iterator it = landmarks_.begin();
+    for ( ; it != landmarks_.end(); ++it)
         processData(*it);
 }
 
@@ -55,7 +57,9 @@ bool ChunkFactory::isChunkReady() const     { return chunkReadiness; }
 
 std::string ChunkFactory::getChunk()
 {
+    std::string chunk = "";
     // TODO
+    return chunk;
 }
 
 // PRIVATE
@@ -70,43 +74,53 @@ void ChunkFactory::pushChunk(const std::string& chunk)
 std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
     // TODO
+    return "";
 }
 
 // Return a string like "P(cccc|cccc|cccccccc|....)" FOR PointXY
 std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
+    return "";
 }
 
 // Return a string without 'P('.....')' FOR PointXY
 std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
+    return "";
 }
 
 // Return a string like "P(cccc|cccc|cccccccc|....)" FOR PointXYZ
 std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO
+    return "";
 }
 
 // Return a string without 'P('.....')' FOR PointXYZ
 std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO
+    return "";
 }
 
 std::string ChunkFactory::fromIntToString(int nb)
 {
     // TODO
+    return "";
 }
 
 std::string ChunkFactory::fromFloatToString(float nb)
 {
     // TODO
+    return "";
 }
 
 std::string ChunkFactory::fromDoubleToString(double nb)
 {
     // TODO
+    return "";
 }
+
+} // end of namespace

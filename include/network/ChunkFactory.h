@@ -1,6 +1,7 @@
 #ifndef     CHUNK_FACTORY_H_
 # define    CHUNK_FACTORY_H_
 
+#include <pcl/common/common.h>
 #include "pcl/impl/point_types.hpp"
 #include "slam/Landmarks.hh"
 #include "utils/NonCopyable.h"
@@ -9,7 +10,8 @@
 #include <string>
 #include <deque>
 
-namespace Network { ChunkFactory; }
+namespace Network
+{
 
 /*
  * Definition of a CHUNK
@@ -58,8 +60,8 @@ private:
   std::string   fromFloatToString(float);
   std::string   fromDoubleToString(double);
 
-  NonCopyable(ChunkFactory);
 
+  NON_COPYABLE(ChunkFactory)
   //-----------------------------
   std::deque<std::string>       chunks; // taille max 1Mo?
 
@@ -67,5 +69,7 @@ private:
   bool          chunkReadiness;
   unsigned int  sizeChunks;
 };
+
+} // end of namespace
 
 #endif
