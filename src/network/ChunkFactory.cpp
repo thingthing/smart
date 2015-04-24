@@ -94,21 +94,22 @@ void ChunkFactory::addEncodedClassToChunk(const std::string& encodedClass)
 // Return a string like "cccciiiioooooooo"
 std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
-    std::string stringLandmark = "";
+    std::string strLandmark = "";
 
 /*
  * ATTENTION "pos" and "robotPos" are cloud of points!
  * pcl::PointCloud::PointXY pos;
  * pcl::PointCloud::PointXYZ robotPos;
 */
-    stringLandmark += fromPclPointToString(landmark_.pos);
-    stringLandmark += fromPclPointToString(landmark_.robotPos);
-    stringLandmark += fromIntToString(landmark_.id);
-    stringLandmark += fromIntToString(landmark_.life);
-    stringLandmark += fromIntToString(landmark_.totalTimeObserved);
-    stringLandmark += fromDoubleToString(landmark_.bearing);
-    stringLandmark += fromDoubleToString(landmark_.range);
-    return stringLandmark;
+    strLandmark += fromPclPointToString(landmark_.pos);
+    strLandmark += fromPclPointToString(landmark_.robotPos);
+    strLandmark += encodeNbIntoString((void*)&(landmark_.id), sizeof(landmark_.id));
+    strLandmark += encodeNbIntoString((void*)&(landmark_.life), sizeof(landmark_.life));
+    strLandmark += encodeNbIntoString((void*)&(landmark_.totalTimeObserved), sizeof(landmark_.totalTimeObserved));
+    strLandmark += encodeNbIntoString((void*)&(landmark_.bearing), sizeof(landmark_.bearing));
+    strLandmark += encodeNbIntoString((void*)&(landmark_.range), sizeof(landmark_.range));
+
+    return strLandmark;
 }
 
 std::string ChunkFactory::fromPclPointCloudToString(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
@@ -122,8 +123,8 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXY& points)
 {
     std::string stringPoints = "";
 
-    stringPoints += fromFloatToString(points.x);
-    stringPoints += fromFloatToString(points.y);
+    stringPoints += encodeNbIntoString((void*)&(points.x), sizeof(points.x));
+    stringPoints += encodeNbIntoString((void*)&(points.y), sizeof(points.y));
 
     return stringPoints;
 }
@@ -133,29 +134,26 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
 {
     std::string stringPoints = "";
 
-    stringPoints += fromFloatToString(points.x);
-    stringPoints += fromFloatToString(points.y);
-    stringPoints += fromFloatToString(points.z);
+    stringPoints += encodeNbIntoString((void*)&(points.x), sizeof(points.x));
+    stringPoints += encodeNbIntoString((void*)&(points.y), sizeof(points.y));
+    stringPoints += encodeNbIntoString((void*)&(points.z), sizeof(points.z));
 
     return stringPoints;
 }
 
-std::string ChunkFactory::fromIntToString(int nb)
+std::string ChunkFactory::encodeNbIntoString(void* nb, unsigned long nbOfByte)
 {
-    // TODO
-    return "";
-}
+  char* nb_ = (char*)nb;
+  std::string encoded = "";
 
-std::string ChunkFactory::fromFloatToString(float nb)
-{
-    // TODO
-    return "";
-}
-
-std::string ChunkFactory::fromDoubleToString(double nb)
-{
-    // TODO
-    return "";
+  for (unsigned long i = 0; i < nbOfByte; ++i)
+    {
+      char tmp = 0;
+      tmp |= nb_[i];
+      encoded += tmp;
+    }
+  //  std::cout << std::hex << encoded;
+  return encoded;
 }
 
 void ChunkFactory::increaseSizeChunks(unsigned int cSize) { _sizeChunks += cSize; }

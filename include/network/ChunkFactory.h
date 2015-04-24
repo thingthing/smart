@@ -55,9 +55,7 @@ private:
   std::string   fromPclPointToString(const pcl::PointXY&);
   std::string   fromPclPointToString(const pcl::PointXYZ&);
 
-  std::string   fromIntToString(int);
-  std::string   fromFloatToString(float);
-  std::string   fromDoubleToString(double);
+  std::string   encodeNbIntoString(void*, unsigned long);
 
   void          increaseSizeChunks(unsigned int);
   void          decreaseSizeChunks(unsigned int);
