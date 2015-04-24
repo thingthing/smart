@@ -60,6 +60,8 @@ private:
   std::string   fromFloatToString(float);
   std::string   fromDoubleToString(double);
 
+  void          increaseSizeChunks(unsigned int);
+  void          decreaseSizeChunks(unsigned int);
 
   NON_COPYABLE(ChunkFactory)
   //-----------------------------

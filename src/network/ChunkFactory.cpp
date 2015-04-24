@@ -58,7 +58,13 @@ bool ChunkFactory::isChunkReady() const     { return _chunkReadiness; }
 std::string ChunkFactory::getChunk()
 {
     std::string chunk = "";
-    // TODO
+
+    if (_chunks.size() != 0)
+    {
+        chunk = _chunks.back();
+        _chunks.pop_back();
+        decreaseSizeChunks(chunk.size());
+    }
     return chunk;
 }
 
@@ -122,5 +128,8 @@ std::string ChunkFactory::fromDoubleToString(double nb)
     // TODO
     return "";
 }
+
+void ChunkFactory::increaseSizeChunks(unsigned int cSize) { _sizeChunks += cSize; }
+void ChunkFactory::decreaseSizeChunks(unsigned int cSize) { _sizeChunks -= cSize; }
 
 } // end of namespace
