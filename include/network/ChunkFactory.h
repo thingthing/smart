@@ -27,7 +27,7 @@ namespace Network
  * double  8 Bytes = 8 char  // of float and double
  *
  * Exemple:
- *   [L(cccc|cccc|cccccccc|...)P(cccc|cccc|cccc)....]
+ *   [L(cccciiiioooooooo...)P(cccciiiioooo)....]
  *
  */
 
@@ -64,8 +64,8 @@ private:
   void          decreaseSizeChunks(unsigned int);
 
   NON_COPYABLE(ChunkFactory)
-  //-----------------------------
 
+  // ATTRIBUTES
   std::deque<std::string>       _chunks; // taille max 1Mo?
 
   bool          _fullChunkReadiness;
