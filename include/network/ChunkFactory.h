@@ -39,7 +39,6 @@ public:
   void  processData(const std::vector<Landmarks::Landmark>&);
   void  processData(const Landmarks::Landmark&);
   void  processData(const pcl::PointCloud<pcl::PointXYZ>&);
-  void  processData(const pcl::PointCloud<pcl::PointXY>&);
 
   // Getters
   bool  isFullChunkReady() const;
@@ -48,13 +47,13 @@ public:
   std::string   getChunk();
 
 private:
-  void          pushChunk(const std::string &);
+  void          pushChunkToChunks();
+  void          addEncodedClassToChunk(const std::string&);
 
   std::string   fromLandmarkToString(const Landmarks::Landmark&);
-  std::string   fromPclPointToString(const pcl::PointCloud<pcl::PointXY>&);
-  std::string   fromPclPointToStringRaw(const pcl::PointCloud<pcl::PointXY>&);
-  std::string   fromPclPointToString(const pcl::PointCloud<pcl::PointXYZ>&);
-  std::string   fromPclPointToStringRaw(const pcl::PointCloud<pcl::PointXYZ>&);
+  std::string   fromPclPointCloudToString(const pcl::PointCloud<pcl::PointXYZ>&);
+  std::string   fromPclPointToString(const pcl::PointXY&);
+  std::string   fromPclPointToString(const pcl::PointXYZ&);
 
   std::string   fromIntToString(int);
   std::string   fromFloatToString(float);

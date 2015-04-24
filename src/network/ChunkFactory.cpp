@@ -39,17 +39,14 @@ void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmar
 
 void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 {
-    // TODO
+    addEncodedClassToChunk("L(" + fromLandmarkToString(landmark_) + ")");
 }
 
+// ATTENTION must convert PointCloud in all PointXYZ first
 void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
-    // TODO
-}
-
-void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXY >& points)
-{
-    // TODO
+    // TODO do a loop on each point of the cloud?
+    // addEncodedClassToChunk("P(" + fromPclPointToString(points) + ")");
 }
 
 // Getters
@@ -71,40 +68,76 @@ std::string ChunkFactory::getChunk()
 
 // PRIVATE
 
-void ChunkFactory::pushChunk(const std::string& chunk)
+void ChunkFactory::pushChunkToChunks()
 {
-    // TODO
-    // update sizeChunks
+    unsigned int chunkSize = _tmpChunk.size();
+
+    if (chunkSize > 0)
+    {
+        _chunks.push_front(_tmpChunk);
+        increaseSizeChunks(chunkSize);
+        _tmpChunk.erase();
+        _chunkReadiness = false;
+    }
 }
 
+void ChunkFactory::addEncodedClassToChunk(const std::string& encodedClass)
+{
+    if (_tmpChunk.size() + encodedClass.size() > _maxSizeChunk)
+        pushChunkToChunks();
+
+    _tmpChunk += encodedClass;
+    if (!_chunkReadiness)
+        _chunkReadiness = true;
+}
+
+// Return a string like "cccciiiioooooooo"
 std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
-    // TODO
-    return "";
+    std::string stringLandmark = "";
+
+/*
+ * ATTENTION "pos" and "robotPos" are cloud of points!
+ * pcl::PointCloud::PointXY pos;
+ * pcl::PointCloud::PointXYZ robotPos;
+*/
+    stringLandmark += fromPclPointToString(landmark_.pos);
+    stringLandmark += fromPclPointToString(landmark_.robotPos);
+    stringLandmark += fromIntToString(landmark_.id);
+    stringLandmark += fromIntToString(landmark_.life);
+    stringLandmark += fromIntToString(landmark_.totalTimeObserved);
+    stringLandmark += fromDoubleToString(landmark_.bearing);
+    stringLandmark += fromDoubleToString(landmark_.range);
+    return stringLandmark;
 }
 
-std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXY >& points)
+std::string ChunkFactory::fromPclPointCloudToString(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
 {
     // TODO
     return "";
 }
 
-std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXY >& points)
+// Return a string like "cccciiii" FOR PointXY
+std::string ChunkFactory::fromPclPointToString(const pcl::PointXY& points)
 {
-    // TODO
-    return "";
+    std::string stringPoints = "";
+
+    stringPoints += fromFloatToString(points.x);
+    stringPoints += fromFloatToString(points.y);
+
+    return stringPoints;
 }
 
-std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXYZ >& points)
+// Return a string like "cccciiiioooo" FOR PointXYZ
+std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
 {
-    // TODO
-    return "";
-}
+    std::string stringPoints = "";
 
-std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXYZ >& points)
-{
-    // TODO
-    return "";
+    stringPoints += fromFloatToString(points.x);
+    stringPoints += fromFloatToString(points.y);
+    stringPoints += fromFloatToString(points.z);
+
+    return stringPoints;
 }
 
 std::string ChunkFactory::fromIntToString(int nb)
