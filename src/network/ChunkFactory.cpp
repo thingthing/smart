@@ -25,88 +25,88 @@
 
 // PUBLIC
 
-chunkFactory::chunkFactory():   isFullChunkReady(false),
-                                isChunkReady(false),
+ChunkFactory::ChunkFactory():   fullChunkReadiness(false),
+                                chunkReadiness(false),
                                 sizeChunks(0) {}
 
-chunkFactory::~chunkFactory() {}
+ChunkFactory::~ChunkFactory() {}
 
-void chunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
+void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
 {
     std::vector<Landmarks::Landmark>::iterator it = landmarks_.begin();
     for (it; it != landmarks_.end(); ++it)
         processData(*it);
 }
 
-void chunkFactory::processData(const Landmarks::Landmark& landmark_)
+void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 {
     // TODO
 }
 
-void chunkFactory::processData(const pcl::pointcloud< pcl::PointXYZ >& points)
+void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO
 }
 
-void chunkFactory::processData(const pcl::pointcloud< pcl::PointXY >& points)
+void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
 }
 
-std::string chunkFactory::getChunk()
+std::string ChunkFactory::getChunk()
 {
     // TODO
 }
 
 // PRIVATE
 
-void chunkFactory::pushChunk(const std::string& chunk)
+void ChunkFactory::pushChunk(const std::string& chunk)
 {
     // TODO
     // update sizeChunks
 }
 
 // Return a string like "L(cccc|cccc|cccccccc|....)"
-std::string chunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
+std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
     // TODO
 }
 
 // Return a string like "P(cccc|cccc|cccccccc|....)" FOR PointXY
-std::string chunkFactory::fromPclPointToString(const pcl::pointcloud< pcl::PointXY >& points)
+std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
 }
 
 // Return a string without 'P('.....')' FOR PointXY
-std::string chunkFactory::fromPclPointToStringRaw(const pcl::pointcloud< pcl::PointXY >& points)
+std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXY >& points)
 {
     // TODO
 }
 
 // Return a string like "P(cccc|cccc|cccccccc|....)" FOR PointXYZ
-std::string chunkFactory::fromPclPointToString(const pcl::pointcloud< pcl::PointXYZ >& points)
+std::string ChunkFactory::fromPclPointToString(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO
 }
 
 // Return a string without 'P('.....')' FOR PointXYZ
-std::string chunkFactory::fromPclPointToStringRaw(const pcl::pointcloud< pcl::PointXYZ >& points)
+std::string ChunkFactory::fromPclPointToStringRaw(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO
 }
 
-std::string chunkFactory::fromIntToString(int nb)
+std::string ChunkFactory::fromIntToString(int nb)
 {
     // TODO
 }
 
-std::string chunkFactory::fromFloatToString(float nb)
+std::string ChunkFactory::fromFloatToString(float nb)
 {
     // TODO
 }
 
-std::string chunkFactory::fromDoubleToString(double nb)
+std::string ChunkFactory::fromDoubleToString(double nb)
 {
     // TODO
 }

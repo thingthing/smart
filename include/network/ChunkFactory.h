@@ -9,7 +9,7 @@
 #include <string>
 #include <deque>
 
-namespace Network { chunkFactory; }
+namespace Network { ChunkFactory; }
 
 /*
  * Definition d'un CHUNK
@@ -29,11 +29,11 @@ namespace Network { chunkFactory; }
  *
  */
 
-class   chunkFactory
+class   ChunkFactory
 {
 public:
-  chunkFactory();
-  ~chunkFactory();
+  ChunkFactory();
+  ~ChunkFactory();
 
   void  processData(const std::vector<Landmarks::Landmark>&);
   void  processData(const Landmarks::Landmark&);
@@ -55,13 +55,13 @@ private:
   std::string   fromFloatToString(float);
   std::string   fromDoubleToString(double);
 
-  NonCopyable(chunkFactory);
+  NonCopyable(ChunkFactory);
 
   //-----------------------------
   std::deque<std::string>       chunks; // taille max 1Mo?
 
-  bool          isFullChunkReady;
-  bool          isChunkReady;
+  bool          fullChunkReadiness;
+  bool          chunkReadiness;
   unsigned int  sizeChunks;
 };
 
