@@ -22,9 +22,9 @@ namespace Network
 
 // PUBLIC
 
-ChunkFactory::ChunkFactory():   fullChunkReadiness(false),
-                                chunkReadiness(false),
-                                sizeChunks(0) {}
+ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
+                                _chunkReadiness(false),
+                                _sizeChunks(0) {}
 
 // TODO clean the deque if needed?
 ChunkFactory::~ChunkFactory() {}
@@ -52,8 +52,8 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXY >& points)
 }
 
 // Getters
-bool ChunkFactory::isFullChunkReady() const { return fullChunkReadiness; }
-bool ChunkFactory::isChunkReady() const     { return chunkReadiness; }
+bool ChunkFactory::isFullChunkReady() const { return _fullChunkReadiness; }
+bool ChunkFactory::isChunkReady() const     { return _chunkReadiness; }
 
 std::string ChunkFactory::getChunk()
 {

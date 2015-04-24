@@ -63,11 +63,12 @@ private:
 
   NON_COPYABLE(ChunkFactory)
   //-----------------------------
-  std::deque<std::string>       chunks; // taille max 1Mo?
 
-  bool          fullChunkReadiness;
-  bool          chunkReadiness;
-  unsigned int  sizeChunks;
+  std::deque<std::string>       _chunks; // taille max 1Mo?
+
+  bool          _fullChunkReadiness;
+  bool          _chunkReadiness;
+  unsigned int  _sizeChunks;
 };
 
 } // end of namespace
