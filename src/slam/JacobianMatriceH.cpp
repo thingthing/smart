@@ -1,14 +1,37 @@
 #include "JacobianMatriceH.hh"
 
 JacobianMatriceH::JacobianMatriceH()
-{
-	/*this->bearingH = std::tuple<double,double,double>(0.0, 0.0, 0.0);
-	this->rangeH = std::tuple<double,double,double>(0.0, 0.0, 0.0);*/
-}
+{}
 
 JacobianMatriceH::~JacobianMatriceH()
 {}
 
+//delete a landmark through its ID
+void JacobianMatriceH::deleteLandmark(unsigned int landmarkNumber)
+{
+	for (unsigned int i = 0; i < this->matrice.size(); i+=2)
+	{
+		if (std::get<0>(matrice.at(i)) == landmarkNumber)
+			{
+				matrice.erase(matrice.begin()+i);
+				matrice.erase(matrice.begin()+i+1);
+				rnbMatrice.erase(rnbMatrice.begin()+(i/2));
+			}
+	}
+}
+
+//resize the matrices. why not
+void JacobianMatriceH::resize(int newSize)
+{
+	matrice.resize(newSize*2);
+	rnbMatrice.resize(newSize);
+}
+
+/*
+	matrice containing the calculations on range and bearing for each landmarks
+	first element is range, second one is bearing.
+	same here, the first part of the first pair is the landmark id
+*/
 void JacobianMatriceH::setRnBMatrice(unsigned int landmarkNumber, SystemStateMatrice stateM)
 {
 	double range_innovation = 0;
@@ -22,35 +45,47 @@ void JacobianMatriceH::setRnBMatrice(unsigned int landmarkNumber, SystemStateMat
 	stateM.getRobotTeta() + bearing_innovation;
 
 	std::pair<double,double> pairing (range, bearing);
-	this->rnbMatrice.push_back(pairing);
+	std::pair<unsigned int,std::pair<double,double>> IDPairing(landmarkNumber, pairing);
+
+	this->rnbMatrice.push_back(IDPairing);
 }
 
-std::pair<double, double> JacobianMatriceH::getRnBMatrice(unsigned int landmarkNumber) const
+const std::pair<double, double> JacobianMatriceH::getRnBMatrice(unsigned int landmarkNumber) const
 {
-	return this->rnbMatrice.at(landmarkNumber);
+	return std::get<1>(this->rnbMatrice.at(landmarkNumber));
 }
 
-void JacobianMatriceH::JacobiMath(unsigned int landmarkNumber, SystemStateMatrice stateM, double range)
+/*
+	matrice 2x
+	for each landmark there are two pairs, one for the range(X & Y)
+	and one for the bearing (X & Y)
+	the first part of the first pair is the landmark id, the second part is the range and the bearing
+*/
+void JacobianMatriceH::JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice stateM, double range)
 {
 	double rangeX = (stateM.getRobotPos().x - stateM.getLandmarkXPosition(landmarkNumber)) / range;
 	double rangeY = (stateM.getRobotPos().y - stateM.getLandmarkYPosition(landmarkNumber)) / range;
 	std::pair<double,double> pairRange (-rangeX, -rangeY);
 
-	this->matrice.push_back(pairRange);
+	std::pair<double,std::pair<double,double>> IDPairRange (landmarkNumber, pairRange);
+
+	this->matrice.push_back(IDPairRange);
 
 	double bearingX = (stateM.getLandmarkXPosition(landmarkNumber) - stateM.getRobotPos().x) / pow(range,2.0);
 	double bearingY = (stateM.getLandmarkYPosition(landmarkNumber) - stateM.getRobotPos().y) / pow(range,2.0);
 	std::pair<double,double> pairBearing (-bearingX, -bearingY);
 
-	this->matrice.push_back(pairBearing);
+	std::pair<double,std::pair<double,double>> IDPairBairing (landmarkNumber, pairBearing);
+
+	this->matrice.push_back(IDPairBairing);
 }
 
-std::pair<double,double> JacobianMatriceH::getJacobianRange(unsigned int landmarkNumber) const
+const std::pair<double,double> JacobianMatriceH::getJacobianRange(unsigned int landmarkNumber) const
 {
-	return this->matrice.at(landmarkNumber*2);
+	return std::get<1>(this->matrice.at(landmarkNumber*2));
 }
 
-std::pair<double,double> JacobianMatriceH::getJacobianBearing(unsigned int landmarkNumber) const
+const std::pair<double,double> JacobianMatriceH::getJacobianBearing(unsigned int landmarkNumber) const
 {
-	return this->matrice.at(landmarkNumber*2 + 1);
+	return std::get<1>(this->matrice.at(landmarkNumber*2 + 1));
 }
