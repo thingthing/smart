@@ -29,8 +29,10 @@ ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
                                 _sizeChunks(0),
                                 _maxSizeChunk(512) {}
 
-// TODO clean the deque if needed?
-ChunkFactory::~ChunkFactory() {}
+ChunkFactory::~ChunkFactory()
+{
+    _chunks.clear();
+}
 
 void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
 {
