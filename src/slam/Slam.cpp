@@ -21,10 +21,7 @@ Slam::~Slam()
     delete this->_covariance;
 }
 
-/**
- * To be used after agent update odometry
- **/
-void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
 {
   //Update state using odometry
   this->_state->setRobotState(agent);
@@ -44,16 +41,13 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agen
     //@TODO: Caculate kalman gain and uncertainity
     //@TODO: Update state using kalman gain and uncertainity
   }
-  
+
   agent.setPos(this->_state->getRobotPos());
   //After all, remove abd landmarks
   this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
-/**
- * Add landmark to matrice
- **/
-void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
+void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
 {
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
