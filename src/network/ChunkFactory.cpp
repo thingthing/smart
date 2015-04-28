@@ -46,8 +46,7 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 
 void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
-    // TODO do a loop on each point of the cloud?
-    // addEncodedClassToChunk("P(" + fromPclPointToString(points) + ")");
+    addEncodedClassToChunk("P(" + fromPclPointCloudToString(points) + ")");
 }
 
 // Getters
@@ -110,7 +109,15 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
 
 std::string ChunkFactory::fromPclPointCloudToString(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
 {
-    // TODO
+    std::vector< pcl::PointXYZ, Eigen::aligned_allocator < pcl::PointXYZ > >::const_iterator it;
+    std::string encodedString = "";
+
+    encodedString += encodeNbIntoString((void*)&(pointCloud.width), sizeof(pointCloud.width));
+    encodedString += encodeNbIntoString((void*)&(pointCloud.height), sizeof(pointCloud.height));
+
+    for (it = pointCloud.begin() ; it != pointCloud.end() ; ++it)
+        encodedString += fromPclPointToString((*it));
+
     return "";
 }
 
