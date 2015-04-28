@@ -120,7 +120,7 @@ std::string ChunkFactory::fromPclPointCloudToString(const pcl::PointCloud< pcl::
     for (it = pointCloud.begin() ; it != pointCloud.end() ; ++it)
         encodedString += fromPclPointToString((*it));
 
-    return "";
+    return encodedString;
 }
 
 // Return a string like "cccciiii" FOR PointXY
