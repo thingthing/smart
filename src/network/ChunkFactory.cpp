@@ -5,14 +5,16 @@ namespace Network
 
 /*
  * Class used :
- * "pcl::PointCloud::PointXYZ"
+ * "pcl::PointCloud"
+ *      unsigned int width
+ *      unsigned int height
  *      float x
  *      float y
- *      float z // not avaible in "pcl::PointCloud::PointXY"
+ *      float z
  *
  * "Landmarks::Landmark"
- *  pcl::PointCloud::PointXY pos;
- *  pcl::PointCloud::PointXYZ robotPos;
+ *  pcl::PointXY pos;
+ *  pcl::PointXYZ robotPos;
  *  int id;
  *  int life;
  *  int totalTimeObserved;
@@ -32,8 +34,8 @@ ChunkFactory::~ChunkFactory() {}
 
 void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
 {
-    std::vector<Landmarks::Landmark>::const_iterator it = landmarks_.begin();
-    for ( ; it != landmarks_.end(); ++it)
+    std::vector<Landmarks::Landmark>::const_iterator it;
+    for (it = landmarks_.begin() ; it != landmarks_.end(); ++it)
         processData(*it);
 }
 
@@ -42,7 +44,6 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
     addEncodedClassToChunk("L(" + fromLandmarkToString(landmark_) + ")");
 }
 
-// ATTENTION must convert PointCloud in all PointXYZ first
 void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
     // TODO do a loop on each point of the cloud?
@@ -96,11 +97,6 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
 {
     std::string strLandmark = "";
 
-/*
- * ATTENTION "pos" and "robotPos" are cloud of points!
- * pcl::PointCloud::PointXY pos;
- * pcl::PointCloud::PointXYZ robotPos;
-*/
     strLandmark += fromPclPointToString(landmark_.pos);
     strLandmark += fromPclPointToString(landmark_.robotPos);
     strLandmark += encodeNbIntoString((void*)&(landmark_.id), sizeof(landmark_.id));
