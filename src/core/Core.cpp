@@ -9,6 +9,7 @@
 Core::Core(AgentProtocol &protocol) :
     _protocol(protocol)
 {
+    _protocol.setAgent(_agent);
 }
 
 Core::~Core()

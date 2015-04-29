@@ -4,7 +4,8 @@ const double Agent::DEGREESPERSCAN = 0.5;
 const double Agent::CAMERAPROBLEM = 4.1; // meters
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : _bearing(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem)
+  : _bearing(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem),
+    _name("UnamedAgent")
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -13,7 +14,6 @@ Agent::Agent(double degreePerScan, double cameraProblem)
 
 Agent::~Agent()
 {
-
 }
 
 pcl::PointXYZ	const &Agent::getPos() const

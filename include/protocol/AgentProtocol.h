@@ -18,8 +18,12 @@ public:
     virtual void        receivePacketEvent(Network::CircularBuffer &packet);
     virtual void        disconnectEvent();
 
+    inline void         setAgent(Agent &agent) { _agent = &agent; }
+
 protected:
     AgentProtocol();
+
+    Agent               *_agent;
 };
 
 #endif

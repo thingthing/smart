@@ -7,12 +7,14 @@
 
 void        AgentProtocol::connectedEvent()
 {
-    // Send agent infos.
-    //std::cout << "connected event " << std::endl;
-    //_networkAdapter->send("name:Testouille\n");
-    //_networkAdapter->send("position:{\"x\":" + std::to_string(_agent.getPos().x) + ", \"y\":" + std::to_string(_agent.getPos().y) + ", \"z\":" + std::to_string(_agent.getPos().z) + "}\n");
+    std::cout << "connected event " << std::endl;
+    Json::Value     reply;
+    reply["name"] = _agent->getName();
+    reply["position"]["x"] = _agent->getPos().x;        // todo : Move this in a "sendAgentInfo" function or something like this
+    reply["position"]["y"] = _agent->getPos().y;        // And dispatch a "newConnection" event, or smthn like this to the agent.
+    reply["position"]["z"] = _agent->getPos().z;
+    _networkAdapter.send(reply.toStyledString());
 }
-
 
 void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)      // only for test 4 now, will change
 {
@@ -24,25 +26,18 @@ void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)  
 
     if (posColumn != serverReply.npos)
     {
-  /*      if (reader.parse(serverReply.substr(posColumn + 1), root, false) == true)
+        if (reader.parse(serverReply.substr(posColumn + 1), root, false) == true)
         {
             std::cout << "received a movement order " << serverReply << std::endl;
-            _agent.setGoalPos(root.get("x", 0.0).asDouble(),
+            /*_agent.setGoalPos(root.get("x", 0.0).asDouble(),
                               root.get("y", 0.0).asDouble(),
-                              root.get("z", 0.0).asDouble());
+                              root.get("z", 0.0).asDouble());*/
+            this->dispatch("AGivenCommand"/*, params*/); // And the agent should subscribes to the events.
         }
         else
             std::cout << "error while parsing order : " << reader.getFormatedErrorMessages()<< std::endl;
-            */
     }
-    this->dispatch("AGivenCommand"/*, params*/); // And the agent subscribes to the events.
 }
-/*
-void        AgentProtocol::sendMovement()       // Only for test, do something more generic
-{
-   // _networkAdapter->send("position:{\"x\":" + std::to_string(_agent.getPos().x) + ", \"y\":" + std::to_string(_agent.getPos().y) + ", \"z\":" + std::to_string(_agent.getPos().z) + "}\n");
-
-}*/
 
 void        AgentProtocol::disconnectEvent()
 {
