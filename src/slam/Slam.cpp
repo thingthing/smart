@@ -25,8 +25,8 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &ag
 {
   //Update state using odometry
   this->_state->setRobotState(agent);
-  //@TODO: update jacobian matrice
-  //@TODO: update process noise matrice
+  ///@todo: update jacobian matrice
+  ///@todo: update process noise matrice
   this->_covariance->setRobotPosition(agent);
   this->_covariance->calculationCovariance();
 
@@ -38,8 +38,8 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &ag
 
   for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
   {
-    //@TODO: Caculate kalman gain and uncertainity
-    //@TODO: Update state using kalman gain and uncertainity
+    ///@todo: Caculate kalman gain and uncertainity
+    ///@todo: Update state using kalman gain and uncertainity
   }
 
   agent.setPos(this->_state->getRobotPos());
