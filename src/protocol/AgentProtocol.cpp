@@ -17,7 +17,7 @@ void        AgentProtocol::connectedEvent()
 {
     std::cout << "connected event " << std::endl;
     Json::Value     reply;
-    reply["name"] = _agent->getName();
+    reply["name"] = _agent->name();
     reply["position"]["x"] = _agent->getPos().x;        // todo : Move this in a "sendAgentInfo" function or something like this
     reply["position"]["y"] = _agent->getPos().y;        // And dispatch a "newConnection" event, or smthn like this to the agent.
     reply["position"]["z"] = _agent->getPos().z;
