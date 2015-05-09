@@ -51,7 +51,7 @@ public:
    * @details Take the current mapping and the current agent state
    * (upated with the odometry), apply SLAM algorithm and update agent state
    * with new values
-   * @warining Must be used after agent update odometry
+   * @warning Must be used after agent update odometry
    *
    * @param cloud Current mapping
    * @param agent Agent we want the state updated
