@@ -31,93 +31,59 @@
 class Landmarks
 {
 public:
-  /**
-   * @brief Convert from degree to radians
-   */
+
+   ///Convert from degree to radians
   static const double CONVERSION;
-  /**
-   * @brief Max number of landmarks
-   */
+   ///Max number of landmarks
   static const unsigned int MAXLANDMARKS;
-  /**
-  * @brief If a landmarks is within this distance of another landmarks,
-  * its the same landmarks
-  */
+  ///If a landmarks is within this distance of another landmarks, its the same landmarks
   static const double MAXERROR;
-  /**
-  * @brief  Number of times a landmark must be observed to be recongnized
-  * as a landmark
-  */
+  ///Number of times a landmark must be observed to be recongnized as a landmark
   static const unsigned int MINOBSERVATIONS;
   /**
   * @brief Use to reset life counter
   * (counter use to determine whether to discard a landmark or not)
   */
   static const unsigned int LIFE;
-  /**
-  * @brief RANSAC: max times to run algorithm
-  */
+  ///RANSAC: max times to run algorithm
   static const unsigned int MAXTRIALS;
-  /**
-  * @brief RANSAC: randomly select x points
-  */
+  ///RANSAC: randomly select x points
   static const unsigned int MAXSAMPLE; //
   /**
   * @brief RANSAC: if less than x points left,
   * don't bother trying to find a consensus (stop algorithm)
   */
   static const unsigned int MINLINEPOINTS;
-  /**
-  * @brief RANSAC: if point is within x distance of line, its part of the line
-  */
+  ///RANSAC: if point is within x distance of line, its part of the line
   static const double RANSAC_TOLERANCE;
-  /**
-  * @brief RANSAC: at leat x votes required to determine if its a line
-  */
+  ///RANSAC: at leat x votes required to determine if its a line
   static const unsigned int RANSAC_CONSENSUS;
-  /**
-  * @brief Maximum meters range from wich a spike landmark is consider
-  */
+  ///Maximum meters range from wich a spike landmark is consider
   static const double MAX_DIFFERENCE; //
-  /**
-  * @brief Minimum meters range from wich a spike landmark is consider
-  */
+  ///Minimum meters range from wich a spike landmark is consider
   static const double MIN_DIFFERENCE;
 
   class  Landmark
   {
   public:
-    /**
-     * @brief Landmark position relative to map
-     */
+    ///Landmark position relative to map
     pcl::PointXY pos;
-    /**
-     * @brief Landmark unique ID
-     */
+    ///Landmark unique ID
     int id;
-    /**
-     * @brief a life counter to determine whether to discard a landmark
-     */
+    ///A life counter to determine whether to discard a landmark
     int life;
-    /**
-     * @brief the number of times we have seen the landmark
-     */
+    ///The number of times we have seen the landmark
     int totalTimeObserved;
-    /**
-     * @brief last observed range from agent to landmark
-     */
+    ///Last observed range from agent to landmark
     double range;
-    /**
-     * @brief last observed bearing from agent to landmark
-     */
+    ///Last observed bearing from agent to landmark
     double bearing;
-    /**
-     * @brief Position of agent when landmark was spotted
-     */
+    ///Position of agent when landmark was spotted
     pcl::PointXYZ robotPos;
 
-    /// RANSAC : Store equation of a line to be reused
+    /// RANSAC : Store equation of a line to be reused, first point of line
     double a;
+    /// RANSAC : Store equation of a line to be reused, second point of line
     double b;
     /// Distance from robot position to the wall we are using as a landmark (to calculate error)
     double rangeError;
