@@ -57,13 +57,13 @@ private:
   NON_COPYABLE(ChunkFactory)
 
   // ATTRIBUTES
-  std::deque<std::string>       _chunks; // max size 1Mo?
-  std::string                   _tmpChunk; // fill it, push it to _chunks
+  std::deque<std::string>       _chunks; /*!< contain all ready chunks, max size? */
+  std::string                   _tmpChunk; /*!< fill it, push it to _chunks */
 
-  bool          _fullChunkReadiness; // true: there is at least 1 chunk in _chunks
-  bool          _chunkReadiness; // true: _tmpChunk is not empty neither full
-  unsigned int  _sizeChunks;
-  unsigned int  _maxSizeChunk; // could also depend on the MTU
+  bool          _fullChunkReadiness; /*!< true: there is at least 1 chunk in _chunks */
+  bool          _chunkReadiness; /*!< true: _tmpChunk is not empty neither full */
+  unsigned int  _sizeChunks; /*!< Total size of chunks in _chunks */
+  unsigned int  _maxSizeChunk; /*!< could also depend on the MTU */
 };
 
 } // end of namespace
