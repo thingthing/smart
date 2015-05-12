@@ -4,8 +4,8 @@
 
  * PointClouds (PCL)  [Download Pointclouds](http://pointclouds.org/downloads/)
  * Jsoncpp [How to install on unix](http://ask.xmodulo.com/fix-fatal-error-jsoncpp.html)
-
-We are using [Igloo](http://igloo-testing.org/) for the Tests.
+ * We are using [Igloo](http://igloo-testing.org/) for the Tests.
+ * And [Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) for the documentation.
 
 This project use [CMake](http://www.cmake.org) (version 2.6 Minimum) to compile.  
 We use g++ compiler. **The version of the compiler is not defined yet!**  
@@ -34,6 +34,12 @@ to smartly scan the environment around him.
     cmake . #for the first time only
     make
     ./test
+
+### How to generate documenation ###
+
+To generate documentation use `doxygen documentation/docConfig.txt`.
+You can find doxygen [here](http://www.stack.nl/~dimitri/doxygen/download.html)
+The documenation will be generated in the `documentation` folder. You can view the html version of it by opening the file `documentation/html/index.html` in your web browser
 
 ### Available Makefile command ###
 
