@@ -13,23 +13,17 @@
 namespace Network
 {
 
-/*
- * Definition of a CHUNK
- *
- * The maximum Chunk's size is 512 Bytes
- *
- * Only contain complete class (no fragmentation)
- * (pcl::PointCloud::PointXYZ 'P' or Landmarks::Landmark 'L')
- *
- * int:    4 Bytes = 4 char
- * float:  4 Bytes = 4 char  // see the wiki/doc for the encoding process
- * double  8 Bytes = 8 char  // of float and double
- *
- * Exemple:
- *   L(cccciiiioooooooo...)P(cccciiiioooo)....
- *
+/**
+ * @class ChunkFactory
+ * @brief Split 3D information into chunks to sent it through UDP.
+ * @details The maximum size of a chunk is 512 Bytes.
+ * (but if we analyse the MTU we can make this size dynamique).
+ * The classes encoded are tagged with:
+ * "P(" ")" for pcl::PointCloud::PointXYZ
+ * "L(" ")" for Landmarks::Landmark
+ * @author Maxence
+ * @version 0.3
  */
-
 class   ChunkFactory
 {
 public:
@@ -69,7 +63,7 @@ private:
   bool          _fullChunkReadiness; // true: there is at least 1 chunk in _chunks
   bool          _chunkReadiness; // true: _tmpChunk is not empty neither full
   unsigned int  _sizeChunks;
-  unsigned int  _maxSizeChunk; // can also depend on the MTU
+  unsigned int  _maxSizeChunk; // could also depend on the MTU
 };
 
 } // end of namespace
