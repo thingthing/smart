@@ -64,7 +64,7 @@ private:
   bool          _chunkReadiness; /*!< true: _tmpChunk is not empty neither full */
   unsigned int  _sizeChunks; /*!< Total size of chunks in _chunks */
   unsigned int  _maxSizeChunk; /*!< could also depend on the MTU */
-  unsigned long long    _chunk_ids; /*!< Used to give id to chunks */
+  unsigned long long    _chunkID; /*!< Used to give id to chunks */
 };
 
 } // end of namespace

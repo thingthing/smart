@@ -8,7 +8,8 @@ namespace Network
 ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
                                 _chunkReadiness(false),
                                 _sizeChunks(0),
-                                _maxSizeChunk(512) {}
+                                _maxSizeChunk(512),
+                                _chunkID(1) {}
 
 ChunkFactory::~ChunkFactory()
 {
@@ -84,9 +85,11 @@ std::string ChunkFactory::getChunk()
 // PRIVATE
 
 /**
- * @brief Add a chunk to the deque of chunk if not empty.
- * @details If not empty, put the temporary chunk into the deque of chunks
- * and clear it. It also set _chunkReadiness to false, and call increaseSizeChunks()
+ * @brief Push the temporary chunk into the deque _chunks
+ * and prepare a new temporary chunk with a new ID
+ * @details If not empty, put the temporary chunk into the deque of
+ * chunks and clear it. It also set _chunkReadiness to false, call
+ * increaseSizeChunks() and add an ID to the chunk.
  */
 void ChunkFactory::pushChunkToChunks()
 {
@@ -96,7 +99,9 @@ void ChunkFactory::pushChunkToChunks()
     {
         _chunks.push_front(_tmpChunk);
         increaseSizeChunks(chunkSize);
-        _tmpChunk.erase();
+        _tmpChunk.erase(); // A new free chunk is now ready!
+        _tmpChunk += encodeNbIntoString((void*) &(_chunkID), sizeof(_chunkID)); // set new ID
+        ++_chunkID;
         _chunkReadiness = false;
     }
 }
