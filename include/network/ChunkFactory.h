@@ -19,8 +19,8 @@ namespace Network
  * @details The maximum size of a chunk is 512 Bytes.
  * (but if we analyse the MTU we can make this size dynamique).
  * The classes encoded are tagged with: \n
- * "P(" ")" for pcl::PointCloud::PointXYZ \n
- * "L(" ")" for Landmarks::Landmark
+ * "P" for pcl::PointCloud::PointXYZ \n
+ * "L" for Landmarks::Landmark
  * @author Maxence
  * @version 0.3
  */

@@ -36,7 +36,7 @@ void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmar
  */
 void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 {
-    addEncodedClassToChunk("L(" + fromLandmarkToString(landmark_) + ")");
+    addEncodedClassToChunk("L" + fromLandmarkToString(landmark_));
 }
 
 /**
@@ -49,7 +49,6 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
  */
 void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
 {
-    addEncodedClassToChunk("P(" + fromPclPointCloudToString(points) + ")");
 }
 
 // Getters
