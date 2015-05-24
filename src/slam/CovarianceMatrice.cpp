@@ -228,29 +228,29 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA JA)
 	APrrA.at(8) = Prr.at(6) * JA.getMatrice().at(2) + Prr.at(7) * JA.getMatrice().at(5) + Prr.at(8) * JA.getMatrice().at(8);
 
 	//need to add noise Q to APrrA
-	this->_matrice[0][0].setValue(APrrA.at(0));
-	this->_matrice[0][1].setValue(APrrA.at(1));
-	this->_matrice[0][2].setValue(APrrA.at(2));
-	this->_matrice[1][0].setValue(APrrA.at(3));
-	this->_matrice[1][1].setValue(APrrA.at(4));
-	this->_matrice[1][2].setValue(APrrA.at(5));
-	this->_matrice[2][0].setValue(APrrA.at(6));
-	this->_matrice[2][1].setValue(APrrA.at(7));
-	this->_matrice[2][2].setValue(APrrA.at(8));
+	float Q = 0.0;
+	this->_matrice[0][0].setValue(APrrA.at(0)+Q);
+	this->_matrice[0][1].setValue(APrrA.at(1)+Q);
+	this->_matrice[0][2].setValue(APrrA.at(2)+Q);
+	this->_matrice[1][0].setValue(APrrA.at(3)+Q);
+	this->_matrice[1][1].setValue(APrrA.at(4)+Q);
+	this->_matrice[1][2].setValue(APrrA.at(5)+Q);
+	this->_matrice[2][0].setValue(APrrA.at(6)+Q);
+	this->_matrice[2][1].setValue(APrrA.at(7)+Q);
+	this->_matrice[2][2].setValue(APrrA.at(8)+Q);
 
 	//Pri = A * Pri
-	std::vector<double> APri(9,0);
-	for (unsigned int j = 3; j < this->_matrice.size() - 2; j += 3)
+	//Pri is the 3 first rows of the covariance matrice and the 2j columns for the j landmarks
+	std::vector<double> APri(6,0);
+	for (unsigned int j = 3; j < this->_matrice.size() - 1; j += 2)
 	{
 		APri.at(0) = JA.getMatrice().at(0) * this->_matrice[0][j].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j].getValue();
 		APri.at(1) = JA.getMatrice().at(0) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j+1].getValue();
-		APri.at(2) = JA.getMatrice().at(0) * this->_matrice[0][j+2].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j+2].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j+2].getValue();
-		APri.at(3) = JA.getMatrice().at(3) * this->_matrice[0][j].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j].getValue();
-		APri.at(4) = JA.getMatrice().at(3) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j+1].getValue();
-		APri.at(5) = JA.getMatrice().at(3) * this->_matrice[0][j+2].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j+2].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j+2].getValue();
-		APri.at(6) = JA.getMatrice().at(6) * this->_matrice[0][j].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j].getValue();
-		APri.at(7) = JA.getMatrice().at(6) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j+1].getValue();
-		APri.at(8) = JA.getMatrice().at(6) * this->_matrice[0][j+2].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j+2].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j+2].getValue();
+		APri.at(2) = JA.getMatrice().at(3) * this->_matrice[0][j].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j].getValue();
+		APri.at(3) = JA.getMatrice().at(3) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j+1].getValue();
+		APri.at(4) = JA.getMatrice().at(6) * this->_matrice[0][j].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j].getValue();
+		APri.at(5) = JA.getMatrice().at(6) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j+1].getValue();
+
 
 		this->_matrice[0][j].setValue(APri.at(0));
 		this->_matrice[1][j].setValue(APri.at(1));
@@ -258,13 +258,24 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA JA)
 		this->_matrice[0][j+1].setValue(APri.at(3));
 		this->_matrice[1][j+1].setValue(APri.at(4));
 		this->_matrice[2][j+1].setValue(APri.at(5));
-		this->_matrice[0][j+2].setValue(APri.at(6));
-		this->_matrice[1][j+2].setValue(APri.at(7));
-		this->_matrice[2][j+2].setValue(APri.at(8));
+
+	//for the first three columns and 2j lines for the j landmarks
+		this->_matrice[j][0].setValue(APri.at(0));
+		this->_matrice[j][1].setValue(APri.at(1));
+		this->_matrice[j][2].setValue(APri.at(2));
+		this->_matrice[j+1][0].setValue(APri.at(3));
+		this->_matrice[j+1][1].setValue(APri.at(4));
+		this->_matrice[j+1][2].setValue(APri.at(5));
 	}
 
 }
-
+/*
+void CovarianceMatrice::step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz)
+{
+	std::vector<double> R(4,0);
+	//Pn+1n+1 = JxrPJxr + JzRJz
+}
+*/
 void CovarianceMatrice::calculationCovariance()
 {
   for (unsigned int i = 3; i < this->_matrice.size(); ++i)
