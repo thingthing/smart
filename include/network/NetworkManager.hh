@@ -1,7 +1,27 @@
-#ifndef		NETWORKMANAGER_HH_
-# define	NETWORKMANAGER_HH_
+/** @defgroup Network Files network related
+ *
+ * @brief Files related to network
+ */
+
+/**
+ * @class NetworkManager
+ *
+ * @ingroup Network
+ *
+ * @brief Manager of networks connectors
+ *
+ * @author Nicolas
+ *
+ * @version 1.0
+ *
+ * @date 09/05/2015
+ *
+ */
+#ifndef     NETWORKMANAGER_HH_
+# define    NETWORKMANAGER_HH_
 
 #include <poll.h>
+#include <string>
 #include "AProtocol.h"
 #include "AThread.h"
 #include "NonCopyable.h"
@@ -12,32 +32,35 @@
 namespace   Network
 {
 
-class		NetworkManager : public AThread, public Utils::Dispatcher
-{
-public:
-    NetworkManager(IConnector *connector);
-    virtual ~NetworkManager();
+    class       NetworkManager : public AThread, public Utils::Dispatcher
+    {
+    public:
+        NetworkManager();
+        virtual ~NetworkManager();
 
-    bool    send(const std::string &data);
-    bool    connectTo(const std::string &ip, unsigned short port);
-    void    disconnect();
+        bool    send(const std::string &data, const std::string &connector_id);
+        bool    connectTo(const std::string &ip, unsigned short port);
+        bool    connectTo(const std::string &ip, unsigned short port, const std::string &connector_id);
+        void    disconnect();
+        void    disconnect(const std::string &connector_id);
 
-    IConnector *getConnector() const;
+        IConnector      *getConnector(std::string const & connector_id) const;
+        void            setConnector(std::string const &key, IConnector *connector);
 
-protected:
-    NON_COPYABLE(NetworkManager)
 
-    virtual void    run(); // From AThread
+    protected:
+        NON_COPYABLE(NetworkManager)
 
-    CircularBuffer              _rxBuffer;
-    CircularBuffer              _txBuffer;
-    IConnector                  *_connector;
-    pollfd                      _fdset;
-    int                         _byteRead;
-    int                         _byteWritten;
+        virtual void    run(); // From AThread
 
-    static const unsigned int   MAX_RX_BUFFER_SIZE = (64*1024);
-    static const unsigned int   MAX_TX_BUFFER_SIZE = (64*1024);
+        static const unsigned int   MAX_CONNEXION = 10;
+
+        pollfd                                          _fdset[MAX_CONNEXION];
+        int                                             _byteRead;
+        int                                             _byteWritten;
+        std::map<std::string, IConnector *>     _connectors;
+        std::map<std::string, pollfd &>         _fdsetList;
+
 };
 
 }
