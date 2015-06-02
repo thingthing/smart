@@ -236,6 +236,7 @@ std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointX
     for (i = 0; i < nbOfPoint; ++i)
         convertedPoints += fromPclPointToString(cloud[cloudIndex + i]);
 
+    cloudIndex += i;
     return convertedPoints;
 }
 
