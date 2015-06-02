@@ -8,8 +8,8 @@ namespace Network
 ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
                                 _chunkReadiness(false),
                                 _sizeChunks(0),
-                                _maxSizeChunk(512),
-                                _chunkID(1) {}
+                                _chunkID(1),
+                                _packetID(1) {}
 
 ChunkFactory::~ChunkFactory()
 {
@@ -45,8 +45,32 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
  * @details
  * @param points PointCloud containing only 3D point informations about the captured points
  */
-void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
+void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
 {
+    unsigned int cloudIndex = 0;
+    unsigned int packetDone = 0;
+    unsigned int totalPacketNeeded;
+    std::string packet;
+    std::string metadataPacket;
+
+    pushChunkToChunks(); // prepare empty chunk
+
+    totalPacketNeeded = calculateTotalPacketNeeded(pointCloud);
+
+    // First Packet
+    packet = convertDataFirstPacket(pointCloud, cloudIndex);
+    metadataPacket = createPacketMetadata(packetDone + 1, totalPacketNeeded, packet);
+    addEncodedClassToChunk(metadataPacket + packet);
+    ++packetDone;
+
+    // Other Packets (if needed)
+    while (packetDone < totalPacketNeeded)
+    {
+        packet = convertDataPacket(pointCloud, cloudIndex);
+        metadataPacket = createPacketMetadata(packetDone + 1, totalPacketNeeded, packet);
+        addEncodedClassToChunk(metadataPacket + packet);
+        ++packetDone;
+    }
 }
 
 // Getters
@@ -112,7 +136,8 @@ void ChunkFactory::pushChunkToChunks()
  */
 void ChunkFactory::addEncodedClassToChunk(const std::string& encodedClass)
 {
-    if (_tmpChunk.size() + encodedClass.size() > _maxSizeChunk)
+    // Check if the temporary chunk is big enough to put encodedClass in it.
+    if (_tmpChunk.size() + encodedClass.size() > MAX_SIZE_CHUNK)
         pushChunkToChunks();
 
     _tmpChunk += encodedClass;
@@ -143,19 +168,71 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
 }
 
 /*
+ * Calculate the total number of packet we need to do to send the cloud
  */
-std::string ChunkFactory::fromPclPointCloudToString(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
+int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXYZ >& cloud)
 {
-    std::vector< pcl::PointXYZ, Eigen::aligned_allocator < pcl::PointXYZ > >::const_iterator it;
-    std::string encodedString = "";
+    unsigned int        totalPacketNeeded = 1;
+    unsigned int        totalNbOfPoint = cloud.size();
+    unsigned int        nbOfPointInFirstPacket;
+    unsigned int        nbOfPointInPacket;
 
-    encodedString += encodeNbIntoString((void*)&(pointCloud.width), sizeof(pointCloud.width));
-    encodedString += encodeNbIntoString((void*)&(pointCloud.height), sizeof(pointCloud.height));
+    nbOfPointInFirstPacket = (SIZE_IN_PACKET - sizeof(cloud.width) - sizeof(cloud.height)) / SIZE_OF_POINT_XYZ;
+    nbOfPointInPacket = SIZE_IN_PACKET / SIZE_OF_POINT_XYZ;
 
-    for (it = pointCloud.begin() ; it != pointCloud.end() ; ++it)
-        encodedString += fromPclPointToString((*it));
+    totalPacketNeeded = (totalNbOfPoint - nbOfPointInFirstPacket) / nbOfPointInPacket;
 
-    return encodedString;
+    if ((totalNbOfPoint - nbOfPointInFirstPacket) % nbOfPointInPacket > 1)
+        ++totalPacketNeeded;
+
+    return totalPacketNeeded;
+}
+
+std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsigned int totalPacket, std::string& packet)
+{
+    std::string         metadata = "P";
+    unsigned short      packetSize = (unsigned short)(packet.size());
+
+    metadata += encodeNbIntoString((void*)&(_packetID), sizeof(_packetID));
+    metadata += encodeNbIntoString((void*)&(currentPacket), sizeof(currentPacket));
+    metadata += encodeNbIntoString((void*)&(totalPacket), sizeof(totalPacket));
+    metadata += encodeNbIntoString((void*)&(packetSize), sizeof(packetSize));
+
+    return metadata;
+}
+
+std::string ChunkFactory::convertDataFirstPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
+{
+    std::string packetData = "";
+    unsigned int nbOfPoint;
+
+    packetData += encodeNbIntoString((void*)&(cloud.width), sizeof(cloud.width));
+    packetData += encodeNbIntoString((void*)&(cloud.height), sizeof(cloud.height));
+
+    nbOfPoint = (SIZE_IN_PACKET - sizeof(cloud.width) - sizeof(cloud.height)) / SIZE_OF_POINT_XYZ;
+
+    packetData += convertRangeOfPoint(cloud, cloudIndex, nbOfPoint);
+
+    return packetData;
+}
+
+std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
+{
+    std::string packetData = "";
+    unsigned int nbOfPoint;
+
+    nbOfPoint = SIZE_IN_PACKET / SIZE_OF_POINT_XYZ;
+
+    packetData += convertRangeOfPoint(cloud, cloudIndex, nbOfPoint);
+
+    return packetData;
+}
+
+std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex, unsigned int nbOfPoint)
+{
+    std::string convertedPoints = "";
+
+    return convertedPoints;
 }
 
 /**
