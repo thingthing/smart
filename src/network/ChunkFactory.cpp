@@ -231,6 +231,10 @@ std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZ
 std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex, unsigned int nbOfPoint)
 {
     std::string convertedPoints = "";
+    unsigned int i;
+
+    for (i = 0; i < nbOfPoint; ++i)
+        convertedPoints += fromPclPointToString(cloud[cloudIndex + i]);
 
     return convertedPoints;
 }
