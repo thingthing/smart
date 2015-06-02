@@ -21,7 +21,7 @@ namespace Network
  * "P" for pcl::PointCloud::PointXYZ \n
  * "L" for Landmarks::Landmark
  * @author Maxence
- * @version 0.3
+ * @version 1.0
  */
 class   ChunkFactory
 {
