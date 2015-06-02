@@ -17,7 +17,6 @@ namespace Network
  * @class ChunkFactory
  * @brief Split 3D information into chunks to sent it through UDP.
  * @details The maximum size of a chunk is 512 Bytes.
- * (but if we analyse the MTU we can make this size dynamique).
  * The classes encoded are tagged with: \n
  * "P" for pcl::PointCloud::PointXYZ \n
  * "L" for Landmarks::Landmark
@@ -64,7 +63,7 @@ private:
   bool          _chunkReadiness; /*!< true: _tmpChunk is not empty neither full */
   unsigned int  _sizeChunks; /*!< Total size of chunks in _chunks */
   unsigned int  _maxSizeChunk; /*!< could also depend on the MTU */
-  unsigned long long    _chunkID; /*!< Used to give id to chunks */
+  unsigned long long    _chunkID; /*!< Used to give ID to chunks */
 };
 
 } // end of namespace

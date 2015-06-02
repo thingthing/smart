@@ -41,11 +41,8 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 }
 
 /**
- * @brief Convert a PointCloud of PointXYZ into string(s) to put it in chunk(s)
- * @details Call fromPclPointCloudToString() to get a string of information
- * from the class PointCloud and surround it with "P(" ")" to tag it as a
- * PointCloud packet. Then it add the packet to the current built chunk
- * with addEncodedClassToChunk().
+ * @brief Convert a PointCloud of PointXYZ into packets of string(s) to put in chunk(s)
+ * @details
  * @param points PointCloud containing only 3D point informations about the captured points
  */
 void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& points)
@@ -145,9 +142,7 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
     return strLandmark;
 }
 
-/**
- * @brief Convert the PointCloud into strings to put it in chunk(s)
- * @todo This function has to be rework to be able to handle a lot a point.
+/*
  */
 std::string ChunkFactory::fromPclPointCloudToString(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
 {
