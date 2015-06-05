@@ -6,6 +6,7 @@
 #include "NonCopyable.h"
 #include "event/Dispatcher.h"
 #include "NetworkManager.hh"
+#include "Agent.hh"
 
 namespace Network { class NetworkManager; }
 
@@ -18,6 +19,7 @@ public:
     virtual void        connectedEvent() = 0;
     virtual void        receivePacketEvent(Network::CircularBuffer &packet) = 0;
     virtual void        disconnectEvent() = 0;
+    virtual void        sendPacketEvent() = 0;
 
 private:
     AProtocol() = delete;

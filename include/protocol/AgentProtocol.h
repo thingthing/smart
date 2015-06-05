@@ -15,6 +15,7 @@ public:
     virtual void        connectedEvent();
     virtual void        receivePacketEvent(Network::CircularBuffer &packet);
     virtual void        disconnectEvent();
+    virtual void        sendPacketEvent();
 
     inline void         setAgent(Agent &agent) { _agent = &agent; }
 

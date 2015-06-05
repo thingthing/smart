@@ -28,10 +28,17 @@ void        AgentProtocol::connectedEvent()
     Json::Value     reply;
     //reply["name"] = _agent->name();
     _networkAdapter.send("name:" + _agent->name() + "\n", TCP_KEY);
-    /*reply["position"]["x"] = _agent->getPos().x;        // todo : Move this in a "sendAgentInfo" function or something like this
-    reply["position"]["y"] = _agent->getPos().y;        // And dispatch a "newConnection" event, or smthn like this to the agent.
+    /*reply["position"]["x"] = _agent->getPos().x;
+    reply["position"]["y"] = _agent->getPos().y;
     reply["position"]["z"] = _agent->getPos().z;
     _networkAdapter.send(reply.toStyledString(), TCP_KEY);*/
+}
+
+void        AgentProtocol::sendPacketEvent()
+{
+    std::cout << "Send movement event " << std::endl;
+    ///@todo: Really send position
+    _networkAdapter.send("position:{\"x\":" + std::to_string(_agent->getPos().x) + ", \"y\":" + std::to_string(_agent->getPos().y) + ", \"z\":" + std::to_string(_agent->getPos().z) + "}\n", TCP_KEY);
 }
 
 void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)      // only for test 4 now, will change
@@ -41,7 +48,7 @@ void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)  
     std::string         serverReply((const char *)packet.peek());
     size_t              posColumn = serverReply.find_first_of(":");
     packet.peek(serverReply.size() + 1);
-
+    std::cout << "received message from serveur " << serverReply << std::endl;
     if (posColumn != serverReply.npos)
     {
         if (reader.parse(serverReply.substr(posColumn + 1), root, false) == true)
@@ -50,10 +57,15 @@ void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)  
             /*_agent.setGoalPos(root.get("x", 0.0).asDouble(),
                               root.get("y", 0.0).asDouble(),
                               root.get("z", 0.0).asDouble());*/
-            this->dispatch("AGivenCommand"/*, params*/); // And the agent should subscribes to the events.
+            pcl::PointXYZ pos = (pcl::PointXYZ) {
+                root.get("x", 0.0).asFloat(),
+                root.get("y", 0.0).asFloat(),
+                root.get("z", 0.0).asFloat()
+            };
+            this->dispatch("SetGoalPosEvent", pos); // And the agent should subscribes to the events.
         }
         else
-            std::cout << "error while parsing order " << serverReply << ": " << reader.getFormatedErrorMessages()<< std::endl;
+            std::cout << "error while parsing order " << serverReply << ": " << reader.getFormatedErrorMessages() << std::endl;
     }
 }
 
