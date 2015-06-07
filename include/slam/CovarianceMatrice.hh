@@ -9,6 +9,8 @@
 #include "Agent.hh"
 #include "SystemStateMatrice.hh"
 #include "JacobianMatriceA.hh"
+#include "JacobianMatriceJz.hh"
+#include "JacobianMatriceJxr.hh"
 
 class CovarianceMatrice
 {
@@ -27,12 +29,16 @@ class CovarianceMatrice
     virtual ~Case();
     float getValue() const;
     void setValue(float value);
+		int getSlamID() const;
+    void setSlamID(int slamID);
     State getState() const;
     void setState(State state);
 
   protected:
     float _value;
     State _state;
+		//id for the robot is -1
+		int _slamID;
   };
 
 
@@ -44,10 +50,11 @@ public:
   CovarianceMatrice(float X, float Y, float theta);
   CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
   CovarianceMatrice(Agent const &agent);
+
   virtual ~CovarianceMatrice();
 
-  void addLandmark(float x, float y, unsigned int slamId);
-  void addLandmark(pcl::PointXY const &pos, unsigned int slamId);
+  void addLandmark(float x, float y, int slamId);
+  void addLandmark(pcl::PointXY const &pos, int slamId);
 
   float getRobotX() const;
   float getRobotY() const;
@@ -58,7 +65,7 @@ public:
   void setRobotPosition(Agent const &agent);
   void calculationCovariance();
   void step1RobotCovariance(JacobianMatriceA JA);
-
+	void step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz, SystemStateMatrice stateM, int slamID);
 
 private:
   CovarianceMatrice(const CovarianceMatrice &);
