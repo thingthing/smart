@@ -5,7 +5,7 @@ const double Agent::CAMERAPROBLEM = 4.1; // meters
 
 Agent::Agent(double degreePerScan, double cameraProblem)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _bearing(0),
-    _name("Nico")
+    _name("Agent")
 {
   this->_pos.x = 0;
   this->_pos.y = 0;

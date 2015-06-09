@@ -9,25 +9,18 @@
 Core::Core(AgentProtocol &protocol) :
     _protocol(protocol)
 {
+    Agent *a = &_agent;
+    AgentProtocol *ap = &_protocol;
     _protocol.setAgent(_agent);
-    _protocol.registerCallback("SetGoalPosEvent", [this](pcl::PointXYZ pos){setAgentGoal(pos);});
-    _agent.registerCallback("SendPacketEvent", [this](){sendPacketEvent();});
-    _slam = new Slam(&_agent);
+    
+    _protocol.registerCallback("SetGoalPosEvent", [a](pcl::PointXYZ pos){a->setGoalPos(pos);});
+    _agent.registerCallback("SendPacketEvent", [ap](){ap->sendPacketEvent();});
+    _slam = new Slam(a);
 }
 
 Core::~Core()
 {
     delete _slam;
-}
-
-void        Core::sendPacketEvent()
-{
-    _protocol.sendPacketEvent();
-}
-
-void        Core::setAgentGoal(pcl::PointXYZ const &pos)
-{
-    _agent.setGoalPos(pos);
 }
 
 void        Core::update()

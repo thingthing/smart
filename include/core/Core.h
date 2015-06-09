@@ -13,8 +13,6 @@ public:
     Core(AgentProtocol &protocol);
     ~Core();
 
-    void        setAgentGoal(pcl::PointXYZ const &pos);
-    void        sendPacketEvent();
     void        run();
     void        update();
 
