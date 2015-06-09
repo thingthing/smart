@@ -18,7 +18,8 @@ SOURCES += \
     src/slam/SystemStateMatrice.cpp \
     src/utils/AThread.cpp \
     src/utils/event/Dispatcher.cpp \
-    src/protocol/AProtocol.cpp
+    src/protocol/AProtocol.cpp \
+    src/core/Agent.cpp
 
 HEADERS += \
     include/network/CircularBuffer.h \

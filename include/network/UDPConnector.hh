@@ -1,5 +1,5 @@
-#ifndef     TCP_CONNECTOR_H_
-# define    TCP_CONNECTOR_H_
+#ifndef     UDP_CONNECTOR_H_
+# define    UDP_CONNECTOR_H_
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -19,11 +19,11 @@
 
 namespace   Network
 {
-class       TCPConnector : public IConnector
+class       UDPConnector : public IConnector
 {
 public:
-    TCPConnector();
-    virtual ~TCPConnector();
+    UDPConnector();
+    virtual ~UDPConnector();
 
     virtual bool    connectTo(const std::string &ip, unsigned short port);
     virtual void    disconnect();

@@ -174,14 +174,14 @@ Packet      &Packet::operator >>(long &data)
         // Since ntohll is not available everywhere, we have to convert
         // to network byte order (big endian) manually
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(&_data[_readPos]);
-        data = (static_cast<long>(bytes[0]) << 56) |
-                (static_cast<long>(bytes[1]) << 48) |
-                (static_cast<long>(bytes[2]) << 40) |
-                (static_cast<long>(bytes[3]) << 32) |
-                (static_cast<long>(bytes[4]) << 24) |
-                (static_cast<long>(bytes[5]) << 16) |
-                (static_cast<long>(bytes[6]) <<  8) |
-                (static_cast<long>(bytes[7])      );
+        data = (static_cast<long long>(bytes[0]) << 56) |
+                (static_cast<long long>(bytes[1]) << 48) |
+                (static_cast<long long>(bytes[2]) << 40) |
+                (static_cast<long long>(bytes[3]) << 32) |
+                (static_cast<long long>(bytes[4]) << 24) |
+                (static_cast<long long>(bytes[5]) << 16) |
+                (static_cast<long long>(bytes[6]) <<  8) |
+                (static_cast<long long>(bytes[7])      );
         _readPos += sizeof(data);
     }
 
@@ -197,14 +197,14 @@ Packet      &Packet::operator >>(unsigned long &data)
         // Since ntohll is not available everywhere, we have to convert
         // to network byte order (big endian) manually
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(&_data[_readPos]);
-        data = (static_cast<unsigned long>(bytes[0]) << 56) |
-                (static_cast<unsigned long>(bytes[1]) << 48) |
-                (static_cast<unsigned long>(bytes[2]) << 40) |
-                (static_cast<unsigned long>(bytes[3]) << 32) |
-                (static_cast<unsigned long>(bytes[4]) << 24) |
-                (static_cast<unsigned long>(bytes[5]) << 16) |
-                (static_cast<unsigned long>(bytes[6]) <<  8) |
-                (static_cast<unsigned long>(bytes[7])      );
+        data = (static_cast<unsigned long long>(bytes[0]) << 56) |
+                (static_cast<unsigned long long>(bytes[1]) << 48) |
+                (static_cast<unsigned long long>(bytes[2]) << 40) |
+                (static_cast<unsigned long long>(bytes[3]) << 32) |
+                (static_cast<unsigned long long>(bytes[4]) << 24) |
+                (static_cast<unsigned long long>(bytes[5]) << 16) |
+                (static_cast<unsigned long long>(bytes[6]) <<  8) |
+                (static_cast<unsigned long long>(bytes[7])      );
         _readPos += sizeof(data);
     }
 
@@ -334,7 +334,7 @@ Packet      &Packet::operator <<(unsigned int data)
 
 
 
-Packet      &Packet::operator <<(long data)
+Packet      &Packet::operator <<(long long data)
 {
     // Since htonll is not available everywhere, we have to convert
     // to network byte order (big endian) manually
@@ -355,7 +355,7 @@ Packet      &Packet::operator <<(long data)
 
 
 
-Packet      &Packet::operator <<(unsigned long data)
+Packet      &Packet::operator <<(unsigned long long data)
 {
     // Since htonll is not available everywhere, we have to convert
     // to network byte order (big endian) manually

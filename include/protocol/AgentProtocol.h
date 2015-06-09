@@ -8,18 +8,21 @@
 class       AgentProtocol : public AProtocol
 {
 public:
-    AgentProtocol(Network::ANetworkAdapter &networkAdapter) :
-        AProtocol(networkAdapter)
-    {}
+    AgentProtocol(Network::NetworkManager &networkAdapter);
 
-    virtual ~AgentProtocol(){}
+    virtual ~AgentProtocol();
 
     virtual void        connectedEvent();
     virtual void        receivePacketEvent(Network::CircularBuffer &packet);
     virtual void        disconnectEvent();
+    virtual void        sendPacketEvent();
+
+    inline void         setAgent(Agent &agent) { _agent = &agent; }
 
 protected:
     AgentProtocol();
+
+    Agent               *_agent;
 };
 
 #endif
