@@ -71,11 +71,13 @@ private:
 
 private:
   Agent     *_agent;
-  Landmarks   *_landmarkDb;
   DataAssociation *_data;
   KalmanGainMatrice _kg;
   SystemStateMatrice  *_state;
   CovarianceMatrice *_covariance;
+
+public:
+  Landmarks   *_landmarkDb;
 };
 
 
