@@ -32,16 +32,14 @@ void         AgentProtocol::setAgent(Agent &agent)
 void        AgentProtocol::connectedEvent()
 {
     std::cout << "connected event " << std::endl;
-    Json::Value     root;
-    root["data"]["name"] = _agent->name();
-    root["data"]["position"]["x"] = _agent->getPos().x;
-    root["data"]["position"]["y"] = _agent->getPos().y;
-    root["data"]["position"]["z"] = _agent->getPos().z;
-    root["status"]["code"] = 0;
-    root["status"]["message"] = "ok";
-    _outPacket.clear();
-    _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());       // TODO : do something to handle strings directly with << in APacket.
-    _networkAdapter.send(_outPacket, TCP_KEY);
+    Json::Value     reply;
+    reply["status"] = 0;
+    reply["data"]["name"] = _agent->name();
+    reply["data"]["position"]["x"] = _agent->getPos().x;
+    reply["data"]["position"]["y"] = _agent->getPos().y;
+    reply["data"]["position"]["z"] = _agent->getPos().z;
+
+    _networkAdapter.send(reply.toStyledString(), TCP_KEY);
 }
 
 void        AgentProtocol::sendPacketEvent()
