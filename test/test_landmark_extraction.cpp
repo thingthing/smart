@@ -1155,7 +1155,7 @@ When(getting_aligned_landmark_data)
   {
     int	i = 0;
 
-    for(std::vector<pcl::PointXY>::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
+    for(std::vector<pcl::PointXYZ>::iterator it = lmrk.begin(); it != lmrk.end(); ++it)
       {
 	AssertThatDetail(id[i], Is().GreaterThan(-1));
 	AssertThatDetail(matched[i], Is().EqualTo(true));
@@ -1177,8 +1177,8 @@ When(getting_aligned_landmark_data)
   int		*id;
   double	*ranges;
   double	*bearings;
-  std::vector<pcl::PointXY> lmrk;
-  std::vector<pcl::PointXY> exlmrk;
+  std::vector<pcl::PointXYZ> lmrk;
+  std::vector<pcl::PointXYZ> exlmrk;
 };
 
 

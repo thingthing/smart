@@ -17,8 +17,7 @@ const double Landmarks::MIN_DIFFERENCE = 0.3; // meter
 
 Landmarks::Landmark::Landmark()
 {
-  this->pos.x = 0.0;
-  this->pos.y = 0.0;
+  this->pos = pcl::PointXYZ(0.0, 0.0, 0.0);
   this->id = -1;
   this->life = Landmarks::LIFE;
   this->totalTimeObserved = 0;
@@ -479,8 +478,8 @@ std::vector<Landmarks::Landmark *> Landmarks::removeDouble(std::vector<Landmarks
 void Landmarks::alignLandmarkData(std::vector<Landmark *> const &extractedLandmarks,
                                   bool *&matched, int *&id, double *&ranges,
                                   double *&bearings,
-                                  std::vector<pcl::PointXY> &lmrks,
-                                  std::vector<pcl::PointXY> &exlmrks)
+                                  std::vector<pcl::PointXYZ> &lmrks,
+                                  std::vector<pcl::PointXYZ> &exlmrks)
 {
   std::vector<Landmarks::Landmark *> uniqueLandmarks(extractedLandmarks.size(), NULL);
 
@@ -518,8 +517,8 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> const &extractedLandma
   id = new int[uniqueLandmarks.size()];
   ranges = new double[uniqueLandmarks.size()];
   bearings = new double[uniqueLandmarks.size()];
-  lmrks = std::vector<pcl::PointXY>(uniqueLandmarks.size());
-  exlmrks = std::vector<pcl::PointXY>(uniqueLandmarks.size());
+  lmrks = std::vector<pcl::PointXYZ>(uniqueLandmarks.size());
+  exlmrks = std::vector<pcl::PointXYZ>(uniqueLandmarks.size());
 
   for (unsigned int i = 0; i < uniqueLandmarks.size(); ++i)
   {
@@ -529,8 +528,10 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> const &extractedLandma
     bearings[i] = uniqueLandmarks[i]->bearing;
     lmrks[i].x = landmarkDB[uniqueLandmarks[i]->id]->pos.x;
     lmrks[i].y = landmarkDB[uniqueLandmarks[i]->id]->pos.y;
+    lmrks[i].z = landmarkDB[uniqueLandmarks[i]->id]->pos.z;
     exlmrks[i].x = uniqueLandmarks[i]->pos.x;
     exlmrks[i].y = uniqueLandmarks[i]->pos.y;
+    exlmrks[i].z = uniqueLandmarks[i]->pos.z;
   }
 }
 
