@@ -4,6 +4,7 @@
 #include "AProtocol.h"
 #include "network/ComPacket.h"
 #include "Agent.hh"
+#include "json/json.h"
 
 class       AgentProtocol : public AProtocol
 {
@@ -18,6 +19,9 @@ public:
     virtual void        sendPacketEvent();
 
     void         setAgent(Agent &agent);
+
+private:
+    pcl::PointXYZ       getPosFromJson(Json::Value const &root);
 
 protected:
     AgentProtocol();
