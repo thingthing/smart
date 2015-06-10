@@ -22,6 +22,13 @@ AgentProtocol::~AgentProtocol()
 {
 }
 
+void         AgentProtocol::setAgent(Agent &agent)
+{
+    _agent = &agent;
+    this->registerCallback("SetGoalPosEvent", [this](pcl::PointXYZ pos){_agent->setGoalPos(pos);});
+    _agent->registerCallback("SendPacketEvent", [this](){sendPacketEvent();});
+}
+
 void        AgentProtocol::connectedEvent()
 {
     std::cout << "connected event " << std::endl;
