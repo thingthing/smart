@@ -10,6 +10,7 @@
 This project use [CMake](http://www.cmake.org) (version 2.6 Minimum) to compile.  
 We use g++ compiler. **The version of the compiler is not defined yet!**  
 The system used to run this program is Linux (i.e. debian, ubuntu...)
+You'll find a complete documentation of [Jsoncpp here](http://open-source-parsers.github.io/jsoncpp-docs/doxygen/index.html)
 
 ### What is this repository for? ###
 
