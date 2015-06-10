@@ -67,7 +67,7 @@ public:
   {
   public:
     ///Landmark position relative to map
-    pcl::PointXY pos;
+    pcl::PointXYZ pos;
     ///Landmark unique ID
     int id;
     ///A life counter to determine whether to discard a landmark
@@ -233,8 +233,8 @@ public:
   void alignLandmarkData(std::vector<Landmark *> const &extractedLandmarks,
                          bool *&matched,
                          int *&id, double *&ranges, double *&bearings,
-                         std::vector<pcl::PointXY> &lmrks,
-                         std::vector<pcl::PointXY> &exlmrks);
+                         std::vector<pcl::PointXYZ> &lmrks,
+                         std::vector<pcl::PointXYZ> &exlmrks);
   /**
    * @brief Get associated landmark in database
    * @details Search for a landmark close enough in database to be the same

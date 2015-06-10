@@ -45,7 +45,7 @@ public:
   virtual ~CovarianceMatrice();
 
   void addLandmark(float x, float y, unsigned int slamId);
-  void addLandmark(pcl::PointXY const &pos, unsigned int slamId);
+  void addLandmark(pcl::PointXYZ const &pos, unsigned int slamId);
 
   float getRobotX() const;
   float getRobotY() const;

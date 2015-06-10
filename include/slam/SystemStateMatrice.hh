@@ -17,14 +17,14 @@ public:
   SystemStateMatrice(Agent const &agent);
   virtual ~SystemStateMatrice();
 
-  unsigned int addLandmarkPosition(const pcl::PointXY &position);
-  unsigned int addLandmarkPosition(float x, float y);
-  void updateLandmarkPosition(unsigned int landmarkNumber, float x, float y);
-  void updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXY &position);
+  unsigned int addLandmarkPosition(const pcl::PointXYZ &position);
+  unsigned int addLandmarkPosition(float x, float y, float z);
+  void updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z);
+  void updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXYZ &position);
   void updateRobotState(Agent const &agent);
   void setRobotState(Agent const &);
 
-  const pcl::PointXY &getPosition(unsigned int landmarkNumber) const;
+  const pcl::PointXYZ &getPosition(unsigned int landmarkNumber) const;
   float getLandmarkXPosition(unsigned int landmarkNumber) const;
   float getLandmarkYPosition(unsigned int landmarkNumber) const;
   pcl::PointXYZ const &getRobotPos() const;
@@ -33,7 +33,7 @@ public:
 protected:
   float tetaRobot;
   pcl::PointXYZ posRobot;
-  std::vector<pcl::PointXY> matrice;
+  std::vector<pcl::PointXYZ> matrice;
 };
 
 #endif /* !SYSTEMSTATEMATRICE_H_ */
