@@ -17,7 +17,7 @@ public:
     virtual void        disconnectEvent();
     virtual void        sendPacketEvent();
 
-    inline void         setAgent(Agent &agent) { _agent = &agent; }
+    void         setAgent(Agent &agent);
 
 protected:
     AgentProtocol();
