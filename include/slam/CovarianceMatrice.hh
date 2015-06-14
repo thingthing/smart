@@ -12,8 +12,6 @@
 #include "JacobianMatriceJz.hh"
 #include "JacobianMatriceJxr.hh"
 
-#define RobotID -1
-
 class CovarianceMatrice
 {
   enum State
@@ -46,6 +44,7 @@ class CovarianceMatrice
 
 private:
   static const unsigned int SIZEINIT;
+	static const unsigned int ROBOTID;
 
 public:
   CovarianceMatrice();
