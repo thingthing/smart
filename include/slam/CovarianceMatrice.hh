@@ -12,6 +12,8 @@
 #include "JacobianMatriceJz.hh"
 #include "JacobianMatriceJxr.hh"
 
+#define RobotID -1
+
 class CovarianceMatrice
 {
   enum State
