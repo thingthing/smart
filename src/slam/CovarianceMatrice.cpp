@@ -1,7 +1,7 @@
 #include "CovarianceMatrice.hh"
 
 const unsigned int CovarianceMatrice::SIZEINIT = 3;
-const unsigned int CovarianceMatrice::ROBOTID = -1;
+const int CovarianceMatrice::ROBOTID = -1;
 
 CovarianceMatrice::Case::Case() :
   _value(0.0), _state(CALCULATION)

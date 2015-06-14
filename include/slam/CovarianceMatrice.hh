@@ -44,7 +44,7 @@ class CovarianceMatrice
 
 private:
   static const unsigned int SIZEINIT;
-	static const unsigned int ROBOTID;
+	static const int ROBOTID;
 
 public:
   CovarianceMatrice();
