@@ -2,7 +2,7 @@
 # define    IPROTOCOL_H_
 
 #include "CircularBuffer.h"
-#include "Packet.h"
+#include "ComPacket.h"
 #include "NonCopyable.h"
 #include "event/Dispatcher.h"
 #include "NetworkManager.hh"
@@ -17,7 +17,7 @@ public:
     virtual ~AProtocol();
 
     virtual void        connectedEvent() = 0;
-    virtual void        receivePacketEvent(Network::CircularBuffer &packet) = 0;
+    virtual void        receivePacketEvent(Network::ComPacket &packet) = 0;
     virtual void        disconnectEvent() = 0;
     virtual void        sendPacketEvent() = 0;
 

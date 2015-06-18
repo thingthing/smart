@@ -38,7 +38,7 @@ namespace   Network
         NetworkManager();
         virtual ~NetworkManager();
 
-        bool    send(const std::string &data, const std::string &connector_id);
+        bool    send(Network::APacketBase const &packet, const std::string &connector_id);
         bool    connectTo(const std::string &ip, unsigned short port);
         bool    connectTo(const std::string &ip, unsigned short port, const std::string &connector_id);
         void    disconnect();
@@ -55,12 +55,12 @@ namespace   Network
 
         static const unsigned int   MAX_CONNEXION = 10;
 
-        pollfd                                          _fdset[MAX_CONNEXION];
-        int                                             _byteRead;
-        int                                             _byteWritten;
+        pollfd                                  _fdset[MAX_CONNEXION];
+        int                                     _byteRead;
+        int                                     _byteWritten;
         std::map<std::string, IConnector *>     _connectors;
         std::map<std::string, pollfd &>         _fdsetList;
-
+        ComPacket                               _packet;
 };
 
 }

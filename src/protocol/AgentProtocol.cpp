@@ -32,48 +32,53 @@ void         AgentProtocol::setAgent(Agent &agent)
 void        AgentProtocol::connectedEvent()
 {
     std::cout << "connected event " << std::endl;
-    Json::Value     reply;
-    //reply["name"] = _agent->name();
-    _networkAdapter.send("name:" + _agent->name() + "\n", TCP_KEY);
-    /*reply["position"]["x"] = _agent->getPos().x;
-    reply["position"]["y"] = _agent->getPos().y;
-    reply["position"]["z"] = _agent->getPos().z;
-    _networkAdapter.send(reply.toStyledString(), TCP_KEY);*/
+    Json::Value     root;
+    root["data"]["name"] = _agent->name();
+    root["data"]["position"]["x"] = _agent->getPos().x;
+    root["data"]["position"]["y"] = _agent->getPos().y;
+    root["data"]["position"]["z"] = _agent->getPos().z;
+    root["status"]["code"] = 0;
+    root["status"]["message"] = "ok";
+    _outPacket.clear();
+    _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());       // TODO : do something to handle strings directly with << in APacket.
+    _networkAdapter.send(_outPacket, TCP_KEY);
 }
 
 void        AgentProtocol::sendPacketEvent()
 {
+    Json::Value     root;
+
+    root["data"]["position"]["x"] = _agent->getPos().x;
+    root["data"]["position"]["y"] = _agent->getPos().y;
+    root["data"]["position"]["z"] = _agent->getPos().z;
+    root["status"]["code"] = 0;
+    root["status"]["message"] = "ok";
+    _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
     std::cout << "Send movement event " << std::endl;
     ///@todo: Really send position
-    _networkAdapter.send("position:{\"x\":" + std::to_string(_agent->getPos().x) + ", \"y\":" + std::to_string(_agent->getPos().y) + ", \"z\":" + std::to_string(_agent->getPos().z) + "}\n", TCP_KEY);
+    _networkAdapter.send(_outPacket, TCP_KEY);
+    _outPacket.clear();
 }
 
-void        AgentProtocol::receivePacketEvent(Network::CircularBuffer &packet)      // only for test 4 now, will change
+void        AgentProtocol::receivePacketEvent(Network::ComPacket &packet)      // only for test 4 now, will change
 {
     Json::Reader        reader;
     Json::Value         root;
-    std::string         serverReply((const char *)packet.peek());
-    size_t              posColumn = serverReply.find_first_of(":");
-    packet.peek(serverReply.size() + 1);
-    std::cout << "received message from serveur " << serverReply << std::endl;
-    if (posColumn != serverReply.npos)
+    std::string         serverReply((const char *)packet.data() + sizeof(Network::s_ComPacketHeader), packet.getPacketSize() - sizeof(Network::s_ComPacketHeader));
+
+    std::cout << "received message from server " << serverReply << std::endl;
+    if (reader.parse(serverReply, root, false) == true)
     {
-        if (reader.parse(serverReply.substr(posColumn + 1), root, false) == true)
-        {
-            std::cout << "received a movement order " << serverReply << std::endl;
-            /*_agent.setGoalPos(root.get("x", 0.0).asDouble(),
-                              root.get("y", 0.0).asDouble(),
-                              root.get("z", 0.0).asDouble());*/
-            pcl::PointXYZ pos = (pcl::PointXYZ) {
-                root.get("x", 0.0).asFloat(),
-                root.get("y", 0.0).asFloat(),
-                root.get("z", 0.0).asFloat()
-            };
-            this->dispatch("SetGoalPosEvent", pos); // And the agent should subscribes to the events.
-        }
-        else
-            std::cout << "error while parsing order " << serverReply << ": " << reader.getFormatedErrorMessages() << std::endl;
+        std::cout << "received a movement order " << serverReply << std::endl;
+        pcl::PointXYZ pos = (pcl::PointXYZ) {
+                root["data"]["position"].get("x", 0.0).asFloat(),
+                root["data"]["position"].get("y", 0.0).asFloat(),
+                root["data"]["position"].get("z", 0.0).asFloat()
+    };
+    this->dispatch("SetGoalPosEvent", pos); // And the agent should subscribes to the events.
     }
+    else
+        std::cout << "error while parsing order " << serverReply << ": " << reader.getFormattedErrorMessages() << std::endl;
 }
 
 void        AgentProtocol::disconnectEvent()
