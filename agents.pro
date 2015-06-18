@@ -9,7 +9,6 @@ SOURCES += \
     src/network/CircularBuffer.cpp \
     src/protocol/AgentProtocol.cpp \
     src/network/TCPConnector.cpp \
-    src/network/Packet.cpp \
     src/slam/CovarianceMatrice.cpp \
     src/slam/DataAssociation.cpp \
     src/slam/KalmanGainMatrice.cpp \
@@ -19,7 +18,11 @@ SOURCES += \
     src/utils/AThread.cpp \
     src/utils/event/Dispatcher.cpp \
     src/protocol/AProtocol.cpp \
-    src/core/Agent.cpp
+    src/core/Agent.cpp \
+    src/network/ComPacket.cpp \
+    src/network/ChunkFactory.cpp \
+    src/network/NetworkManager.cpp \
+    src/network/UDPConnector.cpp
 
 HEADERS += \
     include/network/CircularBuffer.h \
@@ -29,7 +32,6 @@ HEADERS += \
     include/network/Socket.h \
     include/network/TCPConnector.h \
     include/network/ANetworkAdapter.h \
-    include/network/Packet.h \
     include/core/defines.h \
     include/slam/Agent.hh \
     include/slam/CovarianceMatrice.hh \
@@ -42,7 +44,11 @@ HEADERS += \
     include/core/Core.h \
     include/utils/AThread.h \
     include/utils/NonCopyable.h \
-    include/utils/event/Dispatcher.h
+    include/utils/event/Dispatcher.h \
+    include/network/ComPacket.h \
+    include/network/APacket.h \
+    include/network/NetworkManager.hh \
+    include/network/IConnector.hh
 
 INCLUDEPATH += include \
               include/core \
