@@ -39,64 +39,60 @@ typename FunctionTraits<Lambda>::function makeFunction(Lambda const &lambda)
 
 }  // namespace priv
 
-// Simple design design pattern to dispatch data for a specific key.
-// For example you can use it for an asynchronous resources loading:
-//
-//   Loader loader; // which inherit from Dispatcher
-//   loader.RegisterCallback("finish", [] () {
-//     std::cout << "Finished!" << std::endl;
-//   });
-//   loader.RegisterCallback("progress", [] (float progress) {
-//     std::cout << "Progress " << progress * 100 << "%" << std::endl;
-//   });
-//   loader.Start();
-//
+/** @brief Simple design design pattern to dispatch data for a specific key.
+* For example you can use it for an asynchronous resources loading:
+*
+*   Loader loader; // which inherit from Dispatcher
+*   loader.RegisterCallback("finish", [] () {
+*     std::cout << "Finished!" << std::endl;
+*   });
+*   loader.RegisterCallback("progress", [] (float progress) {
+*     std::cout << "Progress " << progress * 100 << "%" << std::endl;
+*   });
+*   loader.Start();
+*/
 class Dispatcher
 {
 public:
-    // Default constructor which does compute or initialize anything.
-    Dispatcher();
+    Dispatcher();                                       /**< @brief Default constructor which does compute or initialize anything. */
+    Dispatcher(Dispatcher const &other);                /**< @brief Copy constructor */
+    Dispatcher &operator=(Dispatcher const &other);     /**< @brief Assignement operator */
 
-    // Copy constructor.
-    Dispatcher(Dispatcher const &other);
+    virtual ~Dispatcher();                              /**< @brief Delete all registered callbacks. */
 
-    // Asignement operator.
-    Dispatcher &operator=(Dispatcher const &other);
-
-    // Delete all registered callbacks.
-    virtual ~Dispatcher();
-
-    // Add a callback for the given |key|. For example when
-    // `dispatcher.Dispatch("data", myData);` is called, all callbacks
-    // registered with `dispatcher.RegisterCallback("data");` will be
-    // called.
+    /** @brief Add a callback for the given |key|.
+     *
+     * For example when
+    * `dispatcher.Dispatch("data", myData);` is called, all callbacks
+    * registered with `dispatcher.RegisterCallback("data");` will be called.*/
     template<typename Lambda>
     void registerCallback(const std::string &key, Lambda const &lambda);
 
-    // Remove all registered callbacks for the given |key|.
+    /** @brief Remove all registered callbacks for the given |key|. */
     void removeCallbacks(const std::string &key);
 
-    // Dispatch according the given |key|. That means that all
-    // callbacks registered with |key| will be called.
+    /** @brief Dispatch according the given |key|.
+     *
+     * That means that all callbacks registered with |key| will be called. */
     template<typename ...Args>
     void dispatch(const std::string &key, Args ...args) const;
 
 private:
-    // Simple structure to store informations about the callback.
+    /** @brief Simple structure to store informations about the callback.*/
     struct Callback
     {
         void *function;
         const std::type_info* signature;
     };
 
-    // A map which contains all registered callbacks.
+    /** @brief A map which contains all registered callbacks.*/
     std::map<std::string, std::vector<Callback>> callbacks_;
 };
 
 template<typename Lambda>
 void Dispatcher::registerCallback(const std::string &key, const Lambda &lambda)
 {
-    // Generate the function from the given lambda.
+    /** @brief Generate the function from the given lambda */
     auto function = new decltype(priv::makeFunction(lambda))
             (priv::makeFunction(lambda));
 
@@ -112,9 +108,9 @@ void Dispatcher::dispatch(const std::string &key, Args ...args) const
     {
         auto function = static_cast<std::function<void(Args...)>*>(callback.function);
         if (false/*Trouver un moyen pour checker uniquement le type et non la constness ou le fait d'avoir une reference*/)
-            throw std::invalid_argument("Callback signature doesnt with arguments in dispatcher.");
-        (*function)(args...);
-    }
+    throw std::invalid_argument("Callback signature doesnt with arguments in dispatcher.");
+    (*function)(args...);
+}
 }
 
 }  // namespace utils
