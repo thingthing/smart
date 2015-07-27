@@ -11,7 +11,7 @@ static const std::string UDP_KEY = "UDP";
 
 
 AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
-    : AProtocol(networkAdapter)
+: AProtocol(networkAdapter)
 {
     Network::IConnector *connector = new Network::TCPConnector();
     _networkAdapter.setConnector(TCP_KEY, connector);
@@ -33,13 +33,16 @@ void        AgentProtocol::connectedEvent()
 {
     std::cout << "connected event " << std::endl;
     Json::Value     reply;
-    reply["status"] = 0;
+
     reply["data"]["name"] = _agent->name();
     reply["data"]["position"]["x"] = _agent->getPos().x;
     reply["data"]["position"]["y"] = _agent->getPos().y;
     reply["data"]["position"]["z"] = _agent->getPos().z;
-
-    _networkAdapter.send(reply.toStyledString(), TCP_KEY);
+    reply["status"]["code"] = 0;
+    reply["status"]["message"] = "ok";
+    _outPacket.clear();
+    _outPacket.append(reply.toStyledString().c_str(), reply.toStyledString().size());       // TODO : do something to handle strings directly with << in APacket.
+    _networkAdapter.send(_outPacket, TCP_KEY);
 }
 
 void        AgentProtocol::sendPacketEvent()
@@ -88,8 +91,8 @@ bool PrintJSONTree( const Json::Value &root, unsigned short depth /* = 0 */)
             // Print depth. 
             for( int tab = 0 ; tab < depth; tab++) {
                printf("-"); 
-            }
-            printf(" subvalue(");
+           }
+           printf(" subvalue(");
             PrintJSONValue(itr.key());
             printf(") -");
             PrintJSONTree( *itr, depth); 
@@ -107,8 +110,8 @@ pcl::PointXYZ AgentProtocol::getPosFromJson(Json::Value const &root)
 {
     return ((pcl::PointXYZ) {
         root.get("x", 0.0).asFloat(),
-                 root.get("y", 0.0).asFloat(),
-                 root.get("z", 0.0).asFloat()
+        root.get("y", 0.0).asFloat(),
+        root.get("z", 0.0).asFloat()
     });
 }
 
@@ -116,7 +119,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket &packet)      /
 {
     Json::Reader        reader;
     Json::Value         root;
-    std::string         serverReply((const char *)packet.peek());
+    std::string         serverReply((const char *)packet.data() + sizeof(Network::s_ComPacketHeader), packet.getPacketSize() - sizeof(Network::s_ComPacketHeader));
 
     std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
