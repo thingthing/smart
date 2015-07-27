@@ -3,7 +3,7 @@
 
 #include "AgentProtocol.h"
 #include "TCPConnector.h"
-#include "Agent.hh"
+#include "IAgent.hh"
 #include "NonCopyable.h"
 #include "Slam.hh"
 
@@ -20,7 +20,7 @@ protected:
     Core() = delete;
     NON_COPYABLE(Core)
 
-    Agent                       _agent;
+    IAgent                      *_agent;
     Slam                        *_slam;
     AgentProtocol               &_protocol;
 };
