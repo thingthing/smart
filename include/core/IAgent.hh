@@ -35,7 +35,8 @@ public:
     virtual void            goTowardsGoal() = 0;
 
     inline std::string const &name() const { return (_name); }
-
+    inline std::string const &status() const {return (_status) ;}
+    inline std::string const &status(std::string const &status) {_status = status; return (_status);}
 
     double const    degreePerScan;
     double const    cameraProblem;
@@ -44,6 +45,7 @@ protected:
     double          _bearing;
     pcl::PointXYZ   _pos;
     std::string     _name;
+    std::string     _status;
     Capture         _capture;
 
 public:
