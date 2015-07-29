@@ -182,18 +182,18 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
 // Parametric convert equation:
 // x = (x_view * cos(bearing) - y_view * sin(bearing)) + agentx
 // y = (x_view * sin(bearing) + y_view * cos(bearing)) + agenty
-static void parametricConvert(Agent const &agent, double x_view, double y_view, double &x, double &y)
+static void parametricConvert(IAgent const &agent, double x_view, double y_view, double &x, double &y)
 {
   x = (cos(agent.getBearing() * Landmarks::CONVERSION) * x_view - sin(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().x;
   y = (sin(agent.getBearing() * Landmarks::CONVERSION) * x_view + cos(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().y;
 }
 
-double Landmarks::calculateBearing(double x, double y, Agent const &agent) const
+double Landmarks::calculateBearing(double x, double y, IAgent const &agent) const
 {
   return (atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing());
 }
 
-void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b)
+void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent, int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
   double x; //x coordinate
@@ -220,7 +220,7 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &c
 /**
  * @todo Do not use range only, use point (maybe)
  */
-Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, Agent const &agent)
+Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, IAgent const &agent)
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = -1;
@@ -254,7 +254,7 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 /**
  * @todo: Same as getLandmark
  **/
-Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, Agent const &agent)
+Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, IAgent const &agent)
 {
   Landmarks::Landmark *lm;
   double x;
@@ -340,7 +340,7 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
   return (lm);
 }
 
-Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const &agent)
+Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const &agent)
 {
   //our goal is to calculate point on line closest to origin (0,0)
   //calculate line perpendicular to input line. a*ao = -1
@@ -382,7 +382,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, Agent const 
   return (lm);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent)
 {
   unsigned int sampleNumber = cloud.points.size();
 
@@ -535,7 +535,7 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> const &extractedLandma
   }
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent)
 {
   // lines found
   std::vector<double> la;
@@ -654,7 +654,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
   return foundLandmarks;
 }
 
-void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent)
+void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent)
 {
   double maxrange = 0;
   double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent.getPos().x, agent.getPos().y);
@@ -732,7 +732,7 @@ std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLineLandmarks(std::vec
 }
 
 std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[],
-    unsigned int numberMatched, int id[], std::vector<pcl::PointXYZ> const &pos, Agent const &agent)
+    unsigned int numberMatched, int id[], std::vector<pcl::PointXYZ> const &pos, IAgent const &agent)
 {
   std::vector<Landmarks::Landmark *> res(numberMatched);
   for (unsigned int i = 0; i < numberMatched; ++i)

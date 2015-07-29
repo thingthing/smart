@@ -1,11 +1,10 @@
 #include "Agent.hh"
 
-const double Agent::DEGREESPERSCAN = 0.5;
-const double Agent::CAMERAPROBLEM = 4.1; // meters
+const double IAgent::DEGREESPERSCAN = 0.5;
+const double IAgent::CAMERAPROBLEM = 4.1; // meters
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _bearing(0),
-    _name("Agent")
+  : IAgent(degreePerScan, cameraProblem, "Agent")
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -14,35 +13,6 @@ Agent::Agent(double degreePerScan, double cameraProblem)
 
 Agent::~Agent()
 {
-}
-
-pcl::PointXYZ	const &Agent::getPos() const
-{
-  return (this->_pos);
-}
-
-double		Agent::getBearing() const
-{
-  return (this->_bearing);
-}
-
-void		Agent::setPos(pcl::PointXYZ const &pos)
-{
-  this->_pos.x = pos.x;
-  this->_pos.y = pos.y;
-  this->_pos.z = pos.z;
-}
-
-void		Agent::setPos(double x, double y , double z)
-{
-  this->_pos.x = x;
-  this->_pos.y = y;
-  this->_pos.z = z;
-}
-
-void		Agent::setBearing(double bearing)
-{
-  this->_bearing = bearing;
 }
 
 void            Agent::setGoalPos(pcl::PointXYZ const &pos)
@@ -63,11 +33,6 @@ void            Agent::setGoalPos(double x, double y, double z)
 pcl::PointXYZ   const   &Agent::getGoalPos() const
 {
   return (this->_goalPos);
-}
-
-Capture const &Agent::getCapture() const
-{
-  return (this->_capture);
 }
 
 pcl::PointCloud<pcl::PointXYZ> const &Agent::takeData()

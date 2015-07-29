@@ -6,7 +6,7 @@
 #include <pcl/common/projection_matrix.h>
 #include <vector>
 #include <map>
-#include "Agent.hh"
+#include "IAgent.hh"
 
 class SystemStateMatrice
 {
@@ -14,15 +14,15 @@ public:
   SystemStateMatrice();
   SystemStateMatrice(float X, float Y, float z, float Theta);
   SystemStateMatrice(pcl::PointXYZ const &posRobot, float Theta);
-  SystemStateMatrice(Agent const &agent);
+  SystemStateMatrice(IAgent const &agent);
   virtual ~SystemStateMatrice();
 
   unsigned int addLandmarkPosition(const pcl::PointXYZ &position);
   unsigned int addLandmarkPosition(float x, float y, float z);
   void updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z);
   void updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXYZ &position);
-  void updateRobotState(Agent const &agent);
-  void setRobotState(Agent const &);
+  void updateRobotState(IAgent const &agent);
+  void setRobotState(IAgent const &);
 
   const pcl::PointXYZ &getPosition(unsigned int landmarkNumber) const;
   float getLandmarkXPosition(unsigned int landmarkNumber) const;

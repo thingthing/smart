@@ -101,7 +101,7 @@ CovarianceMatrice::CovarianceMatrice(pcl::PointXYZ const &pos, float theta)
   this->_matrice[2][1].setState(CovarianceMatrice::NOTUSED);
 }
 
-CovarianceMatrice::CovarianceMatrice(Agent const &agent)
+CovarianceMatrice::CovarianceMatrice(IAgent const &agent)
 {
     this->_matrice.resize(CovarianceMatrice::SIZEINIT);
   for (unsigned int i = 0 ; i < CovarianceMatrice::SIZEINIT; ++i)
@@ -155,7 +155,7 @@ void CovarianceMatrice::setRobotPosition(pcl::PointXYZ const &pos, float theta)
   this->_matrice[2][2].setValue(theta);
 }
 
-void CovarianceMatrice::setRobotPosition(Agent const &agent)
+void CovarianceMatrice::setRobotPosition(IAgent const &agent)
 {
   this->_matrice[0][0].setValue(agent.getPos().x);
   this->_matrice[1][1].setValue(agent.getPos().y);

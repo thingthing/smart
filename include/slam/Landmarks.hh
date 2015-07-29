@@ -26,7 +26,7 @@
 #include <pcl/common/common.h>
 #include <pcl/impl/point_types.hpp>
 #include <pcl/common/projection_matrix.h>
-#include "Agent.hh"
+#include "IAgent.hh"
 
 class Landmarks
 {
@@ -98,7 +98,7 @@ public:
 
 public:
   ~Landmarks();
-  Landmarks(double degreePerScan = Agent::DEGREESPERSCAN);
+  Landmarks(double degreePerScan = IAgent::DEGREESPERSCAN);
 
   // Getters
 
@@ -149,10 +149,10 @@ public:
    * time but wasn't, so it's not a good landmark, so we delete it.
    *
    * @param cloud Capture data from agent
-   * @param agent Agent information
+   * @param agent IAgent information
    */
   void removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
-                          Agent const &agent);
+                          IAgent const &agent);
   /**
    * @brief Remove duplicated landmarks
    * @details If two landmarks are too close from each other, there are surely
@@ -182,7 +182,7 @@ public:
    * @param numberMatched Number of extracted landmark that are already in db
    * @param id Id of the landmarks (-1 if not in db)
    * @param pos Position of the landmarks
-   * @param agent Agent information
+   * @param agent IAgent information
    *
    * @return Extracted landmarks with updated data (LIFE, id and time observed)
    */
@@ -190,7 +190,7 @@ public:
       unsigned int numberMatched,
       int id[],
       std::vector<pcl::PointXYZ> const &pos,
-      Agent const &agent);
+      IAgent const &agent);
   /**
    * @brief Update landmark information in db or add landmark to db
    *
@@ -208,12 +208,12 @@ public:
    * and interpret them as landmarks
    *
    * @param cloud Capture data this cycle
-   * @param agent Agent information
+   * @param agent IAgent information
    *
    * @return Extracted landmarks
    */
   std::vector<Landmark *> extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
-      Agent const &agent);
+      IAgent const &agent);
 
 
   //Other
@@ -265,25 +265,25 @@ public: // ONLY FOR UNIT TESTS
 #endif
 
   //Getters
-  Landmark *getLandmark(double x_view, double y_view, Agent const &agent);
-  Landmark *getLineLandmark(double a, double b, Agent const &agent);
+  Landmark *getLandmark(double x_view, double y_view, IAgent const &agent);
+  Landmark *getLineLandmark(double a, double b, IAgent const &agent);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();
 
   //Update
-  Landmark *updateLandmark(bool matched, int id, double x_view, double y_view, Agent const &agent);
+  Landmark *updateLandmark(bool matched, int id, double x_view, double y_view, IAgent const &agent);
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
   std::vector<Landmark *> extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
-      Agent const &agent);
+      IAgent const &agent);
 
   //Other
-  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent const &agent, int selectPoints[], int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent, int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
-  double calculateBearing(double x, double y, Agent const &agent) const;
+  double calculateBearing(double x, double y, IAgent const &agent) const;
 
 private: // PRIVATE OTHER CASES
 #ifdef UNITTEST

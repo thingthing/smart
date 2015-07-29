@@ -6,7 +6,7 @@
 #include "NonCopyable.h"
 #include "event/Dispatcher.h"
 #include "NetworkManager.hh"
-#include "Agent.hh"
+#include "IAgent.hh"
 
 namespace Network { class NetworkManager; }
 

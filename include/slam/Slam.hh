@@ -31,7 +31,7 @@
 #include "SystemStateMatrice.hh"
 #include "CovarianceMatrice.hh"
 #include "Landmarks.hh"
-#include "Agent.hh"
+#include "IAgent.hh"
 
 class   Slam
 {
@@ -43,7 +43,7 @@ public:
   *
   * @param agent Agent on wich the API is installed
   */
-  Slam(Agent *agent);
+  Slam(IAgent *agent);
   ~Slam();
 
   /**
@@ -56,7 +56,7 @@ public:
    * @param cloud Current mapping
    * @param agent Agent we want the state updated
    */
-  void    updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent);
+  void    updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent);
 
   /**
   * @brief Add a landmark
@@ -70,7 +70,7 @@ private:
   Slam();
 
 private:
-  Agent     *_agent;
+  IAgent     *_agent;
   DataAssociation *_data;
   KalmanGainMatrice _kg;
   SystemStateMatrice  *_state;

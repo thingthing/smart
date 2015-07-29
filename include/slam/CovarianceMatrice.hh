@@ -6,7 +6,7 @@
 #include <pcl/common/projection_matrix.h>
 
 #include <vector>
-#include "Agent.hh"
+#include "IAgent.hh"
 
 class CovarianceMatrice
 {
@@ -41,7 +41,7 @@ public:
   CovarianceMatrice();
   CovarianceMatrice(float X, float Y, float theta);
   CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
-  CovarianceMatrice(Agent const &agent);
+  CovarianceMatrice(IAgent const &agent);
   virtual ~CovarianceMatrice();
 
   void addLandmark(float x, float y, unsigned int slamId);
@@ -53,7 +53,7 @@ public:
 
   void setRobotPosition(float X, float Y, float theta);
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);
-  void setRobotPosition(Agent const &agent);
+  void setRobotPosition(IAgent const &agent);
   void calculationCovariance();
 
 private:

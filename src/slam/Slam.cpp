@@ -1,6 +1,6 @@
 #include "Slam.hh"
 
-Slam::Slam(Agent *agent)
+Slam::Slam(IAgent *agent)
 {
   this->_agent = agent;
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
@@ -21,7 +21,7 @@ Slam::~Slam()
     delete this->_covariance;
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent)
 {
   //Update state using odometry
   this->_state->setRobotState(agent);
