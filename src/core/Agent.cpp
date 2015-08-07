@@ -2,9 +2,10 @@
 
 const double IAgent::DEGREESPERSCAN = 0.5;
 const double IAgent::CAMERAPROBLEM = 4.1; // meters
+const int    Agent::DEFAULTBATTERY = 10000;
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : IAgent(degreePerScan, cameraProblem, "Agent")
+  : IAgent(degreePerScan, cameraProblem, "Agent"), _battery(Agent::DEFAULTBATTERY)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -13,6 +14,40 @@ Agent::Agent(double degreePerScan, double cameraProblem)
 
 Agent::~Agent()
 {
+}
+
+int              Agent::getBattery() const
+{
+  return (_battery);
+}
+
+void             Agent::setBattery(int new_battery_value)
+{
+  _battery = new_battery_value;
+}
+
+int             Agent::lowerBattery(int value_to_lower)
+{
+  _battery -= value_to_lower;
+  if (_battery < (5 * Agent::DEFAULTBATTERY) / 100)
+    this->status("LOWBATTERY");
+  if (_battery <= 0)
+  {
+    this->status("NOBATTERY");
+    _battery = 0;
+  }
+  return (_battery);
+}
+
+int             Agent::chargeBattery(int value_to_add)
+{
+  _battery += value_to_add;
+  if (_battery >= Agent::DEFAULTBATTERY)
+  {
+    _battery = Agent::DEFAULTBATTERY;
+    this->status("FULLBATTERY");
+  }
+  return (_battery);
 }
 
 void            Agent::setGoalPos(pcl::PointXYZ const &pos)
