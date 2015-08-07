@@ -17,6 +17,7 @@ public:
     virtual void        receivePacketEvent(Network::ComPacket &packet);
     virtual void        disconnectEvent();
     virtual void        sendPacketEvent();
+    void                sendStatusEvent(std::string const &status);
 
     void         setAgent(Agent &agent);
 

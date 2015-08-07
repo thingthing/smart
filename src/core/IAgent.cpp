@@ -13,6 +13,14 @@ IAgent::~IAgent()
 {
 }
 
+std::string const &IAgent::status(std::string const &status)
+{
+  _status = status;
+  this->dispatch("SendStatusEvent", status);
+  return (_status);
+}
+
+
 pcl::PointXYZ const &IAgent::getPos() const
 {
   return (this->_pos);

@@ -86,18 +86,28 @@ void             Agent::goTowardsGoal()
         _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
 }
 
-bool            Agent::isAtDestination()
+bool            Agent::isAtDestination() const
 {
   return (_pos.x == _goalPos.x && _pos.y == _goalPos.y && _pos.z == _goalPos.z);
 }
 
+bool            Agent::isAtBase() const
+{
+  return (_pos.x == 0 && _pos.y == 0 && _pos.z == 0);
+}
+
 void            Agent::updateState()
 {
+  if (!this->isAtBase())
+    this->lowerBattery(1);
   this->dispatch("SendPacketEvent");
   std::cout << "GoalPos is " << _goalPos << std::endl;
   if (this->isAtDestination() == false)
   {
     std::cout << "Going goTowardsGoal" << std::endl;
     this->goTowardsGoal();
+  } else if (this->isAtBase())
+  {
+    this->chargeBattery(1);
   }
 }

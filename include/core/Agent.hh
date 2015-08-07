@@ -24,13 +24,13 @@ public:
     pcl::PointCloud<pcl::PointXYZ> const &takeData();
     void            updateState();
     void            goTowardsGoal();
-    bool            isAtDestination();
+    bool            isAtDestination() const;
+    bool            isAtBase() const;
 
 private:
     static const int DEFAULTBATTERY;
     pcl::PointXYZ   _goalPos;
-
-
+    int             _battery;
 };
 
 

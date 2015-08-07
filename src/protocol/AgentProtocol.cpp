@@ -6,8 +6,8 @@
 #include "TCPConnector.h"
 #include "UDPConnector.hh"
 
-static const std::string TCP_KEY = "TCP";
-static const std::string UDP_KEY = "UDP";
+const std::string TCP_KEY = "TCP";
+const std::string UDP_KEY = "UDP";
 
 
 AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
@@ -15,6 +15,7 @@ AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
 {
     Network::IConnector *connector = new Network::TCPConnector();
     _networkAdapter.setConnector(TCP_KEY, connector);
+    _networkAdapter.setConnector(UDP_KEY, new Network::UDPConnector());
 }
 
 AgentProtocol::~AgentProtocol()
@@ -27,6 +28,7 @@ void         AgentProtocol::setAgent(Agent &agent)
     this->registerCallback("SetGoalPosEvent", [this](pcl::PointXYZ pos) {_agent->setGoalPos(pos);});
     this->registerCallback("SetPosEvent", [this](pcl::PointXYZ pos) {_agent->setPos(pos);});
     _agent->registerCallback("SendPacketEvent", [this]() {sendPacketEvent();});
+    _agent->registerCallback("SendStatusEvent", [this](std::string const &status) {sendStatusEvent(status);});
 }
 
 void        AgentProtocol::connectedEvent()
@@ -45,6 +47,19 @@ void        AgentProtocol::connectedEvent()
     _networkAdapter.send(_outPacket, TCP_KEY);
 }
 
+void        AgentProtocol::sendStatusEvent(std::string const &status)
+{
+    Json::Value     root;
+
+    root["status"]["code"] = 0;
+    root["status"]["message"] = "ok";
+    root["data"]["status"] = status;
+    _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
+    std::cout << "Send status event " << std::endl;
+    _networkAdapter.send(_outPacket, TCP_KEY);
+    _outPacket.clear();
+}
+
 void        AgentProtocol::sendPacketEvent()
 {
     Json::Value     root;
@@ -52,6 +67,7 @@ void        AgentProtocol::sendPacketEvent()
     root["data"]["position"]["x"] = _agent->getPos().x;
     root["data"]["position"]["y"] = _agent->getPos().y;
     root["data"]["position"]["z"] = _agent->getPos().z;
+    root["data"]["battery"] = _agent->getBattery();
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
