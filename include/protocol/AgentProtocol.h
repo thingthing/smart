@@ -21,6 +21,9 @@ public:
 
     void         setAgent(Agent &agent);
 
+    static const std::string TCP_KEY;
+    static const std::string UDP_KEY;
+
 private:
     pcl::PointXYZ       getPosFromJson(Json::Value const &root);
 
