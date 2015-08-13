@@ -6,16 +6,16 @@
 #include "TCPConnector.h"
 #include "UDPConnector.hh"
 
-const std::string TCP_KEY = "TCP";
-const std::string UDP_KEY = "UDP";
+const std::string AgentProtocol::TCP_KEY = "TCP";
+const std::string AgentProtocol::UDP_KEY = "UDP";
 
 
 AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
 : AProtocol(networkAdapter)
 {
     Network::IConnector *connector = new Network::TCPConnector();
-    _networkAdapter.setConnector(TCP_KEY, connector);
-    _networkAdapter.setConnector(UDP_KEY, new Network::UDPConnector());
+    _networkAdapter.setConnector(AgentProtocol::TCP_KEY, connector);
+    _networkAdapter.setConnector(AgentProtocol::UDP_KEY, new Network::UDPConnector());
 }
 
 AgentProtocol::~AgentProtocol()
