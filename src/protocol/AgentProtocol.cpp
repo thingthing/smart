@@ -22,13 +22,25 @@ AgentProtocol::~AgentProtocol()
 {
 }
 
-void         AgentProtocol::setAgent(Agent &agent)
+void         AgentProtocol::setAgent(Agent &agent, Slam &slam)
 {
     _agent = &agent;
     this->registerCallback("SetGoalPosEvent", [this](pcl::PointXYZ pos) {_agent->setGoalPos(pos);});
     this->registerCallback("SetPosEvent", [this](pcl::PointXYZ pos) {_agent->setPos(pos);});
     _agent->registerCallback("SendPacketEvent", [this]() {sendPacketEvent();});
     _agent->registerCallback("SendStatusEvent", [this](std::string const &status) {sendStatusEvent(status);});
+    slam.registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const &cloud) {sendCloudEvent(cloud);});
+    slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
+}
+
+void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud)
+{
+
+}
+
+void        AgentProtocol::sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl)
+{
+
 }
 
 void        AgentProtocol::connectedEvent()
@@ -106,9 +118,9 @@ bool PrintJSONTree( const Json::Value &root, unsigned short depth /* = 0 */)
         for( Json::ValueIterator itr = root.begin() ; itr != root.end() ; itr++ ) {
             // Print depth. 
             for( int tab = 0 ; tab < depth; tab++) {
-               printf("-"); 
-           }
-           printf(" subvalue(");
+             printf("-"); 
+         }
+         printf(" subvalue(");
             PrintJSONValue(itr.key());
             printf(") -");
             PrintJSONTree( *itr, depth); 

@@ -36,6 +36,8 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &a
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
   this->addLandmarks(newLandmarks);
+  this->dispatch("SendCloudEvent", cloud);
+  this->dispatch("SendNewLandmarkEvent", newLandmarks);
 
   for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
   {
