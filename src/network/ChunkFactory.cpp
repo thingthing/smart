@@ -30,9 +30,9 @@ void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmar
 
 /**
  * @brief Convert a Landmark into string to put it in chunk
- * @details Call fromLandmarkToString() to get a string of information from the
- * class landmark_ and surround it with "L(" ")" to tag it as a landmark packet.
- * Then it add the packet to the current built chunk with addEncodedClassToChunk()
+ * @details Create the chunk header and add a landmark_ packet
+ * to it using fromLandmarkToString().
+ * Then it push the temporary chunk into the deque of chunks.
  * @param landmarks_ Class landmark_ containing informations about the captured points
  */
 void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
@@ -85,6 +85,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
  * @return A boolean to tell you weither a totally filled chunk is ready to sent or not.
  */
 bool ChunkFactory::isFullChunkReady() const { return _fullChunkReadiness; }
+
 /**
  * @brief Getter of _chunkReadiness
  * @return A boolean to tell you weither a partially filled chunk is ready to sent or not.
