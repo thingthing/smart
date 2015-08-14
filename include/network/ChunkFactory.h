@@ -74,12 +74,13 @@ private:
 
   // CONST
   const unsigned int    MAX_SIZE_CHUNK = 512;
-  const short           CHUNK_HEADER_SIZE = sizeof(_chunkID);
-  const unsigned int    POINTCLOUD_HEADER_SIZE = sizeof(char) // [P]
-                           + sizeof(unsigned int)       // [packet ID]
-                           + sizeof(unsigned int)       // [current packet nb]
-                           + sizeof(unsigned int)       // [total packet nb]
-                           + sizeof(unsigned short);    // [current packet's size];
+  const std::string     MAGIC_NB_LANDMARK = "L";
+  const std::string     MAGIC_NB_POINTCLOUD = "P";
+  const short           CHUNK_HEADER_SIZE = sizeof(char) + sizeof(_chunkID); // Magic Number + Chunk ID
+  const unsigned int    POINTCLOUD_HEADER_SIZE = sizeof(unsigned int)   // [packet ID]
+                           + sizeof(unsigned int)                       // [current packet nb]
+                           + sizeof(unsigned int)                       // [total packet nb]
+                           + sizeof(unsigned short);                    // [current packet's size];
    const unsigned int   SIZE_IN_PACKET = MAX_SIZE_CHUNK - CHUNK_HEADER_SIZE - POINTCLOUD_HEADER_SIZE;
    const unsigned short SIZE_OF_POINT_XYZ = 12;
 };

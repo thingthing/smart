@@ -35,7 +35,7 @@ void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmar
  */
 void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 {
-    _tmpChunk = "L"; // The Magic
+    _tmpChunk = MAGIC_NB_LANDMARK; // The Magic
     _tmpChunk += getNewChunkID(); // The Chunk ID
     _tmpChunk += fromLandmarkToString(landmark_); // The packet
 
@@ -60,7 +60,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
     // First Packet
     packet = convertDataFirstPacket(pointCloud, cloudIndex);
     metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
-    _tmpChunk = "P"; // The Magic
+    _tmpChunk = MAGIC_NB_POINTCLOUD; // The Magic
     _tmpChunk += getNewChunkID(); // The Chunk ID
     _tmpChunk += metadataPacket + packet; // The Packet
     pushChunkToChunks();
@@ -70,7 +70,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
     {
         packet = convertDataPacket(pointCloud, cloudIndex);
         metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
-        _tmpChunk = "P"; // The Magic
+        _tmpChunk = MAGIC_NB_POINTCLOUD; // The Magic
         _tmpChunk += getNewChunkID(); // The Chunk ID
         _tmpChunk += metadataPacket + packet; // The Packet
         pushChunkToChunks();
