@@ -41,7 +41,6 @@ public:
 
 private:
   void          pushTmpChunkToChunks();
-  void          addEncodedClassToChunk(const std::string&);
 
   std::string   fromLandmarkToString(const Landmarks::Landmark&);
 
