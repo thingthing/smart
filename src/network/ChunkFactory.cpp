@@ -57,15 +57,6 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
 
     totalPacketNeeded = calculateTotalPacketNeeded(pointCloud);
 
-    // First Packet
-    packet = convertDataFirstPacket(pointCloud, cloudIndex);
-    metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
-    _tmpChunk = MAGIC_NB_POINTCLOUD; // The Magic
-    _tmpChunk += getNewChunkID(); // The Chunk ID
-    _tmpChunk += metadataPacket + packet; // The Packet
-    pushTmpChunkToChunks();
-
-    // Other Packets (if needed)
     while (packetDone < totalPacketNeeded)
     {
         packet = convertDataPacket(pointCloud, cloudIndex);
@@ -146,20 +137,14 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
  */
 int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXYZ >& cloud)
 {
-    unsigned int        totalPacketNeeded = 1;
+    unsigned int        totalPacketNeeded = 0;
     unsigned int        totalNbOfPoint = cloud.size();
-    unsigned int        nbOfPointInFirstPacket;
     unsigned int        nbOfPointInPacket;
 
-    nbOfPointInFirstPacket = (SIZE_IN_PACKET - sizeof(cloud.width) - sizeof(cloud.height)) / SIZE_OF_POINT_XYZ;
     nbOfPointInPacket = SIZE_IN_PACKET / SIZE_OF_POINT_XYZ;
+    totalPacketNeeded = (totalNbOfPoint / nbOfPointInPacket);
 
-    totalPacketNeeded = (totalNbOfPoint - nbOfPointInFirstPacket) / nbOfPointInPacket;
-
-    if ((totalNbOfPoint - nbOfPointInFirstPacket) % nbOfPointInPacket > 1)
-        ++totalPacketNeeded;
-
-    return totalPacketNeeded;
+    return ((totalNbOfPoint % nbOfPointInPacket) > 0) ? (++totalPacketNeeded) : (totalPacketNeeded) ;
 }
 
 std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsigned int totalPacket, std::string& packet)
@@ -173,21 +158,6 @@ std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsig
     metadata += encodeNbIntoString((void*)&(packetSize), sizeof(packetSize));
 
     return metadata;
-}
-
-std::string ChunkFactory::convertDataFirstPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
-{
-    std::string packetData = "";
-    unsigned int nbOfPoint;
-
-    packetData += encodeNbIntoString((void*)&(cloud.width), sizeof(cloud.width));
-    packetData += encodeNbIntoString((void*)&(cloud.height), sizeof(cloud.height));
-
-    nbOfPoint = (SIZE_IN_PACKET - sizeof(cloud.width) - sizeof(cloud.height)) / SIZE_OF_POINT_XYZ;
-
-    packetData += convertRangeOfPoint(cloud, cloudIndex, nbOfPoint);
-
-    return packetData;
 }
 
 std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
