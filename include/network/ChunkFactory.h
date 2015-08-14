@@ -60,6 +60,7 @@ private:
 
   void          increaseSizeChunks(unsigned int);
   void          decreaseSizeChunks(unsigned int);
+  std::string   getNewChunkID();
 
   NON_COPYABLE(ChunkFactory)
 

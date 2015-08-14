@@ -299,4 +299,13 @@ void ChunkFactory::increaseSizeChunks(unsigned int cSize) { _sizeChunks += cSize
 /// @brief Subtract the size of the removed chunk from the deque of chunks _chunks
 void ChunkFactory::decreaseSizeChunks(unsigned int cSize) { _sizeChunks -= cSize; }
 
+/// @brief Return a new Chunk ID in a string and increase it
+std::string ChunkFactory::getNewChunkID()
+{
+    std::string tmpChunkID = encodeNbIntoString((void*) &(_chunkID), sizeof(_chunkID));
+    ++_chunkID;
+
+    return tmpChunkID;
+}
+
 } // end of namespace
