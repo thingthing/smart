@@ -215,19 +215,6 @@ std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointX
 }
 
 /**
- * @todo DEPRECATED To remove, PointXY will not be used. Only PointXYZ
- */
-std::string ChunkFactory::fromPclPointToString(const pcl::PointXY& points)
-{
-    std::string stringPoints = "";
-
-    stringPoints += encodeNbIntoString((void*)&(points.x), sizeof(points.x));
-    stringPoints += encodeNbIntoString((void*)&(points.y), sizeof(points.y));
-
-    return stringPoints;
-}
-
-/**
  * @brief Convert PointXYZ into a string
  * @details It convert in a string the variable x, y and z
  * So the length of the string would be sizeof(x) + sizeof(y) + sizeof(z)

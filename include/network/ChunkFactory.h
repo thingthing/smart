@@ -53,7 +53,6 @@ private:
   std::string   convertDataFirstPacket(const pcl::PointCloud<pcl::PointXYZ> &, unsigned int &cloudIndex);
   std::string   convertDataPacket(const pcl::PointCloud<pcl::PointXYZ> &, unsigned int &cloudIndex);
   std::string   convertRangeOfPoint(const pcl::PointCloud<pcl::PointXYZ> &cloud, unsigned int &cloudIndex, unsigned int nbOfPoint);
-  std::string   fromPclPointToString(const pcl::PointXY&);
   std::string   fromPclPointToString(const pcl::PointXYZ&);
 
   std::string   encodeNbIntoString(void*, unsigned long);
