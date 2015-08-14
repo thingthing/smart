@@ -39,7 +39,7 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
     _tmpChunk += getNewChunkID(); // The Chunk ID
     _tmpChunk += fromLandmarkToString(landmark_); // The packet
 
-    pushChunkToChunks();
+    pushTmpChunkToChunks();
 }
 
 /**
@@ -63,7 +63,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
     _tmpChunk = MAGIC_NB_POINTCLOUD; // The Magic
     _tmpChunk += getNewChunkID(); // The Chunk ID
     _tmpChunk += metadataPacket + packet; // The Packet
-    pushChunkToChunks();
+    pushTmpChunkToChunks();
 
     // Other Packets (if needed)
     while (packetDone < totalPacketNeeded)
@@ -73,7 +73,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
         _tmpChunk = MAGIC_NB_POINTCLOUD; // The Magic
         _tmpChunk += getNewChunkID(); // The Chunk ID
         _tmpChunk += metadataPacket + packet; // The Packet
-        pushChunkToChunks();
+        pushTmpChunkToChunks();
     }
 }
 
@@ -106,20 +106,16 @@ std::string ChunkFactory::getChunk()
 
 /**
  * @brief Push the temporary chunk into the deque _chunks
- * and prepare a new temporary chunk with a new ID
  * @details If not empty, put the temporary chunk into the deque of
- * chunks and clear it. It also set _chunkReadiness to false, call
- * increaseSizeChunks() and add an ID to the chunk.
+ * chunks and clear it. It also call increaseSizeChunks()
  */
-void ChunkFactory::pushChunkToChunks()
+void ChunkFactory::pushTmpChunkToChunks()
 {
-    unsigned int chunkSize = _tmpChunk.size();
-
-    if (chunkSize > 0)
+    if (_tmpChunk.size() > 0)
     {
         _chunks.push_front(_tmpChunk);
-        increaseSizeChunks(chunkSize);
-        _tmpChunk.erase(); // A new free chunk is now ready!
+        increaseSizeChunks(_tmpChunk.size());
+        _tmpChunk.erase();
     }
 }
 

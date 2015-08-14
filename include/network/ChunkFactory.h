@@ -40,7 +40,7 @@ public:
   std::string   getChunk();
 
 private:
-  void          pushChunkToChunks();
+  void          pushTmpChunkToChunks();
   void          addEncodedClassToChunk(const std::string&);
 
   std::string   fromLandmarkToString(const Landmarks::Landmark&);
