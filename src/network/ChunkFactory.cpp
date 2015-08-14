@@ -59,17 +59,15 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
 
     // First Packet
     packet = convertDataFirstPacket(pointCloud, cloudIndex);
-    metadataPacket = createPacketMetadata(packetDone + 1, totalPacketNeeded, packet);
+    metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
     addEncodedClassToChunk(metadataPacket + packet);
-    ++packetDone;
 
     // Other Packets (if needed)
     while (packetDone < totalPacketNeeded)
     {
         packet = convertDataPacket(pointCloud, cloudIndex);
-        metadataPacket = createPacketMetadata(packetDone + 1, totalPacketNeeded, packet);
+        metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
         addEncodedClassToChunk(metadataPacket + packet);
-        ++packetDone;
     }
 }
 
