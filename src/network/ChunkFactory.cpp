@@ -37,7 +37,11 @@ void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmar
  */
 void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 {
-    addEncodedClassToChunk("L" + fromLandmarkToString(landmark_));
+    _tmpChunk = "L"; // The Magic
+    _tmpChunk += getNewChunkID(); // The Chunk ID
+    _tmpChunk += fromLandmarkToString(landmark_); // The packet
+
+    pushChunkToChunks();
 }
 
 /**
@@ -53,21 +57,25 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
     std::string packet;
     std::string metadataPacket;
 
-    pushChunkToChunks(); // prepare empty chunk
-
     totalPacketNeeded = calculateTotalPacketNeeded(pointCloud);
 
     // First Packet
     packet = convertDataFirstPacket(pointCloud, cloudIndex);
     metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
-    addEncodedClassToChunk(metadataPacket + packet);
+    _tmpChunk = "P"; // The Magic
+    _tmpChunk += getNewChunkID(); // The Chunk ID
+    _tmpChunk += metadataPacket + packet; // The Packet
+    pushChunkToChunks();
 
     // Other Packets (if needed)
     while (packetDone < totalPacketNeeded)
     {
         packet = convertDataPacket(pointCloud, cloudIndex);
         metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
-        addEncodedClassToChunk(metadataPacket + packet);
+        _tmpChunk = "P"; // The Magic
+        _tmpChunk += getNewChunkID(); // The Chunk ID
+        _tmpChunk += metadataPacket + packet; // The Packet
+        pushChunkToChunks();
     }
 }
 
@@ -119,28 +127,8 @@ void ChunkFactory::pushChunkToChunks()
         _chunks.push_front(_tmpChunk);
         increaseSizeChunks(chunkSize);
         _tmpChunk.erase(); // A new free chunk is now ready!
-        _tmpChunk += encodeNbIntoString((void*) &(_chunkID), sizeof(_chunkID)); // set new ID
-        ++_chunkID;
         _chunkReadiness = false;
     }
-}
-
-/**
- * @brief Get an encoded string and add it to the temporary chunk
- * @details It pushes the temporary chunk into the deque of chunk if needed
- * using pushChunkToChunks(). Then it add an encoded string to the temporary
- * chunk _tmpChunk and set _chunkReadiness to true
- * @param encodedClass 3D informations already converted into string
- */
-void ChunkFactory::addEncodedClassToChunk(const std::string& encodedClass)
-{
-    // Check if the temporary chunk is big enough to put encodedClass in it.
-    if (_tmpChunk.size() + encodedClass.size() > MAX_SIZE_CHUNK)
-        pushChunkToChunks();
-
-    _tmpChunk += encodedClass;
-    if (!_chunkReadiness)
-        _chunkReadiness = true;
 }
 
 /**
@@ -188,8 +176,8 @@ int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXY
 
 std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsigned int totalPacket, std::string& packet)
 {
-    std::string         metadata = "P";
     unsigned short      packetSize = (unsigned short)(packet.size());
+    std::string         metadata = "";
 
     metadata += encodeNbIntoString((void*)&(_packetID), sizeof(_packetID));
     metadata += encodeNbIntoString((void*)&(currentPacket), sizeof(currentPacket));
