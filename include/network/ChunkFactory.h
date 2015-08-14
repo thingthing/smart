@@ -68,8 +68,6 @@ private:
   std::deque<std::string>       _chunks; /*!< contain all ready chunks, max size? */
   std::string                   _tmpChunk; /*!< fill it, push it to _chunks */
 
-  bool                  _fullChunkReadiness; /*!< true: there is at least 1 chunk in _chunks */
-  bool                  _chunkReadiness; /*!< true: _tmpChunk is not empty neither full */
   unsigned int          _sizeChunks; /*!< Total size of chunks in _chunks */
   unsigned long long    _chunkID; /*!< Used to give ID to chunks */
   unsigned int          _packetID; /*!< Used to give ID to packets */

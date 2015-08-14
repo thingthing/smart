@@ -5,9 +5,7 @@ namespace Network
 
 // PUBLIC
 
-ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
-                                _chunkReadiness(false),
-                                _sizeChunks(0),
+ChunkFactory::ChunkFactory():   _sizeChunks(0),
                                 _chunkID(1),
                                 _packetID(1) {}
 
@@ -81,16 +79,10 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
 
 // Getters
 /**
- * @brief Getter of _fullChunkReadiness
- * @return A boolean to tell you weither a totally filled chunk is ready to sent or not.
+ * @brief Return whether _chunks is empty or not
+ * @return A boolean to tell you whether _chunks is empty or not.
  */
-bool ChunkFactory::isFullChunkReady() const { return _fullChunkReadiness; }
-
-/**
- * @brief Getter of _chunkReadiness
- * @return A boolean to tell you weither a partially filled chunk is ready to sent or not.
- */
-bool ChunkFactory::isChunkReady() const     { return _chunkReadiness; }
+bool ChunkFactory::isFullChunkReady() const { return (_chunks.size() == 0)?(false):(true); }
 
 /**
  * @brief Get a chunk already prepared by ChunkFactory
@@ -128,7 +120,6 @@ void ChunkFactory::pushChunkToChunks()
         _chunks.push_front(_tmpChunk);
         increaseSizeChunks(chunkSize);
         _tmpChunk.erase(); // A new free chunk is now ready!
-        _chunkReadiness = false;
     }
 }
 
