@@ -78,8 +78,8 @@ private:
                            + sizeof(unsigned int)                       // [current packet nb]
                            + sizeof(unsigned int)                       // [total packet nb]
                            + sizeof(unsigned short);                    // [current packet's size];
-   const unsigned int   SIZE_IN_PACKET = MAX_SIZE_CHUNK - CHUNK_HEADER_SIZE - POINTCLOUD_HEADER_SIZE;
-   const unsigned short SIZE_OF_POINT_XYZ = 12;
+  const unsigned int   SIZE_IN_PACKET = (MAX_SIZE_CHUNK - CHUNK_HEADER_SIZE) - POINTCLOUD_HEADER_SIZE;
+  const unsigned short SIZE_OF_POINT_XYZ = 12;
 };
 
 } // end of namespace
