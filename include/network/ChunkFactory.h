@@ -29,7 +29,7 @@ public:
   ChunkFactory();
   ~ChunkFactory();
 
-  void  processData(const std::vector<Landmarks::Landmark>&);
+  void  processData(const std::vector<Landmarks::Landmark*>&);
   void  processData(const Landmarks::Landmark&);
   void  processData(const pcl::PointCloud<pcl::PointXYZ>&);
 

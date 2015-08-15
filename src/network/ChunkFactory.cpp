@@ -19,11 +19,14 @@ ChunkFactory::~ChunkFactory()
  * @details Iterates on a vector of Landmarks using processData()
  * @param landmarks_ Vector of landmark_ containing informations about the captured points
  */
-void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
+void ChunkFactory::processData(const std::vector< Landmarks::Landmark* >& landmarks_)
 {
-    std::vector<Landmarks::Landmark>::const_iterator it;
+    std::vector<Landmarks::Landmark*>::const_iterator it;
     for (it = landmarks_.begin() ; it != landmarks_.end(); ++it)
-        processData(*it);
+    {
+        if (*it != NULL)
+            processData((Landmarks::Landmark&)(*(*it))); // Get the reference from the pointer.
+    }
 }
 
 /**
