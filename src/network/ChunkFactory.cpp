@@ -5,9 +5,7 @@ namespace Network
 
 // PUBLIC
 
-ChunkFactory::ChunkFactory():   _fullChunkReadiness(false),
-                                _chunkReadiness(false),
-                                _sizeChunks(0),
+ChunkFactory::ChunkFactory():   _sizeChunks(0),
                                 _chunkID(1),
                                 _packetID(1) {}
 
@@ -21,23 +19,30 @@ ChunkFactory::~ChunkFactory()
  * @details Iterates on a vector of Landmarks using processData()
  * @param landmarks_ Vector of landmark_ containing informations about the captured points
  */
-void ChunkFactory::processData(const std::vector< Landmarks::Landmark >& landmarks_)
+void ChunkFactory::processData(const std::vector< Landmarks::Landmark* >& landmarks_)
 {
-    std::vector<Landmarks::Landmark>::const_iterator it;
+    std::vector<Landmarks::Landmark*>::const_iterator it;
     for (it = landmarks_.begin() ; it != landmarks_.end(); ++it)
-        processData(*it);
+    {
+        if (*it != NULL)
+            processData((Landmarks::Landmark&)(*(*it))); // Get the reference from the pointer.
+    }
 }
 
 /**
  * @brief Convert a Landmark into string to put it in chunk
- * @details Call fromLandmarkToString() to get a string of information from the
- * class landmark_ and surround it with "L(" ")" to tag it as a landmark packet.
- * Then it add the packet to the current built chunk with addEncodedClassToChunk()
+ * @details Create the chunk header and add a landmark_ packet
+ * to it using fromLandmarkToString().
+ * Then it push the temporary chunk into the deque of chunks.
  * @param landmarks_ Class landmark_ containing informations about the captured points
  */
 void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 {
-    addEncodedClassToChunk("L" + fromLandmarkToString(landmark_));
+    _tmpChunk = MAGIC_NB_LANDMARK; // The Magic
+    _tmpChunk += getNewChunkID(); // The Chunk ID
+    _tmpChunk += fromLandmarkToString(landmark_); // The packet
+
+    pushTmpChunkToChunks();
 }
 
 /**
@@ -53,37 +58,25 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
     std::string packet;
     std::string metadataPacket;
 
-    pushChunkToChunks(); // prepare empty chunk
-
     totalPacketNeeded = calculateTotalPacketNeeded(pointCloud);
 
-    // First Packet
-    packet = convertDataFirstPacket(pointCloud, cloudIndex);
-    metadataPacket = createPacketMetadata(packetDone + 1, totalPacketNeeded, packet);
-    addEncodedClassToChunk(metadataPacket + packet);
-    ++packetDone;
-
-    // Other Packets (if needed)
     while (packetDone < totalPacketNeeded)
     {
         packet = convertDataPacket(pointCloud, cloudIndex);
-        metadataPacket = createPacketMetadata(packetDone + 1, totalPacketNeeded, packet);
-        addEncodedClassToChunk(metadataPacket + packet);
-        ++packetDone;
+        metadataPacket = createPacketMetadata(++packetDone, totalPacketNeeded, packet);
+        _tmpChunk = MAGIC_NB_POINTCLOUD; // The Magic
+        _tmpChunk += getNewChunkID(); // The Chunk ID
+        _tmpChunk += metadataPacket + packet; // The Packet
+        pushTmpChunkToChunks();
     }
 }
 
 // Getters
 /**
- * @brief Getter of _fullChunkReadiness
- * @return A boolean to tell you weither a totally filled chunk is ready to sent or not.
+ * @brief Return whether _chunks is empty or not
+ * @return A boolean to tell you whether _chunks is empty or not.
  */
-bool ChunkFactory::isFullChunkReady() const { return _fullChunkReadiness; }
-/**
- * @brief Getter of _chunkReadiness
- * @return A boolean to tell you weither a partially filled chunk is ready to sent or not.
- */
-bool ChunkFactory::isChunkReady() const     { return _chunkReadiness; }
+bool ChunkFactory::isFullChunkReady() const { return (_chunks.size() == 0)?(false):(true); }
 
 /**
  * @brief Get a chunk already prepared by ChunkFactory
@@ -107,42 +100,17 @@ std::string ChunkFactory::getChunk()
 
 /**
  * @brief Push the temporary chunk into the deque _chunks
- * and prepare a new temporary chunk with a new ID
  * @details If not empty, put the temporary chunk into the deque of
- * chunks and clear it. It also set _chunkReadiness to false, call
- * increaseSizeChunks() and add an ID to the chunk.
+ * chunks and clear it. It also call increaseSizeChunks()
  */
-void ChunkFactory::pushChunkToChunks()
+void ChunkFactory::pushTmpChunkToChunks()
 {
-    unsigned int chunkSize = _tmpChunk.size();
-
-    if (chunkSize > 0)
+    if (_tmpChunk.size() > 0)
     {
         _chunks.push_front(_tmpChunk);
-        increaseSizeChunks(chunkSize);
-        _tmpChunk.erase(); // A new free chunk is now ready!
-        _tmpChunk += encodeNbIntoString((void*) &(_chunkID), sizeof(_chunkID)); // set new ID
-        ++_chunkID;
-        _chunkReadiness = false;
+        increaseSizeChunks(_tmpChunk.size());
+        _tmpChunk.erase();
     }
-}
-
-/**
- * @brief Get an encoded string and add it to the temporary chunk
- * @details It pushes the temporary chunk into the deque of chunk if needed
- * using pushChunkToChunks(). Then it add an encoded string to the temporary
- * chunk _tmpChunk and set _chunkReadiness to true
- * @param encodedClass 3D informations already converted into string
- */
-void ChunkFactory::addEncodedClassToChunk(const std::string& encodedClass)
-{
-    // Check if the temporary chunk is big enough to put encodedClass in it.
-    if (_tmpChunk.size() + encodedClass.size() > MAX_SIZE_CHUNK)
-        pushChunkToChunks();
-
-    _tmpChunk += encodedClass;
-    if (!_chunkReadiness)
-        _chunkReadiness = true;
 }
 
 /**
@@ -172,26 +140,20 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
  */
 int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXYZ >& cloud)
 {
-    unsigned int        totalPacketNeeded = 1;
+    unsigned int        totalPacketNeeded = 0;
     unsigned int        totalNbOfPoint = cloud.size();
-    unsigned int        nbOfPointInFirstPacket;
     unsigned int        nbOfPointInPacket;
 
-    nbOfPointInFirstPacket = (SIZE_IN_PACKET - sizeof(cloud.width) - sizeof(cloud.height)) / SIZE_OF_POINT_XYZ;
     nbOfPointInPacket = SIZE_IN_PACKET / SIZE_OF_POINT_XYZ;
+    totalPacketNeeded = (totalNbOfPoint / nbOfPointInPacket);
 
-    totalPacketNeeded = (totalNbOfPoint - nbOfPointInFirstPacket) / nbOfPointInPacket;
-
-    if ((totalNbOfPoint - nbOfPointInFirstPacket) % nbOfPointInPacket > 1)
-        ++totalPacketNeeded;
-
-    return totalPacketNeeded;
+    return ((totalNbOfPoint % nbOfPointInPacket) > 0) ? (++totalPacketNeeded) : (totalPacketNeeded) ;
 }
 
 std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsigned int totalPacket, std::string& packet)
 {
-    std::string         metadata = "P";
     unsigned short      packetSize = (unsigned short)(packet.size());
+    std::string         metadata = "";
 
     metadata += encodeNbIntoString((void*)&(_packetID), sizeof(_packetID));
     metadata += encodeNbIntoString((void*)&(currentPacket), sizeof(currentPacket));
@@ -199,21 +161,6 @@ std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsig
     metadata += encodeNbIntoString((void*)&(packetSize), sizeof(packetSize));
 
     return metadata;
-}
-
-std::string ChunkFactory::convertDataFirstPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
-{
-    std::string packetData = "";
-    unsigned int nbOfPoint;
-
-    packetData += encodeNbIntoString((void*)&(cloud.width), sizeof(cloud.width));
-    packetData += encodeNbIntoString((void*)&(cloud.height), sizeof(cloud.height));
-
-    nbOfPoint = (SIZE_IN_PACKET - sizeof(cloud.width) - sizeof(cloud.height)) / SIZE_OF_POINT_XYZ;
-
-    packetData += convertRangeOfPoint(cloud, cloudIndex, nbOfPoint);
-
-    return packetData;
 }
 
 std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
@@ -238,19 +185,6 @@ std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointX
 
     cloudIndex += i;
     return convertedPoints;
-}
-
-/**
- * @todo DEPRECATED To remove, PointXY will not be used. Only PointXYZ
- */
-std::string ChunkFactory::fromPclPointToString(const pcl::PointXY& points)
-{
-    std::string stringPoints = "";
-
-    stringPoints += encodeNbIntoString((void*)&(points.x), sizeof(points.x));
-    stringPoints += encodeNbIntoString((void*)&(points.y), sizeof(points.y));
-
-    return stringPoints;
 }
 
 /**
@@ -298,5 +232,14 @@ std::string ChunkFactory::encodeNbIntoString(void* nb, unsigned long nbOfByte)
 void ChunkFactory::increaseSizeChunks(unsigned int cSize) { _sizeChunks += cSize; }
 /// @brief Subtract the size of the removed chunk from the deque of chunks _chunks
 void ChunkFactory::decreaseSizeChunks(unsigned int cSize) { _sizeChunks -= cSize; }
+
+/// @brief Return a new Chunk ID in a string and increase it
+std::string ChunkFactory::getNewChunkID()
+{
+    std::string tmpChunkID = encodeNbIntoString((void*) &(_chunkID), sizeof(_chunkID));
+    ++_chunkID;
+
+    return tmpChunkID;
+}
 
 } // end of namespace

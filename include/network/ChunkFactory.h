@@ -29,7 +29,7 @@ public:
   ChunkFactory();
   ~ChunkFactory();
 
-  void  processData(const std::vector<Landmarks::Landmark>&);
+  void  processData(const std::vector<Landmarks::Landmark*>&);
   void  processData(const Landmarks::Landmark&);
   void  processData(const pcl::PointCloud<pcl::PointXYZ>&);
 
@@ -40,8 +40,7 @@ public:
   std::string   getChunk();
 
 private:
-  void          pushChunkToChunks();
-  void          addEncodedClassToChunk(const std::string&);
+  void          pushTmpChunkToChunks();
 
   std::string   fromLandmarkToString(const Landmarks::Landmark&);
 
@@ -50,16 +49,15 @@ private:
                                      unsigned int totalPacket,
                                      std::string &packet
                                     );
-  std::string   convertDataFirstPacket(const pcl::PointCloud<pcl::PointXYZ> &, unsigned int &cloudIndex);
   std::string   convertDataPacket(const pcl::PointCloud<pcl::PointXYZ> &, unsigned int &cloudIndex);
   std::string   convertRangeOfPoint(const pcl::PointCloud<pcl::PointXYZ> &cloud, unsigned int &cloudIndex, unsigned int nbOfPoint);
-  std::string   fromPclPointToString(const pcl::PointXY&);
   std::string   fromPclPointToString(const pcl::PointXYZ&);
 
   std::string   encodeNbIntoString(void*, unsigned long);
 
   void          increaseSizeChunks(unsigned int);
   void          decreaseSizeChunks(unsigned int);
+  std::string   getNewChunkID();
 
   NON_COPYABLE(ChunkFactory)
 
@@ -67,22 +65,21 @@ private:
   std::deque<std::string>       _chunks; /*!< contain all ready chunks, max size? */
   std::string                   _tmpChunk; /*!< fill it, push it to _chunks */
 
-  bool          _fullChunkReadiness; /*!< true: there is at least 1 chunk in _chunks */
-  bool          _chunkReadiness; /*!< true: _tmpChunk is not empty neither full */
-  unsigned int  _sizeChunks; /*!< Total size of chunks in _chunks */
+  unsigned int          _sizeChunks; /*!< Total size of chunks in _chunks */
   unsigned long long    _chunkID; /*!< Used to give ID to chunks */
-  unsigned int  _packetID; /*!< Used to give ID to packets */
+  unsigned int          _packetID; /*!< Used to give ID to packets */
 
   // CONST
   const unsigned int    MAX_SIZE_CHUNK = 512;
-  const short           CHUNK_HEADER_SIZE = sizeof(_chunkID);
-  const unsigned int    POINTCLOUD_HEADER_SIZE = sizeof(char) // [P]
-                           + sizeof(unsigned int)       // [packet ID]
-                           + sizeof(unsigned int)       // [current packet nb]
-                           + sizeof(unsigned int)       // [total packet nb]
-                           + sizeof(unsigned short);    // [current packet's size];
-   const unsigned int   SIZE_IN_PACKET = MAX_SIZE_CHUNK - CHUNK_HEADER_SIZE - POINTCLOUD_HEADER_SIZE;
-   const unsigned short SIZE_OF_POINT_XYZ = 12;
+  const std::string     MAGIC_NB_LANDMARK = "L";
+  const std::string     MAGIC_NB_POINTCLOUD = "P";
+  const short           CHUNK_HEADER_SIZE = sizeof(char) + sizeof(_chunkID); // Magic Number + Chunk ID
+  const unsigned int    POINTCLOUD_HEADER_SIZE = sizeof(unsigned int)   // [packet ID]
+                           + sizeof(unsigned int)                       // [current packet nb]
+                           + sizeof(unsigned int)                       // [total packet nb]
+                           + sizeof(unsigned short);                    // [current packet's size];
+  const unsigned int   SIZE_IN_PACKET = (MAX_SIZE_CHUNK - CHUNK_HEADER_SIZE) - POINTCLOUD_HEADER_SIZE;
+  const unsigned short SIZE_OF_POINT_XYZ = 12;
 };
 
 } // end of namespace
