@@ -55,6 +55,10 @@ void        AgentProtocol::sendNewLandmarkEvent(std::vector<Landmarks::Landmark 
     }
 }
 
+/**
+ * @brief Function called when a connector is connected to the server
+ * @todo: Change the function to get in param the key of the connector (maybe)
+ */
 void        AgentProtocol::connectedEvent()
 {
     std::cout << "connected event " << std::endl;
