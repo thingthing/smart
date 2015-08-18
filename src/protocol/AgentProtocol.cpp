@@ -6,6 +6,7 @@
 #include "TCPConnector.h"
 #include "UDPConnector.hh"
 
+
 const std::string AgentProtocol::TCP_KEY = "TCP";
 const std::string AgentProtocol::UDP_KEY = "UDP";
 
@@ -29,18 +30,29 @@ void         AgentProtocol::setAgent(Agent &agent, Slam &slam)
     this->registerCallback("SetPosEvent", [this](pcl::PointXYZ pos) {_agent->setPos(pos);});
     _agent->registerCallback("SendPacketEvent", [this]() {sendPacketEvent();});
     _agent->registerCallback("SendStatusEvent", [this](std::string const &status) {sendStatusEvent(status);});
+    ///@todo: Register in the factory (process data)
     slam.registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const &cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
 }
 
 void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud)
 {
-
+    _factory.processData(cloud);
+    while (_factory.isFullChunkReady())
+    {
+        std::string toSend = _factory.getChunk();
+        _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+    }
 }
 
 void        AgentProtocol::sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl)
 {
-
+    _factory.processData(nl);
+    while (_factory.isFullChunkReady())
+    {
+        std::string toSend = _factory.getChunk();
+        _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+    }
 }
 
 void        AgentProtocol::connectedEvent()
@@ -56,7 +68,7 @@ void        AgentProtocol::connectedEvent()
     reply["status"]["message"] = "ok";
     _outPacket.clear();
     _outPacket.append(reply.toStyledString().c_str(), reply.toStyledString().size());       // TODO : do something to handle strings directly with << in APacket.
-    _networkAdapter.send(_outPacket, TCP_KEY);
+    _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
 }
 
 void        AgentProtocol::sendStatusEvent(std::string const &status)
@@ -68,7 +80,7 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
     root["data"]["status"] = status;
     _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
     std::cout << "Send status event " << std::endl;
-    _networkAdapter.send(_outPacket, TCP_KEY);
+    _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
     _outPacket.clear();
 }
 
@@ -85,7 +97,7 @@ void        AgentProtocol::sendPacketEvent()
     _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
     std::cout << "Send movement event " << std::endl;
     ///@todo: Really send position
-    _networkAdapter.send(_outPacket, TCP_KEY);
+    _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
     _outPacket.clear();
 }
 

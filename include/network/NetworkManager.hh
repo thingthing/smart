@@ -39,6 +39,7 @@ namespace   Network
         virtual ~NetworkManager();
 
         bool    send(Network::APacketBase const &packet, const std::string &connector_id);
+        bool    send(const std::string &chunk, const std::string &connector_id);
         bool    connectTo(const std::string &ip, unsigned short port);
         bool    connectTo(const std::string &ip, unsigned short port, const std::string &connector_id);
         void    disconnect();

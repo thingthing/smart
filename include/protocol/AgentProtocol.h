@@ -5,6 +5,7 @@
 #include "network/ComPacket.h"
 #include "Agent.hh"
 #include "Slam.hh"
+#include "ChunkFactory.h"
 #include "json/json.h"
 
 class       AgentProtocol : public AProtocol
@@ -34,6 +35,7 @@ private:
 protected:
     AgentProtocol();
 
+    Network::ChunkFactory        _factory;
     Agent               *_agent;
     Network::ComPacket   _outPacket;
 };

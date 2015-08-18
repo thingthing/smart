@@ -113,6 +113,24 @@ bool            NetworkManager::send(const Network::APacketBase &packet, const s
     return (false);
 }
 
+bool            NetworkManager::send(const std::string &chunk, const std::string &connector_id)
+{
+    std::cout << "try to send some data" << std::endl;
+    if (_connectors.at(connector_id)->isConnected() == false)
+    {
+        std::cerr << "Try to send to "<< connector_id << " wich is not connected" << std::endl;
+        return (false);
+    }
+    unsigned int chunk_size = chunk.size();
+    if (chunk_size <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
+    {
+        _connectors.at(connector_id)->getWriteBuffer().write(chunk.c_str(), chunk_size);
+        ///@todo: check if fd exists
+        (_fdsetList.at(connector_id)).events |= POLLOUT;
+        return (true);
+    }
+    return (false);
+}
 void            NetworkManager::run()
 {
     // TODO one day : try to reconnect in case it fails ?
