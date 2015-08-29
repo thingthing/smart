@@ -21,7 +21,7 @@ struct      s_ComPacketHeader
         headerSize = sizeof(s_ComPacketHeader);
     }
 
-    byte            magic;
+    unsigned short  magic;
     unsigned short  packetSize;
     unsigned short  version;
     unsigned short  headerSize;

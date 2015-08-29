@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include <iostream>
-
+#include <bitset>
 #include "NetworkManager.hh"
 
 namespace   Network
@@ -97,7 +97,7 @@ void    NetworkManager::disconnect(const std::string &connector_id)
 
 bool            NetworkManager::send(const Network::APacketBase &packet, const std::string &connector_id)
 {
-    std::cout << "try to send some data" << std::endl;
+    std::cout << "try to send some packet" << std::endl;
     if (_connectors.at(connector_id)->isConnected() == false)
     {
         std::cerr << "Try to send to "<< connector_id << " wich is not connected" << std::endl;
@@ -105,6 +105,14 @@ bool            NetworkManager::send(const Network::APacketBase &packet, const s
     }
     if (packet.getPacketSize() <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
     {
+        struct s_ComPacketHeader header = (*(s_ComPacketHeader *)packet.data());
+        std::bitset<16> magic(header.magic);
+        std::bitset<16> packetSize(header.packetSize);
+        std::bitset<16> version(header.version);
+        std::bitset<16> headerSize(header.headerSize);
+
+        std::cout << "sending :: magic = " << magic << " -- packetsize == " << packetSize << " -- version == " << version << " -- header size == " << headerSize << std::endl;
+        std::cout << "Packet size is == " << packet.getPacketSize() << std::endl;
         _connectors.at(connector_id)->getWriteBuffer().write(packet.data(), packet.getPacketSize());
         ///@todo: check if fd exists
         (_fdsetList.at(connector_id)).events |= POLLOUT;
@@ -115,13 +123,14 @@ bool            NetworkManager::send(const Network::APacketBase &packet, const s
 
 bool            NetworkManager::send(const std::string &chunk, const std::string &connector_id)
 {
-    std::cout << "try to send some data" << std::endl;
+    std::cout << "try to send some string" << std::endl;
     if (_connectors.at(connector_id)->isConnected() == false)
     {
         std::cerr << "Try to send to "<< connector_id << " wich is not connected" << std::endl;
         return (false);
     }
     unsigned int chunk_size = chunk.size();
+    std::cout << "Chunk size in udp is == " << chunk_size << std::endl;
     if (chunk_size <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
     {
         _connectors.at(connector_id)->getWriteBuffer().write(chunk.c_str(), chunk_size);

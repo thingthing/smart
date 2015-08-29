@@ -70,8 +70,10 @@ void        AgentProtocol::connectedEvent()
     reply["data"]["position"]["z"] = _agent->getPos().z;
     reply["status"]["code"] = 0;
     reply["status"]["message"] = "ok";
+        std::cout << "before clear in connected:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
     _outPacket.clear();
     _outPacket.append(reply.toStyledString().c_str(), reply.toStyledString().size());       // TODO : do something to handle strings directly with << in APacket.
+    std::cout << "sending in connected:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
     _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
 }
 
@@ -86,6 +88,8 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
     std::cout << "Send status event " << std::endl;
     _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
     _outPacket.clear();
+        std::cout << "in send status:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
+
 }
 
 void        AgentProtocol::sendPacketEvent()
@@ -103,6 +107,7 @@ void        AgentProtocol::sendPacketEvent()
     ///@todo: Really send position
     _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
     _outPacket.clear();
+            std::cout << "in send packet:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
 }
 
 void PrintJSONValue( const Json::Value &val )
