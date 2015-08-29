@@ -89,7 +89,6 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
     _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
     _outPacket.clear();
         std::cout << "in send status:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
-
 }
 
 void        AgentProtocol::sendPacketEvent()

@@ -120,7 +120,7 @@ public:
     void        append(T const * const data, const unsigned int size)
     {
         reallocIfNecessary(size);
-        memcpy(_data + _writeCursor, &data, size);
+        memcpy(_data + _writeCursor, data, size);
         _header->packetSize += size;
         _writeCursor += size;
     }

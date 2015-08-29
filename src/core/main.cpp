@@ -9,12 +9,12 @@ int     main(int argc, char **argv)
     /**
      * @todo : Add port in configuration files
      */
-    if (networkAdapter.connectTo("86.196.184.254", 4200, AgentProtocol::TCP_KEY) == false)
+    if (networkAdapter.connectTo("54.148.17.11", 4200, AgentProtocol::TCP_KEY) == false)
     {
         std::cout << "failed to connect tcp" << std::endl;
         return (-1);
     }
-     if (networkAdapter.connectTo("86.196.184.254", 4300, AgentProtocol::UDP_KEY) == false)
+     if (networkAdapter.connectTo("54.148.17.11", 4300, AgentProtocol::UDP_KEY) == false)
     {
         std::cout << "failed to connect udp" << std::endl;
         return (-1);
