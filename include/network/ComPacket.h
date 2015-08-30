@@ -16,7 +16,7 @@ struct      s_ComPacketHeader
     s_ComPacketHeader()
     {
         magic = 0x42;
-        packetSize = sizeof(s_ComPacketHeader) + 1;
+        packetSize = sizeof(s_ComPacketHeader);
         version = 0x01;
         headerSize = sizeof(s_ComPacketHeader);
     }

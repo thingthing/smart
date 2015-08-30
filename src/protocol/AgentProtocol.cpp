@@ -81,11 +81,12 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
 {
     Json::Value     root;
 
+    std::cout << "Send status event " << std::endl;
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     root["data"]["status"] = status;
+    _outPacket.clear();
     _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
-    std::cout << "Send status event " << std::endl;
     _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
     _outPacket.clear();
         std::cout << "in send status:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
@@ -101,6 +102,7 @@ void        AgentProtocol::sendPacketEvent()
     root["data"]["battery"] = _agent->getBattery();
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
+    _outPacket.clear();
     _outPacket.append(root.toStyledString().c_str(), root.toStyledString().size());
     std::cout << "Send movement event " << std::endl;
     ///@todo: Really send position
