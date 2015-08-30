@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <stdlib.h>
+#include <netinet/in.h>
 
 #include <iostream>
 #include <bitset>
@@ -106,15 +107,22 @@ bool            NetworkManager::send(const Network::APacketBase &packet, const s
     }
     if (packet.getPacketSize() <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
     {
-        // struct s_ComPacketHeader header = (*(s_ComPacketHeader *)packet.data());
-        // std::bitset<16> magic(header.magic);
-        // std::bitset<16> packetSize(header.packetSize);
-        // std::bitset<16> version(header.version);
-        // std::bitset<16> headerSize(header.headerSize);
+        Network::ComPacket packet_cpy;
+        struct s_ComPacketHeader header = (*(s_ComPacketHeader *)packet.data());
+        std::bitset<16> magic(header.magic);
+        std::bitset<16> packetSize(header.packetSize);
+        std::bitset<16> version(header.version);
+        std::bitset<16> headerSize(header.headerSize);
 
-        // std::cout << "sending :: magic = " << magic << " -- packetsize == " << packetSize << " -- version == " << version << " -- header size == " << headerSize << std::endl;
-        // std::cout << "Packet size is == " << packet.getPacketSize() << std::endl;
-        _connectors.at(connector_id)->getWriteBuffer().write(packet.data(), packet.getPacketSize());
+        packet_cpy.append(packet.data() + sizeof(Network::s_ComPacketHeader), packet.getPacketSize() - sizeof(Network::s_ComPacketHeader));
+        packet_cpy.getPacketHeader().magic = htons(header.magic);
+        packet_cpy.getPacketHeader().packetSize = htons(header.packetSize);
+        packet_cpy.getPacketHeader().version = htons(header.version);
+        packet_cpy.getPacketHeader().headerSize = htons(header.headerSize);
+         std::cout << "sending :: magic = " << magic << " -- packetsize == " << packetSize << " -- version == " << version << " -- header size == " << headerSize << std::endl;
+        std::cout << "Packet size is == " << packet.getPacketSize() << std::endl;
+        std::cout << "Packet size minus header == " << packet.getPacketSize() - sizeof(Network::s_ComPacketHeader) << std::endl;
+        _connectors.at(connector_id)->getWriteBuffer().write(packet_cpy.data(), packet_cpy.getPacketSize());
         ///@todo: check if fd exists
         (_fdsetList.at(connector_id)).events |= POLLOUT;
         return (true);
@@ -165,7 +173,17 @@ void            NetworkManager::run()
                     {
                         std::cout << "Packet size is minimum so set header with buffer" << std::endl;
                         if (_byteRead > (int)sizeof(Network::ComPacket))
-                            connector->getReadBuffer() >> _packet.getPacketHeader();
+                            {
+                                unsigned short tmp;
+                                connector->getReadBuffer() >> tmp;
+                                _packet.getPacketHeader().magic = ntohs(tmp);
+                                connector->getReadBuffer() >> tmp;
+                                _packet.getPacketHeader().packetSize = ntohs(tmp);
+                                connector->getReadBuffer() >> tmp;
+                                _packet.getPacketHeader().version = ntohs(tmp);
+                                connector->getReadBuffer() >> tmp;
+                                _packet.getPacketHeader().headerSize = ntohs(tmp);
+                            }
                     }
                     else
                     {

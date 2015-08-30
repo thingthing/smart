@@ -19,6 +19,7 @@ public:
     virtual void        receivePacketEvent(Network::ComPacket *packet);
     virtual void        disconnectEvent();
     virtual void        sendPacketEvent();
+    void                sendDataTcp(Json::Value &root);
     void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud);
     void                sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl);
     void                sendStatusEvent(std::string const &status);

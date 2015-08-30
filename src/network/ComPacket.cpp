@@ -5,7 +5,6 @@ namespace       Network
 
 ComPacket::ComPacket()
 {
-    std::cout << "ComPacket constructor:: magic = " << (char)this->getPacketHeader().magic << " -- packetsize == " << this->getPacketHeader().packetSize << " -- version == " << this->getPacketHeader().version << " -- header size == " << this->getPacketHeader().headerSize << std::endl;
     clear();
 }
 
