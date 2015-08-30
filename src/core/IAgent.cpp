@@ -16,6 +16,7 @@ IAgent::~IAgent()
 std::string const &IAgent::status(std::string const &status)
 {
   _status = status;
+  std::cerr << "New status == [" << _status << "]" << std::endl;
   this->dispatch("SendStatusEvent", status);
   return (_status);
 }

@@ -2,7 +2,7 @@
 
 const double IAgent::DEGREESPERSCAN = 0.5;
 const double IAgent::CAMERAPROBLEM = 4.1; // meters
-const int    Agent::DEFAULTBATTERY = 10000;
+const int    Agent::DEFAULTBATTERY = 1000;
 
 Agent::Agent(double degreePerScan, double cameraProblem)
   : IAgent(degreePerScan, cameraProblem, "Agent"), _battery(Agent::DEFAULTBATTERY)
@@ -28,24 +28,36 @@ void             Agent::setBattery(int new_battery_value)
 
 int             Agent::lowerBattery(int value_to_lower)
 {
+  std::cerr << "LOWER BATTER" << std::endl;
   _battery -= value_to_lower;
-  if (_battery < (5 * Agent::DEFAULTBATTERY) / 100)
-    this->status("LOWBATTERY");
   if (_battery <= 0)
   {
     this->status("NOBATTERY");
     _battery = 0;
+  }
+  else if (_battery < (5 * Agent::DEFAULTBATTERY) / 100)
+    this->status("LOWBATTERY");
+  else
+  {
+    int battery = round((_battery * 100) / Agent::DEFAULTBATTERY);
+    this->status("BATTERY_" + std::to_string(battery) + "_PERCENT");
   }
   return (_battery);
 }
 
 int             Agent::chargeBattery(int value_to_add)
 {
+  std::cerr << "CHARGE BATTERY" << std::endl;
   _battery += value_to_add;
   if (_battery >= Agent::DEFAULTBATTERY)
   {
     _battery = Agent::DEFAULTBATTERY;
     this->status("FULLBATTERY");
+  }
+  else
+  {
+    int battery = round((_battery * 100) / Agent::DEFAULTBATTERY);
+    this->status("BATTERY_" + std::to_string(battery) + "_PERCENT");
   }
   return (_battery);
 }
@@ -106,7 +118,7 @@ void            Agent::updateState()
   {
     std::cout << "Going goTowardsGoal" << std::endl;
     this->goTowardsGoal();
-  } else if (this->isAtBase() && this->getBattery() <= Agent::DEFAULTBATTERY)
+  } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
   {
     this->chargeBattery(1);
   }
