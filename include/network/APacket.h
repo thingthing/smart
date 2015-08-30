@@ -111,7 +111,7 @@ public:
             return;
         reallocIfNecessary(size);
         data.read(_data + _writeCursor, size);
-        _header->packetSize += size;
+        //_header->packetSize += size;
         _writeCursor += size;
     }
 

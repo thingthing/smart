@@ -17,7 +17,7 @@ public:
     virtual ~AProtocol();
 
     virtual void        connectedEvent() = 0;
-    virtual void        receivePacketEvent(Network::ComPacket &packet) = 0;
+    virtual void        receivePacketEvent(Network::ComPacket *packet) = 0;
     virtual void        disconnectEvent() = 0;
     virtual void        sendPacketEvent() = 0;
 

@@ -16,7 +16,7 @@ public:
     virtual ~AgentProtocol();
 
     virtual void        connectedEvent();
-    virtual void        receivePacketEvent(Network::ComPacket &packet);
+    virtual void        receivePacketEvent(Network::ComPacket *packet);
     virtual void        disconnectEvent();
     virtual void        sendPacketEvent();
     void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud);

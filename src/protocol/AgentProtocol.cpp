@@ -165,18 +165,30 @@ pcl::PointXYZ AgentProtocol::getPosFromJson(Json::Value const &root)
     });
 }
 
-void        AgentProtocol::receivePacketEvent(Network::ComPacket &packet)      // only for test 4 now, will change
+void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      // only for test 4 now, will change
 {
     Json::Reader        reader;
     Json::Value         root;
-    std::string         serverReply((const char *)packet.data() + sizeof(Network::s_ComPacketHeader), packet.getPacketSize() - sizeof(Network::s_ComPacketHeader));
+    std::string         serverReply((const char *)packet->data() + sizeof(Network::s_ComPacketHeader), packet->getPacketSize() - sizeof(Network::s_ComPacketHeader));
 
     std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
     {
-        std::cout << "received a movement order " << serverReply << std::endl;
+        std::cout << "received a data " << serverReply << std::endl;
+        for (Json::ValueIterator it = root.begin(); it != root.end(); ++it)
+        {
+            std::cout << "Root member recieved == " << it.memberName() << std::endl;
+        }
+        std::cout << "After the iteration" << std::endl;
         Json::Value data = root["data"];
-        if (root.get("status", 0).asInt() == 0 && data.isNull() == false)
+        std::cout << "Data is == " << std::endl;
+        PrintJSONTree(data, 0);
+        Json::Value status = root["status"];
+        std::cout << "status is == " << std::endl;
+        PrintJSONTree(status, 0);
+        int status_code = status.get("code", 0).asInt();
+        std::cout << "Status code == " << status_code << std::endl;
+        if (status_code == 0 && data.isNull() == false)
         {
             for (Json::ValueIterator it = data.begin(); it != data.end(); ++it)
             {
@@ -198,7 +210,10 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket &packet)      /
         }
         else
         {
-            std::cout << "Status error recieved" << std::endl;
+            if (status_code != 0)
+                std::cerr << "Status error recieved: [" << status_code << "]: " << status.get("message","").asString() << std::endl;
+            else
+                std::cerr << "No data recieved but good status: " << status.get("message","").asString() << std::endl;
         }
     }
     else
