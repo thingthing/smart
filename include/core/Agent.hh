@@ -27,8 +27,8 @@ public:
     bool            isAtDestination() const;
     bool            isAtBase() const;
 
-private:
     static const int DEFAULTBATTERY;
+private:
     pcl::PointXYZ   _goalPos;
     int             _battery;
 };

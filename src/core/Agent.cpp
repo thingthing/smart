@@ -37,11 +37,6 @@ int             Agent::lowerBattery(int value_to_lower)
   }
   else if (_battery < (5 * Agent::DEFAULTBATTERY) / 100)
     this->status("LOWBATTERY");
-  else
-  {
-    int battery = round((_battery * 100) / Agent::DEFAULTBATTERY);
-    this->status("BATTERY_" + std::to_string(battery) + "_PERCENT");
-  }
   return (_battery);
 }
 
@@ -53,11 +48,6 @@ int             Agent::chargeBattery(int value_to_add)
   {
     _battery = Agent::DEFAULTBATTERY;
     this->status("FULLBATTERY");
-  }
-  else
-  {
-    int battery = round((_battery * 100) / Agent::DEFAULTBATTERY);
-    this->status("BATTERY_" + std::to_string(battery) + "_PERCENT");
   }
   return (_battery);
 }

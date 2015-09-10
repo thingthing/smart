@@ -106,6 +106,7 @@ void        AgentProtocol::sendPacketEvent()
     root["data"]["position"]["x"] = _agent->getPos().x;
     root["data"]["position"]["y"] = _agent->getPos().y;
     root["data"]["position"]["z"] = _agent->getPos().z;
+    root["data"]["battery"] = (_agent->getBattery() * 100) / Agent::DEFAULTBATTERY;
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     this->sendDataTcp(root);
