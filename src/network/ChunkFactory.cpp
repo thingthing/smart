@@ -124,11 +124,6 @@ void ChunkFactory::pushTmpChunkToChunks()
 std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
     std::string strLandmark = "";
-    uint32_t idConevert = htonl(landmark_.id);
-    uint32_t lifeConevert = htonl(landmark_.life);
-    uint32_t totalTimeObservedConevert = htonl(landmark_.totalTimeObserved);
-    uint32_t bearingConevert = htonl(landmark_.bearing);
-    uint32_t rangeConevert = htonl(landmark_.range);
 
 
     strLandmark += fromPclPointToString(landmark_.pos);
@@ -161,10 +156,6 @@ std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsig
 {
     unsigned short      packetSize = (unsigned short)(packet.size());
     std::string         metadata = "";
-    uint32_t packetIDConevert = htonl(_packetID);
-    uint32_t currentPacketConevert = htonl(currentPacket);
-    uint32_t totalPacketConevert = htonl(totalPacket);
-    uint16_t packetSizeConevert = htons(packetSize);
 
     metadata += encodeNbIntoString((void*)&(_packetID), sizeof(_packetID));
     metadata += encodeNbIntoString((void*)&(currentPacket), sizeof(currentPacket));
