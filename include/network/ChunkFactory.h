@@ -66,7 +66,7 @@ private:
   std::string                   _tmpChunk; /*!< fill it, push it to _chunks */
 
   unsigned int          _sizeChunks; /*!< Total size of chunks in _chunks */
-  unsigned long long    _chunkID; /*!< Used to give ID to chunks */
+  unsigned int          _chunkID; /*!< Used to give ID to chunks */
   unsigned int          _packetID; /*!< Used to give ID to packets */
 
   // CONST
