@@ -1,10 +1,10 @@
 #include "Agent.hh"
 
-const double Agent::DEGREESPERSCAN = 0.5;
-const double Agent::CAMERAPROBLEM = 4.1; // meters
+const double IAgent::DEGREESPERSCAN = 0.5;
+const double IAgent::CAMERAPROBLEM = 4.1; // meters
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : _bearing(0), thrust(0), theta(0), deltaTheta(0), degreePerScan(degreePerScan), cameraProblem(cameraProblem)
+  : IAgent(degreePerScan, cameraProblem, "Agent")
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -13,60 +13,56 @@ Agent::Agent(double degreePerScan, double cameraProblem)
 
 Agent::~Agent()
 {
-
 }
 
-pcl::PointXYZ	const &Agent::getPos() const
+void            Agent::setGoalPos(pcl::PointXYZ const &pos)
 {
-  return (this->_pos);
+  this->_goalPos.x = pos.x;
+  this->_goalPos.y = pos.y;
+  this->_goalPos.z = pos.z;
+  std::cout << "recieve setGoalPos from serveur " << pos << std::endl;
 }
 
-double		Agent::getBearing() const
+void            Agent::setGoalPos(double x, double y, double z)
 {
-  return (this->_bearing);
+  this->_goalPos.x = x;
+  this->_goalPos.y = y;
+  this->_goalPos.z = z;
 }
 
-double		Agent::getThrust() const
+pcl::PointXYZ   const   &Agent::getGoalPos() const
 {
-	return (this->thrust);
+  return (this->_goalPos);
 }
 
-void	Agent::setThrust(double thrust)
+pcl::PointCloud<pcl::PointXYZ> const &Agent::takeData()
 {
-	this->thrust = thrust;
+  return (this->_capture.captureData());
 }
 
-double	Agent::getTheta() const
+
+void             Agent::goTowardsGoal()
 {
-	return (this->theta);
+    if (_pos.x != _goalPos.x)
+        _pos.x += (_goalPos.x < _pos.x) ? -1 : 1;
+    if (_pos.y != _goalPos.y)
+        _pos.y += (_goalPos.y < _pos.y) ? -1 : 1;
+    if (_pos.z != _goalPos.z)
+        _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
 }
 
-double	Agent::getDeltaTheta() const
+bool            Agent::isAtDestination()
 {
-	return (this->deltaTheta);
+  return (_pos.x == _goalPos.x && _pos.y == _goalPos.y && _pos.z == _goalPos.z);
 }
 
-void	Agent::setTheta(double _theta)
+void            Agent::updateState()
 {
-	this->deltaTheta = _theta - this->theta;
-	this->theta = _theta;
-}
-
-void		Agent::setPos(pcl::PointXYZ const &pos)
-{
-  this->_pos.x = pos.x;
-  this->_pos.y = pos.y;
-  this->_pos.z = pos.z;
-}
-
-void		Agent::setPos(double x, double y , double z)
-{
-  this->_pos.x = x;
-  this->_pos.y = y;
-  this->_pos.z = z;
-}
-
-void		Agent::setBearing(double bearing)
-{
-  this->_bearing = bearing;
+  this->dispatch("SendPacketEvent");
+  std::cout << "GoalPos is " << _goalPos << std::endl;
+  if (this->isAtDestination() == false)
+  {
+    std::cout << "Going goTowardsGoal" << std::endl;
+    this->goTowardsGoal();
+  }
 }

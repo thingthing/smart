@@ -1,9 +1,8 @@
-
 #include "Core.h"
 
 int     main(int argc, char **argv)
 {
-    Network::TCPConnector    networkAdapter;
+    Network::NetworkManager  networkAdapter;
     AgentProtocol            protocol(networkAdapter);
     Core                     core(protocol);
 

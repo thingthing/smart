@@ -1,47 +1,32 @@
-#ifndef		_AGENT_HH_
-# define	_AGENT_HH_
+#ifndef     _AGENT_HH_
+# define    _AGENT_HH_
 
-#include <pcl-1.7/pcl/common/common.h>
-#include <pcl-1.7/pcl/impl/point_types.hpp>
-#include <pcl-1.7/pcl/common/projection_matrix.h>
+#include <string>
 
-class		Agent
+#include "IAgent.hh"
+
+class       Agent : public IAgent
 {
 public:
 
-  //Defined in Agent.cpp
-  static const double DEGREESPERSCAN; // meter
-  static const double CAMERAPROBLEM; // meter
+    Agent(double degreePerScan = DEGREESPERSCAN, double cameraProblem = CAMERAPROBLEM);
+    ~Agent();
 
+    pcl::PointXYZ   const   &getGoalPos() const;
 
-  Agent(double degreePerScan = DEGREESPERSCAN, double cameraProblem = CAMERAPROBLEM);
-  ~Agent();
+    void            setGoalPos(pcl::PointXYZ const &pos);
+    void            setGoalPos(double x, double y, double z);
 
-  pcl::PointXYZ	const	&getPos() const;
-  double		getBearing() const;
-
-  void		setBearing(double bearing);
-  void		setPos(pcl::PointXYZ const &pos);
-  void		setPos(double x, double y, double z);
-	void		setTheta(double _theta);
-	void		setThrust(double _thrust);
-	double	getTheta() const;
-	double	getThrust() const;
-  double  getDeltaTheta() const;
+    pcl::PointCloud<pcl::PointXYZ> const &takeData();
+    void            updateState();
+    void            goTowardsGoal();
+    bool            isAtDestination();
 
 private:
-  double	_bearing;
-	double	thrust;
-	double	theta;
-	double	deltaTheta;
+    pcl::PointXYZ   _goalPos;
 
-public:
-  double const	degreePerScan;
-  double const	cameraProblem;
 
-private:
-  pcl::PointXYZ _pos;
 };
 
 
-#endif		/* !_AGENT_HH_ */
+#endif      /* !_AGENT_HH_ */

@@ -6,11 +6,12 @@
 #include <pcl/common/projection_matrix.h>
 
 #include <vector>
-#include "Agent.hh"
+
 #include "SystemStateMatrice.hh"
 #include "JacobianMatriceA.hh"
 #include "JacobianMatriceJz.hh"
 #include "JacobianMatriceJxr.hh"
+#include "IAgent.hh"
 
 class CovarianceMatrice
 {
@@ -50,12 +51,11 @@ public:
   CovarianceMatrice();
   CovarianceMatrice(float X, float Y, float theta);
   CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
-  CovarianceMatrice(Agent const &agent);
-
-  virtual ~CovarianceMatrice();
 
   void addLandmark(float x, float y, int slamId);
   void addLandmark(pcl::PointXY const &pos, int slamId);
+  CovarianceMatrice(IAgent const &agent);
+  virtual ~CovarianceMatrice();
 
   float getRobotX() const;
   float getRobotY() const;
@@ -65,7 +65,7 @@ public:
 
   void setRobotPosition(float X, float Y, float theta);
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);
-  void setRobotPosition(Agent const &agent);
+  void setRobotPosition(IAgent const &agent);
   void calculationCovariance();
   void step1RobotCovariance(JacobianMatriceA JA);
 	void step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz, SystemStateMatrice stateM, int slamID);

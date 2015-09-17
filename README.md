@@ -1,13 +1,16 @@
 # README #
 
-There is only one dependency for the Agent part at the moment, which is PointClouds (PCL)  
-You can find this package following this link: [Download Pointclouds](http://pointclouds.org/downloads/)
+### Dependencies ###
 
-We are using [Igloo](http://igloo-testing.org/) for the Tests.
+ * PointClouds (PCL)  [Download Pointclouds](http://pointclouds.org/downloads/)
+ * Jsoncpp [How to install on unix](http://ask.xmodulo.com/fix-fatal-error-jsoncpp.html)
+ * We are using [Igloo](http://igloo-testing.org/) for the Tests.
+ * And [Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) for the documentation.
 
 This project use [CMake](http://www.cmake.org) (version 2.6 Minimum) to compile.  
 We use g++ compiler. **The version of the compiler is not defined yet!**  
 The system used to run this program is Linux (i.e. debian, ubuntu...)
+You'll find a complete documentation of [Jsoncpp here](http://open-source-parsers.github.io/jsoncpp-docs/doxygen/index.html)
 
 ### What is this repository for? ###
 
@@ -32,6 +35,12 @@ to smartly scan the environment around him.
     cmake . #for the first time only
     make
     ./test
+
+### How to generate documenation ###
+
+To generate documentation use `doxygen documentation/docConfig.txt`.
+You can find doxygen [here](http://www.stack.nl/~dimitri/doxygen/download.html)
+The documenation will be generated in the `documentation` folder. You can view the html version of it by opening the file `documentation/html/index.html` in your web browser
 
 ### Available Makefile command ###
 

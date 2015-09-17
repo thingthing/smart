@@ -15,6 +15,7 @@ SystemStateMatrice::SystemStateMatrice(pcl::PointXYZ const &posRobot, float teta
 {
 }
 
+
 SystemStateMatrice::SystemStateMatrice(Agent const &agent) :
   tetaRobot(agent.getBearing()), posRobot(pcl::PointXYZ(agent.getPos())), oldPosRobot(pcl::PointXYZ(agent.getPos()))
 {
@@ -27,43 +28,42 @@ SystemStateMatrice::~SystemStateMatrice()
 /**
 * Add landmark to matrice and return id
 **/
-unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXY &position)
+unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXYZ &position)
 {
-  this->matrice.push_back(pcl::PointXY(position));
+  this->matrice.push_back(pcl::PointXYZ(position));
   return (this->matrice.size() - 1);
 }
 
 /**
 * Add landmark to matrice and return id
 **/
-unsigned int SystemStateMatrice::addLandmarkPosition(float x, float y)
+unsigned int SystemStateMatrice::addLandmarkPosition(float x, float y, float z)
 {
-  pcl::PointXY pos;
-  pos.x = x;
-  pos.y = y;
-  this->matrice.push_back(pcl::PointXY(pos));
+  this->matrice.push_back(pcl::PointXYZ(x, y, z));
   return (this->matrice.size() - 1);
 }
 
-void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, float x, float y)
+void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z)
 {
   if (landmarkNumber < this->matrice.size())
     {
       this->matrice[landmarkNumber].x = x;
       this->matrice[landmarkNumber].y = y;
+      this->matrice[landmarkNumber].z = z;
     }
 }
 
-void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXY &position)
+void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXYZ &position)
 {
     if (landmarkNumber < this->matrice.size())
     {
       this->matrice[landmarkNumber].x = position.x;
       this->matrice[landmarkNumber].y = position.y;
+      this->matrice[landmarkNumber].z = position.z;
     }
 }
 
-void SystemStateMatrice::updateRobotState(Agent const &agent)
+void SystemStateMatrice::updateRobotState(IAgent const &agent)
 {
 	this->oldPosRobot.x = this->posRobot.x;
 	this->oldPosRobot.y = this->posRobot.y;
@@ -76,7 +76,15 @@ void SystemStateMatrice::updateRobotState(Agent const &agent)
   this->tetaRobot += agent.getBearing();
 }
 
-const pcl::PointXY &SystemStateMatrice::getPosition(unsigned int landmarkNumber) const
+void SystemStateMatrice::setRobotState(IAgent const &agent)
+{
+  this->posRobot.x = agent.getPos().x;
+  this->posRobot.y = agent.getPos().y;
+  this->posRobot.z = agent.getPos().z;
+  this->tetaRobot = agent.getBearing();
+}
+
+const pcl::PointXYZ &SystemStateMatrice::getPosition(unsigned int landmarkNumber) const
 {
   return (this->matrice[landmarkNumber]);
 }

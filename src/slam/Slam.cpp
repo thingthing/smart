@@ -1,6 +1,6 @@
 #include "Slam.hh"
 
-Slam::Slam(Agent *agent)
+Slam::Slam(IAgent *agent)
 {
   this->_agent = agent;
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
@@ -21,15 +21,13 @@ Slam::~Slam()
     delete this->_covariance;
 }
 
-/**
- * To be used after agent update odometry
- **/
-void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agent)
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent)
 {
   //Update state using odometry
   this->_state->updateRobotState(agent);
   this->_jA.JacobiMath(agent);
-  //@TODO: update process noise matrice
+  ///@todo: update process noise matrice
+
   this->_covariance->setRobotPosition(agent);
   this->_covariance->calculationCovariance();
 
@@ -41,19 +39,16 @@ void		Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, Agent &agen
 
   for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
   {
-    //@TODO: Caculate kalman gain and uncertainity
-    //@TODO: Update state using kalman gain and uncertainity
+    ///@todo: Caculate kalman gain and uncertainity
+    ///@todo: Update state using kalman gain and uncertainity
   }
-  
+
   agent.setPos(this->_state->getRobotPos());
   //After all, remove abd landmarks
   this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
-/**
- * Add landmark to matrice
- **/
-void		Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
+void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
 {
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
