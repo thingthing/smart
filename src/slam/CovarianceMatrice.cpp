@@ -164,6 +164,26 @@ float CovarianceMatrice::getRobotTheta() const
   return this->_matrice[2][2].getValue();
 }
 
+double CovarianceMatrice::getLandmarkXCovariance(int slamID) const
+{
+	for (unsigned int i = 0; i < this->_matrice.size(); i++)
+	{
+		if (this->_matrice[i][i].getSlamID() == slamID)
+			return this->_matrice[i][i].getValue();
+	}
+	return 0.0;
+}
+
+double CovarianceMatrice::getLandmarkYCovariance(int slamID) const
+{
+	for (unsigned int i = 0; i < this->_matrice.size(); i++)
+	{
+		if (this->_matrice[i][i].getSlamID() == slamID)
+			return this->_matrice[i+1][i+1].getValue();
+	}
+	return 0.0;
+}
+
 void CovarianceMatrice::setRobotPosition(float X, float Y, float theta)
 {
   this->_matrice[0][0].setValue(X);

@@ -60,6 +60,8 @@ public:
   float getRobotX() const;
   float getRobotY() const;
   float getRobotTheta() const;
+	double getLandmarkXCovariance(int slamID) const;
+	double getLandmarkYCovariance(int slamID) const;
 
   void setRobotPosition(float X, float Y, float theta);
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);

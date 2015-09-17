@@ -29,17 +29,17 @@ public:
 	void setRnBMatrice(unsigned int landmarkNumber, SystemStateMatrice stateM);
 	std::pair<double, double> getRnBMatrice(unsigned int landmarkNumber) const;
 
-private:
-  JacobianMatriceH(const JacobianMatriceH &);
-  JacobianMatriceH &operator=(const JacobianMatriceH &);
-
-protected:
+//protected:
 	/*matrice containing the calculations on range and bearing for each landmarks
 	first element is range, second one is bearing.*/
 	std::map<unsigned int, std::pair<double,double>> rnbMatrice;
 	/*for each landmark there are 4 elements, the first two for the range(X & Y) and
 	the other two for the bearing(X & Y)*/
 	std::map<unsigned int, std::tuple<double,double,double,double>> matrice;
+
+private:
+  JacobianMatriceH(const JacobianMatriceH &);
+  JacobianMatriceH &operator=(const JacobianMatriceH &);
 
 
 };
