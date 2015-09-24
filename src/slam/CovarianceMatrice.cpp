@@ -227,7 +227,7 @@ void CovarianceMatrice::addLandmark(float x, float y, int slamId)
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
 }
 
-void CovarianceMatrice::addLandmark(pcl::PointXY const &pos, int slamId)
+void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId)
 {
   unsigned int oldSize = this->_matrice.size();
   this->_matrice.resize(oldSize + 2);

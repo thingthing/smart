@@ -24,8 +24,14 @@ public:
 
     pcl::PointXYZ   const   &getPos() const;
     double          getBearing() const;
-    Capture const &getCapture() const;
+    Capture const & getCapture() const;
+    double          getThrust() const;
+    double          getTheta() const;
+    double          getDeltaTheta() const;
 
+    void            setThrust(double thrust);
+    void            setTheta(double theta);
+    void            setDeltaTheta(double deltaTheta);
     void            setBearing(double bearing);
     void            setPos(pcl::PointXYZ const &pos);
     void            setPos(double x, double y, double z);
@@ -47,6 +53,9 @@ protected:
     std::string     _name;
     std::string     _status;
     Capture         _capture;
+    double          _thrust;
+    double          _theta;
+    double          _deltaTheta;
 
 public:
     //Use to align class with pointCloud

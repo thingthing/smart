@@ -2,7 +2,7 @@
 
 IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _bearing(0),
-    _name(name)
+    _name(name), _thrust(0), _theta(0), _deltaTheta(0)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -47,3 +47,32 @@ Capture const &IAgent::getCapture() const
   return (this->_capture);
 }
 
+double          IAgent::getThrust() const
+{
+  return (this->_thrust);
+}
+
+double          IAgent::getTheta() const
+{
+  return (this->_theta);
+}
+
+double          IAgent::getDeltaTheta() const
+{
+  return (this->_deltaTheta);
+}
+
+void            IAgent::setThrust(double thrust)
+{
+  this->_thrust = thrust;
+}
+
+void            IAgent::setTheta(double theta)
+{
+  this->_theta = theta;
+}
+
+void            IAgent::setDeltaTheta(double deltaTheta)
+{
+  this->_deltaTheta = deltaTheta;
+}

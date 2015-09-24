@@ -15,7 +15,7 @@ class JacobianMatriceA
 public:
 	JacobianMatriceA();
 	virtual ~JacobianMatriceA();
-	void JacobiMath(Agent const &agent);
+	void JacobiMath(IAgent const &agent);
 	const std::vector<double> &getMatrice() const;
 
 private:

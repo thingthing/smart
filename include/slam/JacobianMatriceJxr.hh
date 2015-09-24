@@ -13,7 +13,7 @@ class	JacobianMatriceJxr
 public:
 	JacobianMatriceJxr();
 	virtual ~JacobianMatriceJxr();
-	void JacobiMath(Agent const &agent);
+	void JacobiMath(IAgent const &agent);
 	const std::vector<double> &getMatrice() const;
 
 private:
