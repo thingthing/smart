@@ -12,7 +12,7 @@ namespace   Network
 NetworkManager::NetworkManager()
 {
     _packet.clear();
-    std::cout << "In constructor packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
+    // std::cout << "In constructor packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
 }
 
 NetworkManager::~NetworkManager()
@@ -99,7 +99,7 @@ void    NetworkManager::disconnect(const std::string &connector_id)
 
 bool            NetworkManager::send(const Network::APacketBase &packet, const std::string &connector_id)
 {
-    std::cout << "try to send some packet" << std::endl;
+    //std::cout << "try to send some packet" << std::endl;
     if (_connectors.at(connector_id)->isConnected() == false)
     {
         std::cerr << "Try to send to " << connector_id << " wich is not connected" << std::endl;
@@ -119,9 +119,9 @@ bool            NetworkManager::send(const Network::APacketBase &packet, const s
         packet_cpy.getPacketHeader().packetSize = htons(header.packetSize);
         packet_cpy.getPacketHeader().version = htons(header.version);
         packet_cpy.getPacketHeader().headerSize = htons(header.headerSize);
-         std::cout << "sending :: magic = " << magic << " -- packetsize == " << packetSize << " -- version == " << version << " -- header size == " << headerSize << std::endl;
-        std::cout << "Packet size is == " << packet.getPacketSize() << std::endl;
-        std::cout << "Packet size minus header == " << packet.getPacketSize() - sizeof(Network::s_ComPacketHeader) << std::endl;
+        //  std::cout << "sending :: magic = " << magic << " -- packetsize == " << packetSize << " -- version == " << version << " -- header size == " << headerSize << std::endl;
+        // std::cout << "Packet size is == " << packet.getPacketSize() << std::endl;
+        // std::cout << "Packet size minus header == " << packet.getPacketSize() - sizeof(Network::s_ComPacketHeader) << std::endl;
         _connectors.at(connector_id)->getWriteBuffer().write(packet_cpy.data(), packet_cpy.getPacketSize());
         ///@todo: check if fd exists
         (_fdsetList.at(connector_id)).events |= POLLOUT;
@@ -132,17 +132,17 @@ bool            NetworkManager::send(const Network::APacketBase &packet, const s
 
 bool            NetworkManager::send(const std::string &chunk, const std::string &connector_id)
 {
-    std::cout << "try to send some string" << std::endl;
+    // std::cout << "try to send some string" << std::endl;
     if (_connectors.at(connector_id)->isConnected() == false)
     {
         std::cerr << "Try to send to " << connector_id << " wich is not connected" << std::endl;
         return (false);
     }
     unsigned int chunk_size = chunk.size();
-    std::cout << "Chunk size in udp is == " << chunk_size << std::endl;
+    // std::cout << "Chunk size in udp is == " << chunk_size << std::endl;
     if (chunk_size <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
     {
-        std::cout << "Sending chunk" << std::endl;
+        // std::cout << "Sending chunk" << std::endl;
         _connectors.at(connector_id)->getWriteBuffer().write(chunk.c_str(), chunk_size);
         ///@todo: check if fd exists
         (_fdsetList.at(connector_id)).events |= POLLOUT;
@@ -157,21 +157,21 @@ void            NetworkManager::run()
     //{
     if (poll(_fdset, _fdsetList.size(), 100) > 0)
     {
-        std::cout << "Poll start" << std::endl;
+        // std::cout << "Poll start" << std::endl;
         for (std::map<std::string, pollfd &>::iterator it = _fdsetList.begin();
                 it != _fdsetList.end(); ++it)
         {
             IConnector *connector = _connectors[it->first];
             if (it->second.revents & POLLIN)
             {
-                std::cout << "Pollin for is == " << it->first << std::endl;
+                // std::cout << "Pollin for is == " << it->first << std::endl;
                 if ((_byteRead = connector->getReadBuffer().readFrom(connector->getSocket())) > 0)
                 {
                     _byteRead = connector->getReadBuffer().getSpaceUsed();
                     /// Check if packet has minimum size: packet header size
                     if (_packet.getPacketHeader().packetSize == sizeof(Network::s_ComPacketHeader))
                     {
-                        std::cout << "Packet size is minimum so set header with buffer" << std::endl;
+                        // std::cout << "Packet size is minimum so set header with buffer" << std::endl;
                         if (_byteRead > (int)sizeof(Network::ComPacket))
                             {
                                 unsigned short tmp;
@@ -187,19 +187,19 @@ void            NetworkManager::run()
                     }
                     else
                     {
-                        std::cout << "Packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
+                        // std::cout << "Packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
                         if (_packet.getPacketHeader().packetSize > _packet.getPacketSize())
                         {
                             const int      bytesMissing = _packet.getPacketHeader().packetSize - _packet.getPacketSize();
-                            std::cout << "Byte missing in packet add " << bytesMissing << " bytes" << std::endl;
+                            // std::cout << "Byte missing in packet add " << bytesMissing << " bytes" << std::endl;
                             _packet.appendFromCircularBuffer(connector->getReadBuffer(), (_byteRead > (bytesMissing)) ? bytesMissing : _byteRead);
-                            std::cout << "After append packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
+                            // std::cout << "After append packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
                         }
                         if (_packet.getPacketHeader().packetSize == _packet.getPacketSize())
                         {
-                            std::cout << "Packet completly recieved, dispatch event" << std::endl;
+                            // std::cout << "Packet completly recieved, dispatch event" << std::endl;
                             this->dispatch("ReceivePacketEvent", &_packet);
-                            std::cout << "After dispatching" << std::endl;
+                            // std::cout << "After dispatching" << std::endl;
                             _packet.clear();
                         }
                     }
@@ -211,16 +211,16 @@ void            NetworkManager::run()
             }
             else if ((it->second.revents & POLLOUT))
             {
-                std::cout << "Pollout for is == " << it->first << std::endl;
+                // std::cout << "Pollout for is == " << it->first << std::endl;
                 if (!connector->isConnected())
-                    std::cout << "Try to write on socket not connected : " << it->first << std::endl;
-                std::cout << "Writting on socket : " <<  connector->getSocket() << std::endl;
+                    std::cerr << "Try to write on socket not connected : " << it->first << std::endl;
+                // std::cout << "Writting on socket : " <<  connector->getSocket() << std::endl;
                 if ((_byteWritten = connector->getWriteBuffer().writeTo(connector->getSocket())) > 0)
                 {
-                    std::cout << "Byte written" << std::endl;
+                    // std::cout << "Byte written" << std::endl;
                     if (connector->getWriteBuffer().getSpaceUsed() == 0)
                     {
-                        std::cout << "Reset buffer" << std::endl;
+                        // std::cout << "Reset buffer" << std::endl;
                         it->second.events &= ~POLLOUT;              // A race condition with send may arise here, but we don't care for now
                         connector->getWriteBuffer().reset();
                     }

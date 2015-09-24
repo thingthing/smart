@@ -64,9 +64,9 @@ void        AgentProtocol::sendDataTcp(Json::Value &root)
     //                           [](char x){return std::isspace(x);}),
     //            buffer.end());
     _outPacket.append(buffer.c_str(), buffer.size());
-    std::cout << "data sent == " << buffer << std::endl;
+    // std::cout << "data sent == " << buffer << std::endl;
     _networkAdapter.send(_outPacket, AgentProtocol::TCP_KEY);
-    std::cout << "in send data:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
+    // std::cout << "in send data:: magic = " << (char)_outPacket.getPacketHeader().magic << " -- packetsize == " << _outPacket.getPacketHeader().packetSize << " -- version == " << _outPacket.getPacketHeader().version << " -- header size == " << _outPacket.getPacketHeader().headerSize << std::endl;
     _outPacket.clear();
 }
 /**
@@ -75,7 +75,7 @@ void        AgentProtocol::sendDataTcp(Json::Value &root)
  */
 void        AgentProtocol::connectedEvent()
 {
-    std::cout << "connected event " << std::endl;
+    // std::cout << "connected event " << std::endl;
     Json::Value     reply;
 
     reply["data"]["name"] = _agent->name();
@@ -91,7 +91,7 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
 {
     Json::Value     root;
 
-    std::cout << "Send status event " << std::endl;
+    // std::cout << "Send status event " << std::endl;
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     root["data"]["state"] = status;
@@ -102,7 +102,7 @@ void        AgentProtocol::sendPacketEvent()
 {
     Json::Value     root;
 
-    std::cout << "Send movement event " << std::endl;
+    // std::cout << "Send movement event " << std::endl;
     root["data"]["position"]["x"] = _agent->getPos().x;
     root["data"]["position"]["y"] = _agent->getPos().y;
     root["data"]["position"]["z"] = _agent->getPos().z;
@@ -172,17 +172,17 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
     Json::Value         root;
     std::string         serverReply((const char *)packet->data() + sizeof(Network::s_ComPacketHeader), packet->getPacketSize() - sizeof(Network::s_ComPacketHeader));
 
-    std::cout << "received message from serveur " << serverReply << std::endl;
+    // std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
     {
-        std::cout << "received a data " << serverReply << std::endl;
+        // std::cout << "received a data " << serverReply << std::endl;
         Json::Value data = root["data"];
         Json::Value status = root["status"];
         int status_code = status.get("code", 0).asInt();
-        std::cout << "Status code == " << status_code << std::endl;
+        // std::cout << "Status code == " << status_code << std::endl;
         if (status_code == 0 && data.empty() == false)
         {
-            std::cout << "Data found == " << data << std::endl;
+            // std::cout << "Data found == " << data << std::endl;
             for (Json::ValueIterator it = data.begin(); it != data.end(); ++it)
             {
                 std::string command = it.memberName();
@@ -205,12 +205,12 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
         {
             if (status_code != 0)
                 std::cerr << "Status error recieved: [" << status_code << "]: " << status.get("message", "").asString() << std::endl;
-            else
-                std::cerr << "No data recieved but good status: " << status.get("message", "").asString() << std::endl;
+            // else
+            //     std::cerr << "No data recieved but good status: " << status.get("message", "").asString() << std::endl;
         }
     }
     else
-        std::cout << "error while parsing order " << serverReply << ": " << reader.getFormatedErrorMessages() << std::endl;
+        std::cerr << "error while parsing order " << serverReply << ": " << reader.getFormatedErrorMessages() << std::endl;
 }
 
 void        AgentProtocol::disconnectEvent()

@@ -23,7 +23,7 @@ Core::~Core()
 
 void        Core::update()
 {
-    std::cout << "Updating" << std::endl;
+    //std::cout << "Updating" << std::endl;
     pcl::PointCloud<pcl::PointXYZ> cloud = _agent->takeData();
     _slam->updateState(cloud, *_agent);
     _agent->updateState();

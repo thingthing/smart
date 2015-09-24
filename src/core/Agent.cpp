@@ -5,7 +5,7 @@ const double IAgent::CAMERAPROBLEM = 4.1; // meters
 const int    Agent::DEFAULTBATTERY = 1000;
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-  : IAgent(degreePerScan, cameraProblem, "Agent"), _battery(Agent::DEFAULTBATTERY)
+  : IAgent(degreePerScan, cameraProblem, "AgentVirtuel"), _battery(Agent::DEFAULTBATTERY)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -28,7 +28,7 @@ void             Agent::setBattery(int new_battery_value)
 
 int             Agent::lowerBattery(int value_to_lower)
 {
-  std::cerr << "LOWER BATTER" << std::endl;
+  // std::cerr << "LOWER BATTER" << std::endl;
   _battery -= value_to_lower;
   if (_battery <= 0)
   {
@@ -42,7 +42,7 @@ int             Agent::lowerBattery(int value_to_lower)
 
 int             Agent::chargeBattery(int value_to_add)
 {
-  std::cerr << "CHARGE BATTERY" << std::endl;
+  // std::cerr << "CHARGE BATTERY" << std::endl;
   _battery += value_to_add;
   if (_battery >= Agent::DEFAULTBATTERY)
   {
@@ -54,9 +54,9 @@ int             Agent::chargeBattery(int value_to_add)
 
 void            Agent::setGoalPos(pcl::PointXYZ const &pos)
 {
-  this->_goalPos.x = pos.x;
-  this->_goalPos.y = pos.y;
-  this->_goalPos.z = pos.z;
+  this->_goalPos.x = round(pos.x);
+  this->_goalPos.y = round(pos.y);
+  this->_goalPos.z = round(pos.z);
   std::cout << "recieve setGoalPos from serveur " << pos << std::endl;
 }
 
@@ -103,10 +103,10 @@ void            Agent::updateState()
   if (!this->isAtBase())
     this->lowerBattery(1);
   this->dispatch("SendPacketEvent");
-  std::cout << "GoalPos is " << _goalPos << std::endl;
+  // std::cout << "GoalPos is " << _goalPos << std::endl;
   if (this->isAtDestination() == false)
   {
-    std::cout << "Going goTowardsGoal" << std::endl;
+    // std::cout << "Going goTowardsGoal" << std::endl;
     this->goTowardsGoal();
   } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
   {

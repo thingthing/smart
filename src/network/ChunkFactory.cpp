@@ -212,7 +212,7 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
     std::string stringPoints = "";
 
     //std::cout << points.x << " " << points.y << " " << points.z << std::endl;
-    std::cout << std::hex << dumper4(&points.x) << " " << dumper4(&points.y) << " " << dumper4(&points.z) << std::endl;
+    // std::cout << std::hex << dumper4(&points.x) << " " << dumper4(&points.y) << " " << dumper4(&points.z) << std::endl;
 
     stringPoints += encodeNbIntoString((void*) &(points.x), sizeof(points.x));
     stringPoints += encodeNbIntoString((void*) &(points.y), sizeof(points.y));
