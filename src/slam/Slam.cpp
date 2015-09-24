@@ -57,7 +57,7 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
     this->_landmarkDb->addSlamId(landmarkId, slamId);
     //By default assume that landmark is perfectly observed
     //this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
-    this->_covariance->addLandmark((*it)->pos, slamId);
-    this->_covariance->calculationCovariance();
+    /*this->_covariance->addLandmark((*it)->pos, slamId);
+    this->_covariance->calculationCovariance();*/
   }
 }
