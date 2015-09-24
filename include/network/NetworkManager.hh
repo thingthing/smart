@@ -28,6 +28,7 @@
 #include "CircularBuffer.h"
 #include "event/Dispatcher.h"
 #include "IConnector.hh"
+#include "IAgent.hh"
 
 namespace   Network
 {
@@ -41,7 +42,7 @@ namespace   Network
         bool    send(Network::APacketBase const &packet, const std::string &connector_id);
         bool    send(const std::string &chunk, const std::string &connector_id);
         bool    connectTo(const std::string &ip, unsigned short port);
-        bool    connectTo(const std::string &ip, unsigned short port, const std::string &connector_id);
+        bool    connectTo(const std::string &ip, unsigned short port, const std::string &connector_id, IAgent *agent);
         void    disconnect();
         void    disconnect(const std::string &connector_id);
 

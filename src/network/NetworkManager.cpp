@@ -57,7 +57,7 @@ bool    NetworkManager::connectTo(const std::string &ip, unsigned short port)
     return (true);
 }
 
-bool    NetworkManager::connectTo(const std::string &ip, unsigned short port, const std::string &connector_id)
+bool    NetworkManager::connectTo(const std::string &ip, unsigned short port, const std::string &connector_id, IAgent *agent)
 {
     IConnector *connector;
 
@@ -70,7 +70,7 @@ bool    NetworkManager::connectTo(const std::string &ip, unsigned short port, co
     _fdset[fdsetIndex] = (struct pollfd) {connector->getSocket(), POLLIN, 0};
     _fdsetList.insert(std::pair<std::string, pollfd &>(connector_id, _fdset[fdsetIndex]));
 
-    this->dispatch("ConnectedEvent");
+    this->dispatch("ConnectedEvent", agent);
     return (true);
 }
 
@@ -197,7 +197,7 @@ void            NetworkManager::run()
                         }
                         if (_packet.getPacketHeader().packetSize == _packet.getPacketSize())
                         {
-                            // std::cout << "Packet completly recieved, dispatch event" << std::endl;
+                            std::cout << "Packet completly recieved, dispatch event" << std::endl;
                             this->dispatch("ReceivePacketEvent", &_packet);
                             // std::cout << "After dispatching" << std::endl;
                             _packet.clear();

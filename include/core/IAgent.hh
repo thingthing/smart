@@ -19,7 +19,8 @@ public:
     static const double CAMERAPROBLEM; // meter
 
 
-    IAgent(double degreePerScan = DEGREESPERSCAN, double cameraProblem = CAMERAPROBLEM, std::string const &name = "Default");
+    IAgent(double degreePerScan = DEGREESPERSCAN, double cameraProblem = CAMERAPROBLEM,
+           std::string const &name = "Default", int battery = 0);
     virtual ~IAgent();
 
     pcl::PointXYZ   const   &getPos() const;
@@ -28,7 +29,9 @@ public:
     double          getThrust() const;
     double          getTheta() const;
     double          getDeltaTheta() const;
+    int             getBattery() const;
 
+    void            setBattery(int new_battery_value);
     void            setThrust(double thrust);
     void            setTheta(double theta);
     void            setDeltaTheta(double deltaTheta);
@@ -56,6 +59,7 @@ protected:
     double          _thrust;
     double          _theta;
     double          _deltaTheta;
+    int             _battery;
 
 public:
     //Use to align class with pointCloud

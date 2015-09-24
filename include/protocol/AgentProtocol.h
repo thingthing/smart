@@ -15,10 +15,10 @@ public:
 
     virtual ~AgentProtocol();
 
-    virtual void        connectedEvent();
+    virtual void        connectedEvent(IAgent *);
     virtual void        receivePacketEvent(Network::ComPacket *packet);
     virtual void        disconnectEvent();
-    virtual void        sendPacketEvent();
+    virtual void        sendPacketEvent(IAgent *);
     void                sendDataTcp(Json::Value &root);
     void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud);
     void                sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl);
@@ -37,7 +37,6 @@ protected:
     AgentProtocol();
 
     Network::ChunkFactory        _factory;
-    Agent               *_agent;
     Network::ComPacket   _outPacket;
 };
 

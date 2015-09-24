@@ -1,8 +1,8 @@
 #include "IAgent.hh"
 
-IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name)
+IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _bearing(0),
-    _name(name), _thrust(0), _theta(0), _deltaTheta(0)
+    _name(name), _thrust(0), _theta(0), _deltaTheta(0), _battery(battery)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -11,6 +11,16 @@ IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &na
 
 IAgent::~IAgent()
 {
+}
+
+int              IAgent::getBattery() const
+{
+  return (_battery);
+}
+
+void             IAgent::setBattery(int new_battery_value)
+{
+  _battery = new_battery_value;
 }
 
 std::string const &IAgent::status(std::string const &status)

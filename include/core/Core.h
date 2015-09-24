@@ -15,6 +15,7 @@ public:
 
     void        run();
     void        update();
+    IAgent      *getAgent() const;
 
 protected:
     Core() = delete;

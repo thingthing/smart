@@ -13,9 +13,7 @@ public:
     ~Agent();
 
     pcl::PointXYZ   const   &getGoalPos() const;
-    int                     getBattery() const;
 
-    void            setBattery(int new_battery_value);
     int             lowerBattery(int value_to_lower);
     int             chargeBattery(int value_to_add);
     void            setGoalPos(pcl::PointXYZ const &pos);
@@ -30,7 +28,6 @@ public:
     static const int DEFAULTBATTERY;
 private:
     pcl::PointXYZ   _goalPos;
-    int             _battery;
 };
 
 

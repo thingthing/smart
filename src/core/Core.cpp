@@ -25,7 +25,7 @@ void        Core::update()
 {
     //std::cout << "Updating" << std::endl;
     pcl::PointCloud<pcl::PointXYZ> cloud = _agent->takeData();
-    _slam->updateState(cloud, *_agent);
+    //_slam->updateState(cloud, *_agent);
     _agent->updateState();
 }
 
@@ -38,3 +38,7 @@ void        Core::run()
     }
 }
 
+IAgent      *Core::getAgent() const
+{
+    return (_agent);
+}

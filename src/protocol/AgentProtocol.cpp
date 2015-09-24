@@ -25,11 +25,11 @@ AgentProtocol::~AgentProtocol()
 
 void         AgentProtocol::setAgent(Agent &agent, Slam &slam)
 {
-    _agent = &agent;
-    this->registerCallback("SetGoalPosEvent", [this](pcl::PointXYZ pos) {_agent->setGoalPos(pos);});
-    this->registerCallback("SetPosEvent", [this](pcl::PointXYZ pos) {_agent->setPos(pos);});
-    _agent->registerCallback("SendPacketEvent", [this]() {sendPacketEvent();});
-    _agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
+    Agent *agent_tmp = &agent;
+    this->registerCallback("SetGoalPosEvent", [agent_tmp](pcl::PointXYZ pos) {agent_tmp->setGoalPos(pos);});
+    this->registerCallback("SetPosEvent", [agent_tmp](pcl::PointXYZ pos) {agent_tmp->setPos(pos);});
+    agent.registerCallback("SendPacketEvent", [this](IAgent *agent) {sendPacketEvent(agent);});
+    agent.registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     ///@todo: Register in the factory (process data)
     slam.registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const & cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
@@ -73,15 +73,15 @@ void        AgentProtocol::sendDataTcp(Json::Value &root)
  * @brief Function called when a connector is connected to the server
  * @todo: Change the function to get in param the key of the connector (maybe)
  */
-void        AgentProtocol::connectedEvent()
+void        AgentProtocol::connectedEvent(IAgent *agent)
 {
     // std::cout << "connected event " << std::endl;
     Json::Value     reply;
 
-    reply["data"]["name"] = _agent->name();
-    reply["data"]["position"]["x"] = _agent->getPos().x;
-    reply["data"]["position"]["y"] = _agent->getPos().y;
-    reply["data"]["position"]["z"] = _agent->getPos().z;
+    reply["data"]["name"] = agent->name();
+    reply["data"]["position"]["x"] = agent->getPos().x;
+    reply["data"]["position"]["y"] = agent->getPos().y;
+    reply["data"]["position"]["z"] = agent->getPos().z;
     reply["status"]["code"] = 0;
     reply["status"]["message"] = "ok";
     this->sendDataTcp(reply);
@@ -91,22 +91,22 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
 {
     Json::Value     root;
 
-    // std::cout << "Send status event " << std::endl;
+    std::cout << "Send status event " << std::endl;
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     root["data"]["state"] = status;
     this->sendDataTcp(root);
 }
 
-void        AgentProtocol::sendPacketEvent()
+void        AgentProtocol::sendPacketEvent(IAgent *agent)
 {
     Json::Value     root;
 
-    // std::cout << "Send movement event " << std::endl;
-    root["data"]["position"]["x"] = _agent->getPos().x;
-    root["data"]["position"]["y"] = _agent->getPos().y;
-    root["data"]["position"]["z"] = _agent->getPos().z;
-    root["data"]["battery"] = (_agent->getBattery() * 100) / Agent::DEFAULTBATTERY;
+    std::cout << "Send movement event " << std::endl;
+    root["data"]["position"]["x"] = agent->getPos().x;
+    root["data"]["position"]["y"] = agent->getPos().y;
+    root["data"]["position"]["z"] = agent->getPos().z;
+    root["data"]["battery"] = (agent->getBattery() * 100) / Agent::DEFAULTBATTERY;
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     this->sendDataTcp(root);
@@ -172,7 +172,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
     Json::Value         root;
     std::string         serverReply((const char *)packet->data() + sizeof(Network::s_ComPacketHeader), packet->getPacketSize() - sizeof(Network::s_ComPacketHeader));
 
-    // std::cout << "received message from serveur " << serverReply << std::endl;
+    std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
     {
         // std::cout << "received a data " << serverReply << std::endl;
@@ -190,6 +190,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
                 if (command == "order")
                 {
                     pos = this->getPosFromJson(*it);
+                    std::cout << "Order goal pos got == " << pos << std::endl;
                     this->dispatch("SetGoalPosEvent", pos);
                 }
                 else if (command == "position")
