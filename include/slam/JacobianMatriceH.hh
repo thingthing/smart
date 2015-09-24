@@ -5,30 +5,43 @@
 # include <map>
 # include <tuple>
 # include <cmath>
-# include <pcl/common/common.h>
-# include <pcl/impl/point_types.hpp>
-# include <pcl/common/projection_matrix.h>
-# include "Landmarks.hh"
+#include <pcl/common/common.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/common/projection_matrix.h>
+#include "SystemStateMatrice.hh"
+#include "Landmarks.hh"
 
 class JacobianMatriceH
 {
 public:
-  JacobianMatriceH();
-  virtual ~JacobianMatriceH();
-	//values for <x,y,theta> according to the range
-  const std::tuple<double,double,double> &getJacobianRange(unsigned int landmarkNumber) const;
-	//values for <x,y,theta> according to the bearing
-  const std::tuple<double,double,double> &getJacobianBearing(unsigned int landmarkNumber) const;
+	JacobianMatriceH();
+	virtual ~JacobianMatriceH();
+	//values for <x,y> according to the range
+	std::pair<double,double> getJacobianRange(unsigned int landmarkNumber) const;
+	//values for <x,y> according to the bearing
+	std::pair<double,double> getJacobianBearing(unsigned int landmarkNumber) const;
 	//set the values of H for the specified landmark
-	void JacobiMath(unsigned int landmarkNumber, SystemStateMatrice stateM);
+	void JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice stateM, double range);
+
+	//Utilities
+	void deleteLandmark(unsigned int landmarkNumber);
+
+	void setRnBMatrice(unsigned int landmarkNumber, SystemStateMatrice stateM);
+	std::pair<double, double> getRnBMatrice(unsigned int landmarkNumber) const;
+
+//protected:
+	/*matrice containing the calculations on range and bearing for each landmarks
+	first element is range, second one is bearing.*/
+	std::map<unsigned int, std::pair<double,double>> rnbMatrice;
+	/*for each landmark there are 4 elements, the first two for the range(X & Y) and
+	the other two for the bearing(X & Y)*/
+	std::map<unsigned int, std::tuple<double,double,double,double>> matrice;
 
 private:
   JacobianMatriceH(const JacobianMatriceH &);
   JacobianMatriceH &operator=(const JacobianMatriceH &);
 
-protected:
-  std::tuple<double,double,double> bearingH;
-  std::tuple<double,double,double> rangeH;
+
 };
 
 #endif /* !JACOBIANMATRICEH_H_ */

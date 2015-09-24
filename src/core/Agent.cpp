@@ -40,6 +40,7 @@ pcl::PointCloud<pcl::PointXYZ> const &Agent::takeData()
   return (this->_capture.captureData());
 }
 
+
 void             Agent::goTowardsGoal()
 {
     if (_pos.x != _goalPos.x)

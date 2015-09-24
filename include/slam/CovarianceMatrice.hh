@@ -6,6 +6,11 @@
 #include <pcl/common/projection_matrix.h>
 
 #include <vector>
+
+#include "SystemStateMatrice.hh"
+#include "JacobianMatriceA.hh"
+#include "JacobianMatriceJz.hh"
+#include "JacobianMatriceJxr.hh"
 #include "IAgent.hh"
 
 class CovarianceMatrice
@@ -25,36 +30,45 @@ class CovarianceMatrice
     virtual ~Case();
     float getValue() const;
     void setValue(float value);
+		int getSlamID() const;
+    void setSlamID(int slamID);
     State getState() const;
     void setState(State state);
 
   protected:
     float _value;
     State _state;
+		//id for the robot is -1
+		int _slamID;
   };
 
 
 private:
   static const unsigned int SIZEINIT;
+	static const int ROBOTID;
 
 public:
   CovarianceMatrice();
   CovarianceMatrice(float X, float Y, float theta);
   CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
+
+  void addLandmark(float x, float y, int slamId);
+  void addLandmark(pcl::PointXY const &pos, int slamId);
   CovarianceMatrice(IAgent const &agent);
   virtual ~CovarianceMatrice();
-
-  void addLandmark(float x, float y, unsigned int slamId);
-  void addLandmark(pcl::PointXYZ const &pos, unsigned int slamId);
 
   float getRobotX() const;
   float getRobotY() const;
   float getRobotTheta() const;
+	double getLandmarkXCovariance(int slamID) const;
+	double getLandmarkYCovariance(int slamID) const;
 
   void setRobotPosition(float X, float Y, float theta);
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);
   void setRobotPosition(IAgent const &agent);
   void calculationCovariance();
+  void step1RobotCovariance(JacobianMatriceA JA);
+	void step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz, SystemStateMatrice stateM, int slamID);
 
 private:
   CovarianceMatrice(const CovarianceMatrice &);

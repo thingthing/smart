@@ -25,6 +25,7 @@ public:
 private:
     pcl::PointXYZ   _goalPos;
 
+
 };
 
 

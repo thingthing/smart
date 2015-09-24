@@ -31,6 +31,7 @@
 #include "SystemStateMatrice.hh"
 #include "CovarianceMatrice.hh"
 #include "Landmarks.hh"
+#include "JacobianMatriceA.hh"
 #include "IAgent.hh"
 
 class   Slam
@@ -70,6 +71,7 @@ private:
   Slam();
 
 private:
+  JacobianMatriceA _jA;
   IAgent     *_agent;
   DataAssociation *_data;
   KalmanGainMatrice _kg;

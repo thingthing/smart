@@ -29,11 +29,14 @@ public:
   float getLandmarkYPosition(unsigned int landmarkNumber) const;
   pcl::PointXYZ const &getRobotPos() const;
   float getRobotTeta() const;
+	pcl::PointXYZ const &getRobotOldPos() const;
+  float getRobotOldTeta() const;
 
 protected:
-  float tetaRobot;
+  float tetaRobot, oldTetaRobot;
   pcl::PointXYZ posRobot;
-  std::vector<pcl::PointXYZ> matrice;
+	pcl::PointXYZ oldPosRobot;
+  std::vector<pcl::PointXY> matrice;
 };
 
 #endif /* !SYSTEMSTATEMATRICE_H_ */

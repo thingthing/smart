@@ -24,9 +24,10 @@ Slam::~Slam()
 void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent)
 {
   //Update state using odometry
-  this->_state->setRobotState(agent);
-  ///@todo: update jacobian matrice
+  this->_state->updateRobotState(agent);
+  this->_jA.JacobiMath(agent);
   ///@todo: update process noise matrice
+
   this->_covariance->setRobotPosition(agent);
   this->_covariance->calculationCovariance();
 
@@ -55,7 +56,7 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
     int slamId = this->_state->addLandmarkPosition((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
     //By default assume that landmark is perfectly observed
-    this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
+    //this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
     this->_covariance->addLandmark((*it)->pos, slamId);
     this->_covariance->calculationCovariance();
   }
