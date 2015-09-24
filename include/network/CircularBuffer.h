@@ -10,20 +10,24 @@
 
 namespace   Network
 {
-/** @brief Circular Buffer. Convenient for network communications
-
-    @author Maxime C.
-    @date June 2015
-    */
+/** 
+ * @brief Circular Buffer. Convenient for network communications
+ *
+ * @author Maxime C.
+ * @date June 2015
+ */
 class       CircularBuffer
 {
 public:
-    /** @brief Constructor. The specified size will be rounded to a multiple of getpagesize()
-     *
+    /** 
+     * @brief Constructor. The specified size will be rounded to a multiple of getpagesize()
+     * @param size size_t Default size of buffer
+     * 
      * The circular buffer is initialized by memory-mapping the same memory area contiguiously. That is,
-    When you write at the last address + 1, it will write on the first byte of the buffer. (avoids modulo
-    operation and data wrapping logic ! */
-    CircularBuffer(size_t size);
+     * When you write at the last address + 1, it will write on the first byte of the buffer. (avoids modulo
+     * operation and data wrapping logic !
+     * */
+    CircularBuffer(size_t size = 4096);
     ~CircularBuffer();
 
     size_t          getSpaceLeft();                                     /**< @brief Returns the space left in the buffer in bytes */

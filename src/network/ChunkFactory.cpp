@@ -1,3 +1,4 @@
+#include <netinet/in.h>
 #include "network/ChunkFactory.h"
 
 namespace Network
@@ -6,8 +7,8 @@ namespace Network
 // PUBLIC
 
 ChunkFactory::ChunkFactory():   _sizeChunks(0),
-                                _chunkID(1),
-                                _packetID(1) {}
+    _chunkID(1),
+    _packetID(1) {}
 
 ChunkFactory::~ChunkFactory()
 {
@@ -76,7 +77,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
  * @brief Return whether _chunks is empty or not
  * @return A boolean to tell you whether _chunks is empty or not.
  */
-bool ChunkFactory::isFullChunkReady() const { return (_chunks.size() == 0)?(false):(true); }
+bool ChunkFactory::isFullChunkReady() const { return (_chunks.size() == 0) ? (false) : (true); }
 
 /**
  * @brief Get a chunk already prepared by ChunkFactory
@@ -123,6 +124,7 @@ void ChunkFactory::pushTmpChunkToChunks()
 std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landmark_)
 {
     std::string strLandmark = "";
+
 
     strLandmark += fromPclPointToString(landmark_.pos);
     strLandmark += fromPclPointToString(landmark_.robotPos);
@@ -187,6 +189,18 @@ std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointX
     return convertedPoints;
 }
 
+int dumper4(const void* target)
+{
+    int* tmp = (int*)target;
+    return (int)(*tmp);
+}
+
+long long dumper8(const void* target)
+{
+    long long* tmp = (long long*)target;
+    return (long long)(*tmp);
+}
+
 /**
  * @brief Convert PointXYZ into a string
  * @details It convert in a string the variable x, y and z
@@ -197,9 +211,12 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
 {
     std::string stringPoints = "";
 
-    stringPoints += encodeNbIntoString((void*)&(points.x), sizeof(points.x));
-    stringPoints += encodeNbIntoString((void*)&(points.y), sizeof(points.y));
-    stringPoints += encodeNbIntoString((void*)&(points.z), sizeof(points.z));
+    //std::cout << points.x << " " << points.y << " " << points.z << std::endl;
+    // std::cout << std::hex << dumper4(&points.x) << " " << dumper4(&points.y) << " " << dumper4(&points.z) << std::endl;
+
+    stringPoints += encodeNbIntoString((void*) &(points.x), sizeof(points.x));
+    stringPoints += encodeNbIntoString((void*) &(points.y), sizeof(points.y));
+    stringPoints += encodeNbIntoString((void*) &(points.z), sizeof(points.z));
 
     return stringPoints;
 }
@@ -215,17 +232,17 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
  */
 std::string ChunkFactory::encodeNbIntoString(void* nb, unsigned long nbOfByte)
 {
-  char* nb_ = (char*)nb;
-  std::string encoded = "";
+    char* nb_ = (char*)nb;
+    std::string encoded = "";
 
-  for (unsigned long i = 0; i < nbOfByte; ++i)
+    for (long i = nbOfByte - 1; i >= 0; --i)
     {
-      char tmp = 0;
-      tmp |= nb_[i];
-      encoded += tmp;
+        char tmp = 0;
+        tmp |= nb_[i];
+        encoded += tmp;
     }
-  //  std::cout << std::hex << encoded;
-  return encoded;
+    //  std::cout << std::hex << encoded;
+    return encoded;
 }
 
 /// @brief Add the size of the added chunk into the deque of chunks _chunks

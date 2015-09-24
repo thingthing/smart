@@ -33,8 +33,9 @@
 #include "Landmarks.hh"
 #include "JacobianMatriceA.hh"
 #include "IAgent.hh"
+#include "event/Dispatcher.h"
 
-class   Slam
+class   Slam : public Utils::Dispatcher
 {
 public:
   /**

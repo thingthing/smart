@@ -4,6 +4,8 @@
 #include "AProtocol.h"
 #include "network/ComPacket.h"
 #include "Agent.hh"
+#include "Slam.hh"
+#include "ChunkFactory.h"
 #include "json/json.h"
 
 class       AgentProtocol : public AProtocol
@@ -14,11 +16,19 @@ public:
     virtual ~AgentProtocol();
 
     virtual void        connectedEvent();
-    virtual void        receivePacketEvent(Network::ComPacket &packet);
+    virtual void        receivePacketEvent(Network::ComPacket *packet);
     virtual void        disconnectEvent();
     virtual void        sendPacketEvent();
+    void                sendDataTcp(Json::Value &root);
+    void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud);
+    void                sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl);
+    void                sendStatusEvent(std::string const &status);
 
-    void         setAgent(Agent &agent);
+
+    void         setAgent(Agent &agent, Slam &slam);
+
+    static const std::string TCP_KEY;
+    static const std::string UDP_KEY;
 
 private:
     pcl::PointXYZ       getPosFromJson(Json::Value const &root);
@@ -26,6 +36,7 @@ private:
 protected:
     AgentProtocol();
 
+    Network::ChunkFactory        _factory;
     Agent               *_agent;
     Network::ComPacket   _outPacket;
 };
