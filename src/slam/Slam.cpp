@@ -25,7 +25,7 @@ Slam::~Slam()
 void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent)
 {
   //Update state using odometry
-  this->_state->updateRobotState(agent);
+  this->_state->setRobotState(agent);
   this->_jA.JacobiMath(agent);
   ///@todo: update process noise matrice
 
