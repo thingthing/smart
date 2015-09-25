@@ -23,7 +23,7 @@ class   APacketBase                     // Use the base class to refer to a pack
 public:
     APacketBase()
     {
-        _data = new byte[2048];
+        _data = new char[2048];
         _bufferSize = 2048;
     }
 
@@ -37,7 +37,7 @@ public:
         return (_writeCursor);
     }
 
-    inline const byte         *data() const
+    inline const char         *data() const
     {
         return (_data);
     }
@@ -48,7 +48,7 @@ protected:
        NON_COPYABLE(APacketBase)
     virtual void        init() = 0;
 
-    byte                *_data;
+    char                *_data;
     unsigned int        _bufferSize;
     unsigned int        _writeCursor;
 };
@@ -84,6 +84,7 @@ public:
     {
         _writeCursor = sizeof(PacketHeaderType);
         _data[sizeof(PacketHeaderType)] = 0;
+        init();
     }
 
     /** @brief Append a data of scalar type T to the packet */
@@ -110,7 +111,7 @@ public:
             return;
         reallocIfNecessary(size);
         data.read(_data + _writeCursor, size);
-        _header->packetSize += size;
+        //_header->packetSize += size;
         _writeCursor += size;
     }
 
@@ -119,7 +120,7 @@ public:
     void        append(T const * const data, const unsigned int size)
     {
         reallocIfNecessary(size);
-        memcpy(_data + _writeCursor, &data, size);
+        memcpy(_data + _writeCursor, data, size);
         _header->packetSize += size;
         _writeCursor += size;
     }
@@ -164,7 +165,7 @@ protected:
     {
         if ((_writeCursor + size) > _bufferSize)
         {
-            byte *tmp = new byte[_bufferSize * 2];                  // Quite ugly but will do the trick. It's very unlikely that we'll have multi-megabytes single packets.
+            char *tmp = new char[_bufferSize * 2];                  // Quite ugly but will do the trick. It's very unlikely that we'll have multi-megabytes single packets.
             memcpy(tmp, _data, _writeCursor);
             delete[] (_data);
             _data = tmp;

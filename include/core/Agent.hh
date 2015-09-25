@@ -14,18 +14,20 @@ public:
 
     pcl::PointXYZ   const   &getGoalPos() const;
 
+    int             lowerBattery(int value_to_lower);
+    int             chargeBattery(int value_to_add);
     void            setGoalPos(pcl::PointXYZ const &pos);
     void            setGoalPos(double x, double y, double z);
 
     pcl::PointCloud<pcl::PointXYZ> const &takeData();
     void            updateState();
     void            goTowardsGoal();
-    bool            isAtDestination();
+    bool            isAtDestination() const;
+    bool            isAtBase() const;
 
+    static const int DEFAULTBATTERY;
 private:
     pcl::PointXYZ   _goalPos;
-
-
 };
 
 
