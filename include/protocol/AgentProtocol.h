@@ -25,7 +25,7 @@ public:
     void                sendStatusEvent(std::string const &status);
 
 
-    void         setAgent(Agent &agent, Slam &slam);
+    void         setAgent(IAgent *agent, Slam &slam);
 
     static const std::string TCP_KEY;
     static const std::string UDP_KEY;

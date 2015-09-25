@@ -23,13 +23,12 @@ AgentProtocol::~AgentProtocol()
 {
 }
 
-void         AgentProtocol::setAgent(Agent &agent, Slam &slam)
+void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
 {
-    Agent *agent_tmp = &agent;
-    this->registerCallback("SetGoalPosEvent", [agent_tmp](pcl::PointXYZ pos) {agent_tmp->setGoalPos(pos);});
-    this->registerCallback("SetPosEvent", [agent_tmp](pcl::PointXYZ pos) {agent_tmp->setPos(pos);});
-    agent.registerCallback("SendPacketEvent", [this](IAgent *agent) {sendPacketEvent(agent);});
-    agent.registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
+    this->registerCallback("SetGoalPosEvent", [agent](pcl::PointXYZ pos) {dynamic_cast<Agent *>(agent)->setGoalPos(pos);});
+    this->registerCallback("SetPosEvent", [agent](pcl::PointXYZ pos) {agent->setPos(pos);});
+    agent->registerCallback("SendPacketEvent", [this](IAgent *agent) {sendPacketEvent(agent);});
+    agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     ///@todo: Register in the factory (process data)
     slam.registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const & cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
