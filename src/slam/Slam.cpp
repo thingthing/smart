@@ -7,6 +7,7 @@ Slam::Slam(IAgent *agent)
   this->_data = new DataAssociation(this->_landmarkDb);
   this->_state = new SystemStateMatrice(*agent);
   this->_covariance = new CovarianceMatrice(agent->getPos().x, agent->getPos().y, agent->getBearing());
+	this->_jA = new JacobianMatriceA();
 }
 
 Slam::~Slam()

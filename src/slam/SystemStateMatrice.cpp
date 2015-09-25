@@ -1,23 +1,23 @@
 #include "SystemStateMatrice.hh"
 
 SystemStateMatrice::SystemStateMatrice() :
-  tetaRobot(0.0), posRobot(pcl::PointXYZ(0.0, 0.0, 0.0)), oldPosRobot(pcl::PointXYZ(0.0, 0.0, 0.0))
+  tetaRobot(0.0), posRobot(pcl::PointXYZ(0.0, 0.0, 0.0)), oldPosRobot(pcl::PointXYZ(0.0, 0.0, 0.0)), slamID(1)
 {
 }
 
 SystemStateMatrice::SystemStateMatrice(float x, float y, float z, float teta) :
-  tetaRobot(teta), posRobot(pcl::PointXYZ(x, y, z)), oldPosRobot(pcl::PointXYZ(x, y, z))
+  tetaRobot(teta), posRobot(pcl::PointXYZ(x, y, z)), oldPosRobot(pcl::PointXYZ(x, y, z)), slamID(1)
 {
 }
 
 SystemStateMatrice::SystemStateMatrice(pcl::PointXYZ const &posRobot, float teta) :
-  tetaRobot(teta), posRobot(pcl::PointXYZ(posRobot)), oldPosRobot(pcl::PointXYZ(posRobot))
+  tetaRobot(teta), posRobot(pcl::PointXYZ(posRobot)), oldPosRobot(pcl::PointXYZ(posRobot)), slamID(1)
 {
 }
 
 
-SystemStateMatrice::SystemStateMatrice(IAgent const &agent) :
-  tetaRobot(agent.getBearing()), posRobot(pcl::PointXYZ(agent.getPos())), oldPosRobot(pcl::PointXYZ(agent.getPos()))
+SystemStateMatrice::SystemStateMatrice(Agent const &agent) :
+  tetaRobot(agent.getBearing()), posRobot(pcl::PointXYZ(agent.getPos())), oldPosRobot(pcl::PointXYZ(agent.getPos())), slamID(1)
 {
 }
 
@@ -30,8 +30,8 @@ SystemStateMatrice::~SystemStateMatrice()
 **/
 unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXYZ &position)
 {
-  this->matrice.push_back(pcl::PointXYZ(position));
-  return (this->matrice.size() - 1);
+	this->matrice[slamID] = pcl::PointXYZ(position);
+  return (slamID++);
 }
 
 /**
@@ -39,8 +39,8 @@ unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXYZ &positi
 **/
 unsigned int SystemStateMatrice::addLandmarkPosition(float x, float y, float z)
 {
-  this->matrice.push_back(pcl::PointXYZ(x, y, z));
-  return (this->matrice.size() - 1);
+	this->matrice[slamID] = pcl::PointXYZ(x,y,z);
+  return (slamID++);
 }
 
 void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z)
@@ -78,6 +78,11 @@ void SystemStateMatrice::updateRobotState(IAgent const &agent)
 
 void SystemStateMatrice::setRobotState(IAgent const &agent)
 {
+	this->oldPosRobot.x = this->posRobot.x;
+	this->oldPosRobot.y = this->posRobot.y;
+	this->oldPosRobot.z = this->posRobot.z;
+	this->oldTetaRobot = this->tetaRobot;
+
   this->posRobot.x = agent.getPos().x;
   this->posRobot.y = agent.getPos().y;
   this->posRobot.z = agent.getPos().z;
