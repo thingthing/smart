@@ -36,7 +36,8 @@ protected:
   float tetaRobot, oldTetaRobot;
   pcl::PointXYZ posRobot;
 	pcl::PointXYZ oldPosRobot;
-  std::vector<pcl::PointXY> matrice;
+	unsigned int slamID;
+	std::map<unsigned int, pcl::PointXY> matrice;
 };
 
 #endif /* !SYSTEMSTATEMATRICE_H_ */
