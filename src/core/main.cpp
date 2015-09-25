@@ -13,12 +13,12 @@ int     main(int argc, char **argv)
     /**
      * @todo : Add port in configuration files
      */
-    if (networkAdapter.connectTo(server_ip, 4200, AgentProtocol::TCP_KEY) == false)
+    if (networkAdapter.connectTo(server_ip, 4200, AgentProtocol::TCP_KEY, core.getAgent()) == false)
     {
         std::cout << "failed to connect tcp" << std::endl;
         return (-1);
     }
-    if (networkAdapter.connectTo(server_ip, 4300, AgentProtocol::UDP_KEY) == false)
+    if (networkAdapter.connectTo(server_ip, 4300, AgentProtocol::UDP_KEY, core.getAgent()) == false)
     {
         std::cout << "failed to connect udp" << std::endl;
         return (-1);

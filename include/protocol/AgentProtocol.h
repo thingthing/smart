@@ -15,17 +15,17 @@ public:
 
     virtual ~AgentProtocol();
 
-    virtual void        connectedEvent();
+    virtual void        connectedEvent(IAgent *);
     virtual void        receivePacketEvent(Network::ComPacket *packet);
     virtual void        disconnectEvent();
-    virtual void        sendPacketEvent();
+    virtual void        sendPacketEvent(IAgent *);
     void                sendDataTcp(Json::Value &root);
     void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud);
     void                sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl);
     void                sendStatusEvent(std::string const &status);
 
 
-    void         setAgent(Agent &agent, Slam &slam);
+    void         setAgent(IAgent *agent, Slam &slam);
 
     static const std::string TCP_KEY;
     static const std::string UDP_KEY;
@@ -37,7 +37,6 @@ protected:
     AgentProtocol();
 
     Network::ChunkFactory        _factory;
-    Agent               *_agent;
     Network::ComPacket   _outPacket;
 };
 
