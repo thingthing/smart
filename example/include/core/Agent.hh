@@ -19,9 +19,9 @@ public:
     void            setGoalPos(pcl::PointXYZ const &pos);
     void            setGoalPos(double x, double y, double z);
 
-    pcl::PointCloud<pcl::PointXYZ> const &takeData();
-    void            updateState();
-    void            goTowardsGoal();
+    virtual pcl::PointCloud<pcl::PointXYZ> const &takeData();
+    virtual void            updateState();
+    virtual void            goTowardsGoal();
     bool            isAtDestination() const;
     bool            isAtBase() const;
 

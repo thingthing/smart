@@ -2,12 +2,9 @@ SET(SOURCES
   ${SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/CircularBuffer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ComPacket.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/TCPConnector.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/UDPConnector.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ChunkFactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/NetworkManager.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ChunkFactory.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/UDPConnector.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/NetworkManager.cpp
   PARENT_SCOPE
   )
