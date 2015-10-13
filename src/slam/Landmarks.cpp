@@ -182,18 +182,18 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
 // Parametric convert equation:
 // x = (x_view * cos(bearing) - y_view * sin(bearing)) + agentx
 // y = (x_view * sin(bearing) + y_view * cos(bearing)) + agenty
-static void parametricConvert(IAgent const &agent, double x_view, double y_view, double &x, double &y)
+static void parametricConvert(IAgent const *agent, double x_view, double y_view, double &x, double &y)
 {
-  x = (cos(agent.getBearing() * Landmarks::CONVERSION) * x_view - sin(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().x;
-  y = (sin(agent.getBearing() * Landmarks::CONVERSION) * x_view + cos(agent.getBearing() * Landmarks::CONVERSION) * y_view) + agent.getPos().y;
+  x = (cos(agent->getBearing() * Landmarks::CONVERSION) * x_view - sin(agent->getBearing() * Landmarks::CONVERSION) * y_view) + agent->getPos().x;
+  y = (sin(agent->getBearing() * Landmarks::CONVERSION) * x_view + cos(agent->getBearing() * Landmarks::CONVERSION) * y_view) + agent->getPos().y;
 }
 
-double Landmarks::calculateBearing(double x, double y, IAgent const &agent) const
+double Landmarks::calculateBearing(double x, double y, IAgent const *agent) const
 {
-  return (atan((y - agent.getPos().y) / (x - agent.getPos().x)) - agent.getBearing());
+  return (atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getBearing());
 }
 
-void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent, int selectPoints[], int arraySize, double &a, double &b)
+void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
   double x; //x coordinate
@@ -220,7 +220,7 @@ void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &c
 /**
  * @todo Do not use range only, use point (maybe)
  */
-Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, IAgent const &agent)
+Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, IAgent const *agent)
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = -1;
@@ -231,9 +231,9 @@ Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, IAgent
   parametricConvert(agent, x_view, y_view, x, y);
   lm->pos.x = x;
   lm->pos.y = y;
-  lm->range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
+  lm->range = this->distance(x, y, agent->getPos().x, agent->getPos().y);
   lm->bearing = this->calculateBearing(x, y, agent);
-  lm->robotPos = agent.getPos();
+  lm->robotPos = agent->getPos();
   ///@todo: Maybe throw and exception if no landmarks can be associated
   this->getClosestAssociation(lm, id, totalTimeObserved);
   lm->id = id;
@@ -254,7 +254,7 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 /**
  * @todo: Same as getLandmark
  **/
-Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, IAgent const &agent)
+Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, IAgent const *agent)
 {
   Landmarks::Landmark *lm;
   double x;
@@ -273,9 +273,9 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_vi
     parametricConvert(agent, x_view, y_view, x, y);
     lm->pos.x = x;
     lm->pos.y = y;
-    lm->range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
+    lm->range = this->distance(x, y, agent->getPos().x, agent->getPos().y);
     lm->bearing = this->calculateBearing(x, y, agent);
-    lm->robotPos = agent.getPos();
+    lm->robotPos = agent->getPos();
     lm->id = this->addToDB(*lm);
   }
   return (lm);
@@ -340,7 +340,7 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
   return (lm);
 }
 
-Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const &agent)
+Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const *agent)
 {
   //our goal is to calculate point on line closest to origin (0,0)
   //calculate line perpendicular to input line. a*ao = -1
@@ -348,16 +348,16 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const
   //landmark position
   double x = b / (ao - a);
   double y = (ao * b) / (ao - a);
-  double range = this->distance(x, y, agent.getPos().x, agent.getPos().y);
+  double range = this->distance(x, y, agent->getPos().x, agent->getPos().y);
   double bearing = this->calculateBearing(x, y, agent);
   //now do same calculation but get point on wall closest to robot instead
   //y = aox + bo => bo = y - aox
-  double bo = agent.getPos().y - ao * agent.getPos().x;
+  double bo = agent->getPos().y - ao * agent->getPos().x;
   //get intersection between y = ax + b and y = aox + bo
   //so aox + bo = ax + b => aox - ax = b - bo => x = (b - bo)/(ao - a), y = ao*(b - bo)/(ao - a) + bo
   double px = (b - bo) / (ao - a);
   double py = ((ao * (b - bo)) / (ao - a)) + bo;
-  double rangeError = this->distance(agent.getPos().x, agent.getPos().y, px, py);
+  double rangeError = this->distance(agent->getPos().x, agent->getPos().y, px, py);
   double bearingError = this->calculateBearing(px, py, agent);
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = 0;
@@ -370,7 +370,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const
   lm->bearing = bearing;
   lm->a = a;
   lm->b = b;
-  lm->robotPos = agent.getPos();
+  lm->robotPos = agent->getPos();
   lm->rangeError = rangeError;
   lm->bearingError = bearingError;
 
@@ -382,7 +382,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const
   return (lm);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent)
 {
   unsigned int sampleNumber = cloud.points.size();
 
@@ -391,14 +391,14 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCl
   for (unsigned int i = 0; i < sampleNumber; ++i)
     tempLandmarks.push_back(new Landmarks::Landmark());
 
-  double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent.getPos().x, agent.getPos().y);
-  double range = this->distance(cloud.points[1].x, cloud.points[1].y, agent.getPos().x, agent.getPos().y);
+  double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent->getPos().x, agent->getPos().y);
+  double range = this->distance(cloud.points[1].x, cloud.points[1].y, agent->getPos().x, agent->getPos().y);
   for (unsigned int i = 1; i < sampleNumber - 1; i++)
   {
-    double rangeAfter = this->distance(cloud.points[i + 1].x, cloud.points[i + 1].y, agent.getPos().x, agent.getPos().y);
+    double rangeAfter = this->distance(cloud.points[i + 1].x, cloud.points[i + 1].y, agent->getPos().x, agent->getPos().y);
     //@TODO: Change to use true camera mesurement issue
     // Check for error measurement in laser data
-    if (rangeBefore < agent.cameraProblem && rangeAfter < agent.cameraProblem)
+    if (rangeBefore < agent->cameraProblem && rangeAfter < agent->cameraProblem)
     {
       if ((rangeBefore - range) + (rangeAfter - range) > Landmarks::MAX_DIFFERENCE)
         tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, agent);
@@ -535,7 +535,7 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> const &extractedLandma
   }
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent)
 {
   // lines found
   std::vector<double> la;
@@ -547,7 +547,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
   std::vector<Landmarks::Landmark *> tempLandmarks;
 #endif
 
-  // linepoints is all the points linked to the lines 
+  // linepoints is all the points linked to the lines
   unsigned int totalLinepoints = numberSample - 1;
 
   // BEGIN RANSAC ALGORITHM
@@ -654,19 +654,19 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
   return foundLandmarks;
 }
 
-void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent)
+void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent)
 {
   double maxrange = 0;
-  double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent.getPos().x, agent.getPos().y);
-  double range = this->distance(cloud.points[1].x, cloud.points[1].y, agent.getPos().x, agent.getPos().y);
+  double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent->getPos().x, agent->getPos().y);
+  double range = this->distance(cloud.points[1].x, cloud.points[1].y, agent->getPos().x, agent->getPos().y);
 
   for (unsigned int i = 1; i < cloud.points.size() - 1; ++i)
   {
-    double rangeAfter = this->distance(cloud.points[i + 1].x, cloud.points[i + 1].y, agent.getPos().x, agent.getPos().y);
+    double rangeAfter = this->distance(cloud.points[i + 1].x, cloud.points[i + 1].y, agent->getPos().x, agent->getPos().y);
     /// @todo: check real camera max
     // we get the camera data with max range
-    if (rangeBefore < agent.cameraProblem
-        && rangeAfter < agent.cameraProblem
+    if (rangeBefore < agent->cameraProblem
+        && rangeAfter < agent->cameraProblem
         && range > maxrange)
       maxrange = range;
     rangeBefore = range;
@@ -677,14 +677,14 @@ void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, 
   double *Ybounds = new double[4];
 
   //get bounds of rectangular box to remove bad landmarks from
-  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
-  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
-  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
-  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().x;
-  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange + agent.getPos().y;
-  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent.getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().x;
+  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().y;
+  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().x;
+  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().y;
+  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
 
   //now check DB for landmarks that are within this box
   //decrease life of all landmarks in box. If the life reaches zero, remove landmark
@@ -698,7 +698,7 @@ void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, 
     pnty = this->landmarkDB[k]->pos.y;
     int i = 0;
     int j = 0;
-    bool inRectangle = (agent.getPos().x < 0 || agent.getPos().y < 0 ? false : true);
+    bool inRectangle = (agent->getPos().x < 0 || agent->getPos().y < 0 ? false : true);
     for (i = 0; i < 4; ++i)
     {
       if ((((Ybounds[i] <= pnty) && (pnty < Ybounds[j])) || ((Ybounds[j] <= pnty) && (pnty < Ybounds[i]))) &&
@@ -732,7 +732,7 @@ std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLineLandmarks(std::vec
 }
 
 std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResults(bool matched[],
-    unsigned int numberMatched, int id[], std::vector<pcl::PointXYZ> const &pos, IAgent const &agent)
+    unsigned int numberMatched, int id[], std::vector<pcl::PointXYZ> const &pos, IAgent const *agent)
 {
   std::vector<Landmarks::Landmark *> res(numberMatched);
   for (unsigned int i = 0; i < numberMatched; ++i)

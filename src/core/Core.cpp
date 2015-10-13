@@ -11,8 +11,8 @@ Core::Core(AgentProtocol &protocol) :
     _protocol(protocol)
 {
     _agent = new Agent();
+    _protocol.setAgent(*(dynamic_cast<Agent*>(_agent)));
     _slam = new Slam(_agent);
-    _protocol.setAgent(_agent, *_slam);
 }
 
 Core::~Core()
