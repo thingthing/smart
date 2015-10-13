@@ -37,7 +37,7 @@ protected:
   pcl::PointXYZ posRobot;
 	pcl::PointXYZ oldPosRobot;
 	unsigned int slamID;
-	std::map<unsigned int, pcl::PointXY> matrice;
+	std::map<unsigned int, pcl::PointXYZ> matrice;
 };
 
 #endif /* !SYSTEMSTATEMATRICE_H_ */

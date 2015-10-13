@@ -45,7 +45,7 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *a
     ///@todo: Update state using kalman gain and uncertainity
   }
 
-  agent.setPos(this->_state->getRobotPos());
+  agent->setPos(this->_state->getRobotPos());
   //After all, remove abd landmarks
   this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }

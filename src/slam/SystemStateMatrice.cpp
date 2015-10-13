@@ -91,17 +91,17 @@ void SystemStateMatrice::setRobotState(IAgent const *agent)
 
 const pcl::PointXYZ &SystemStateMatrice::getPosition(unsigned int landmarkNumber) const
 {
-  return (this->matrice[landmarkNumber]);
+  return (this->matrice.at(landmarkNumber));
 }
 
 float SystemStateMatrice::getLandmarkXPosition(unsigned int landmarkNumber) const
 {
-  return (this->matrice[landmarkNumber].x);
+  return (this->matrice.at(landmarkNumber).x);
 }
 
 float SystemStateMatrice::getLandmarkYPosition(unsigned int landmarkNumber) const
 {
-  return (this->matrice[landmarkNumber].y);
+  return (this->matrice.at(landmarkNumber).y);
 }
 
 pcl::PointXYZ const &SystemStateMatrice::getRobotPos() const

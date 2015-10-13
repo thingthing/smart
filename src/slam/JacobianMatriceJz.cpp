@@ -8,7 +8,7 @@ JacobianMatriceJz::JacobianMatriceJz()
 JacobianMatriceJz::~JacobianMatriceJz()
 {}
 
-void JacobianMatriceJz::JacobiMath(IAgent const &agent)
+void JacobianMatriceJz::JacobiMath(IAgent const *agent)
 {
 	matrice.at(0) = cos(agent->getDeltaTheta() + agent->getTheta());
 	matrice.at(1) = -agent->getThrust() * sin(agent->getDeltaTheta() + agent->getTheta());
