@@ -227,7 +227,7 @@ void CovarianceMatrice::addLandmark(float x, float y, int slamId)
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
 }
 
-void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId)
+void CovarianceMatrice::addLandmark(pcl::PointXY const &pos, int slamId) 
 {
   unsigned int oldSize = this->_matrice.size();
   this->_matrice.resize(oldSize + 2);
@@ -249,7 +249,29 @@ void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId)
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
 }
 
-void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA JA)
+void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId) 
+{
+  unsigned int oldSize = this->_matrice.size();
+  this->_matrice.resize(oldSize + 2);
+  for (unsigned int i = 0; i < oldSize + 2; ++i)
+    this->_matrice[i].resize(oldSize + 2);
+
+  // Two cases by landmark
+	//used to use (slamID * 2 + CovarianceMatrice::SIZEINIT) for index
+  unsigned int index = oldSize + 1;
+  this->_matrice[index][index].setValue(pos.x);
+  this->_matrice[index][index].setState(CovarianceMatrice::POSITION);
+	this->_matrice[index][index].setSlamID(slamId);
+
+  this->_matrice[index + 1][index + 1].setValue(pos.y);
+  this->_matrice[index + 1][index + 1].setState(CovarianceMatrice::POSITION);
+	this->_matrice[index + 1][index + 1].setSlamID(slamId);
+
+  this->_matrice[index][index + 1].setState(CovarianceMatrice::NOTUSED);
+  this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
+}
+
+void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 {
 	//Step1
 	//Prr = A * Prr * A + Q
@@ -383,50 +405,4 @@ void CovarianceMatrice::step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJ
 		this->_matrice[i+1][this->_matrice.size()-2].setValue(this->_matrice[this->_matrice.size()-2][i+1].getValue());
 		this->_matrice[i+1][this->_matrice.size()-1].setValue(this->_matrice[this->_matrice.size()-1][i+1].getValue());
 	}
-}
-
-void CovarianceMatrice::calculationCovariance()
-{
-  for (unsigned int i = 3; i < this->_matrice.size(); ++i)
-    {
-      for (unsigned int j = 3; j < this->_matrice.size(); ++j)
-	{
-	  if (this->_matrice[i][j].getState() != CovarianceMatrice::CALCULATION)
-	    continue;
-
-	  float firstValue;
-	  float secondValue;
-
-	  for (unsigned int x = 0; x < this->_matrice.size(); ++x)
-	    {
-	      if(this->_matrice[i][x].getState() == CovarianceMatrice::POSITION)
-		{
-		  firstValue = this->_matrice[i][x].getValue();
-		  break;
-		}
-	    }
-
-	  for (unsigned int x = 0; x < this->_matrice.size(); ++x)
-	    {
-	      if(this->_matrice[x][j].getState() == CovarianceMatrice::POSITION)
-		{
-		  secondValue = this->_matrice[x][j].getValue();
-		  break;
-		}
-	    }
-
-	  if(i > j) // different formula
-	    {
-	      // partie du bas de la matrice
-	      // pas la bonne formule, a trouver la vrai
-	      this->_matrice[i][j].setValue(firstValue + secondValue);
-	    }
-	  else // different formula
-	    {
-	      // partie du haut de la matrice
-	      // pareillement
-	      this->_matrice[i][j].setValue(firstValue - secondValue);
-	    }
-	}
-    }
 }
