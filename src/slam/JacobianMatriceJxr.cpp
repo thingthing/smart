@@ -10,7 +10,7 @@ JacobianMatriceJxr::JacobianMatriceJxr()
 JacobianMatriceJxr::~JacobianMatriceJxr()
 {}
 
-void JacobianMatriceJxr::JacobiMath(Agent const &agent)
+void JacobianMatriceJxr::JacobiMath(IAgent const &agent)
 {
 	//-deltaY
 	matrice.at(2) = -agent.getThrust() * sin(agent.getTheta());

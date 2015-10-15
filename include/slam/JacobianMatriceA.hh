@@ -8,14 +8,14 @@
 #	include <pcl/impl/point_types.hpp>
 #	include <pcl/common/projection_matrix.h>
 #	include "Landmarks.hh"
-#	include	"Agent.hh"
+#	include	"IAgent.hh"
 
 class JacobianMatriceA
 {
 public:
 	JacobianMatriceA();
 	virtual ~JacobianMatriceA();
-	void JacobiMath(Agent const &agent);
+	void JacobiMath(IAgent const &agent);
 	const std::vector<double> &getMatrice() const;
 
 private:

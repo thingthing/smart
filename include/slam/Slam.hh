@@ -32,6 +32,9 @@
 #include "CovarianceMatrice.hh"
 #include "Landmarks.hh"
 #include "JacobianMatriceA.hh"
+#include "JacobianMatriceJxr.hh"
+#include "JacobianMatriceJz.hh"
+#include "JacobianMatriceH.hh"
 #include "IAgent.hh"
 
 class   Slam
@@ -65,21 +68,24 @@ public:
   *
   * @param newLandmarks New landmark extracted from the current mapping
   */
-  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks);
+  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent &agent);
 
 private:
   Slam();
 
 private:
-  JacobianMatriceA _jA;
   IAgent     *_agent;
   DataAssociation *_data;
   KalmanGainMatrice _kg;
   SystemStateMatrice  *_state;
-  CovarianceMatrice *_covariance;
 
 public:
   Landmarks   *_landmarkDb;
+	JacobianMatriceA *_jA;
+  JacobianMatriceJxr *_jXR;
+  JacobianMatriceJz *_jZ;
+	JacobianMatriceH *_jH;
+  CovarianceMatrice *_covariance;
 };
 
 

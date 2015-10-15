@@ -11,7 +11,7 @@ JacobianMatriceA::JacobianMatriceA()
 JacobianMatriceA::~JacobianMatriceA()
 {}
 
-void JacobianMatriceA::JacobiMath(Agent const &agent)
+void JacobianMatriceA::JacobiMath(IAgent const &agent)
 {
 	//warning, thrust != speed
 
