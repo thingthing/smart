@@ -16,7 +16,7 @@ SystemStateMatrice::SystemStateMatrice(pcl::PointXYZ const &posRobot, float teta
 }
 
 
-SystemStateMatrice::SystemStateMatrice(Agent const &agent) :
+SystemStateMatrice::SystemStateMatrice(IAgent const &agent) :
   tetaRobot(agent.getBearing()), posRobot(pcl::PointXYZ(agent.getPos())), oldPosRobot(pcl::PointXYZ(agent.getPos())), slamID(1)
 {
 }

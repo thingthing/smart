@@ -36,8 +36,9 @@
 #include "JacobianMatriceJz.hh"
 #include "JacobianMatriceH.hh"
 #include "IAgent.hh"
+#include "event/Dispatcher.h"
 
-class   Slam
+class   Slam : public Utils::Dispatcher
 {
 public:
   /**

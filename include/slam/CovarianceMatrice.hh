@@ -53,7 +53,7 @@ public:
   CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
 
   void addLandmark(float x, float y, int slamId);
-  void addLandmark(pcl::PointXY const &pos, int slamId);
+
   void addLandmark(pcl::PointXYZ const &pos, int slamId);
   CovarianceMatrice(IAgent const &agent);
   virtual ~CovarianceMatrice();
