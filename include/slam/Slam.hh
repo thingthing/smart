@@ -69,7 +69,7 @@ public:
   *
   * @param newLandmarks New landmark extracted from the current mapping
   */
-  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent &agent);
+  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent *agent);
 
 private:
   Slam();
@@ -77,7 +77,7 @@ private:
 private:
   IAgent     *_agent;
   DataAssociation *_data;
-  KalmanGainMatrice _kg;
+  KalmanGainMatrice *_kg;
   SystemStateMatrice  *_state;
 
 public:
