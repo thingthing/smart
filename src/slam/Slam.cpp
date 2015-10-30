@@ -46,23 +46,16 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &a
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
 
-  this->addLandmarks(newLandmarks);
+  this->addLandmarks(newLandmarks, agent);
   this->dispatch("SendCloudEvent", cloud);
   this->dispatch("SendNewLandmarkEvent", newLandmarks);
 
-/*
 	//update the covariance for the agent
   this->_covariance->setRobotPosition(agent);
 	this->_covariance->step1RobotCovariance(*_jA);
-*/
- /* for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
-  {
-    ///@todo: Caculate kalman gain and uncertainity
-    ///@todo: Update state using kalman gain and uncertainity
-  }*/
 
 	//calculation of Kalman gain.
-	this->_kg.updateLandmark(this->_jH, this->_covariance);
+	this->_kg.updateLandmark(*this->_jH, *this->_covariance);
 
   agent.setPos(this->_state->getRobotPos());
   //After all, remove bad landmarks
@@ -83,6 +76,6 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
 
 		//first add raw values to the covariance, then do step 3, new landmarks update.
 		this->_covariance->addLandmark((*it)->pos, slamId);
-		this->_covariance->step3Covariance(this->_jXR, this->_jZ, this->_state, slamId);
+		this->_covariance->step3Covariance(*this->_jXR, *this->_jZ, *this->_state, slamId);
   }
 }

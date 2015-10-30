@@ -71,9 +71,10 @@ public:
 	void step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz, SystemStateMatrice stateM, int slamID);
 
 //private:
-  CovarianceMatrice(const CovarianceMatrice &);
+  //CovarianceMatrice(const CovarianceMatrice &);
   CovarianceMatrice &operator=(const CovarianceMatrice &);
 protected:
+	//matrice[y][x]; woops
   std::vector< std::vector<Case> > _matrice;
 
   /*

@@ -17,7 +17,7 @@ public:
 	const std::vector<double> &getMatrice() const;
 
 private:
-	JacobianMatriceJxr(const JacobianMatriceJxr &);
+	//JacobianMatriceJxr(const JacobianMatriceJxr &);
 	JacobianMatriceJxr &operator=(const JacobianMatriceJxr &);
 
 protected:

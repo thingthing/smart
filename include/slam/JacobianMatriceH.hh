@@ -38,7 +38,7 @@ public:
 	std::map<unsigned int, std::tuple<double,double,double,double>> matrice;
 
 //private:
-  JacobianMatriceH(const JacobianMatriceH &);
+  //JacobianMatriceH(const JacobianMatriceH &);
   JacobianMatriceH &operator=(const JacobianMatriceH &);
 
 

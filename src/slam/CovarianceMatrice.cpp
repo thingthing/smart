@@ -171,7 +171,7 @@ double CovarianceMatrice::getLandmarkXCovariance(int slamID) const
 		if (this->_matrice[i][i].getSlamID() == slamID)
 			return this->_matrice[i][i].getValue();
 	}
-	return 0.0;
+	return -1.0;
 }
 
 double CovarianceMatrice::getLandmarkYCovariance(int slamID) const
@@ -181,7 +181,7 @@ double CovarianceMatrice::getLandmarkYCovariance(int slamID) const
 		if (this->_matrice[i][i].getSlamID() == slamID)
 			return this->_matrice[i+1][i+1].getValue();
 	}
-	return 0.0;
+	return -1.0;
 }
 
 void CovarianceMatrice::setRobotPosition(float X, float Y, float theta)
@@ -228,28 +228,6 @@ void CovarianceMatrice::addLandmark(float x, float y, int slamId)
 }
 
 void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId)
-{
-  unsigned int oldSize = this->_matrice.size();
-  this->_matrice.resize(oldSize + 2);
-  for (unsigned int i = 0; i < oldSize + 2; ++i)
-    this->_matrice[i].resize(oldSize + 2);
-
-  // Two cases by landmark
-	//used to use (slamID * 2 + CovarianceMatrice::SIZEINIT) for index
-  unsigned int index = oldSize + 1;
-  this->_matrice[index][index].setValue(pos.x);
-  this->_matrice[index][index].setState(CovarianceMatrice::POSITION);
-	this->_matrice[index][index].setSlamID(slamId);
-
-  this->_matrice[index + 1][index + 1].setValue(pos.y);
-  this->_matrice[index + 1][index + 1].setState(CovarianceMatrice::POSITION);
-	this->_matrice[index + 1][index + 1].setSlamID(slamId);
-
-  this->_matrice[index][index + 1].setState(CovarianceMatrice::NOTUSED);
-  this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
-}
-
-void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId) 
 {
   unsigned int oldSize = this->_matrice.size();
   this->_matrice.resize(oldSize + 2);
@@ -332,10 +310,10 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 
 	//for the first three columns and 2j rows for the j landmarks
 		this->_matrice[j][0].setValue(APri.at(0));
-		this->_matrice[j][1].setValue(APri.at(1));
-		this->_matrice[j][2].setValue(APri.at(2));
-		this->_matrice[j+1][0].setValue(APri.at(3));
-		this->_matrice[j+1][1].setValue(APri.at(4));
+		this->_matrice[j][1].setValue(APri.at(2));
+		this->_matrice[j][2].setValue(APri.at(4));
+		this->_matrice[j+1][0].setValue(APri.at(1));
+		this->_matrice[j+1][1].setValue(APri.at(3));
 		this->_matrice[j+1][2].setValue(APri.at(5));
 	}
 
@@ -360,7 +338,7 @@ void CovarianceMatrice::step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJ
 	//JzRJz
 	// [X.0]
 	// [0.Y]
-	// the cases 1 and 2 might not be useless
+	// the cases #1 and #2 might not be useless
 	JzRJz[0] = JzR[0] * Jz.getMatrice().at(0) + JzR[1] * Jz.getMatrice().at(2);
 	//JzRJz[1] = JzR[0] * Jz[1] + JzR[1] * Jz[3];
 	//JzRJz[2] = JzR[2] * Jz[0] + JzR[3] * Jz[2];
