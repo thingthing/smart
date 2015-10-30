@@ -36,10 +36,11 @@ void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
 
 void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud)
 {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
-        std::cout << "    " << cloud.points[i].x
-                  << " "    << cloud.points[i].y
-                  << " "    << cloud.points[i].z << std::endl;
+    // To decomment to see the cloud to be send
+    // for (size_t i = 0; i < cloud.points.size (); ++i)
+    //     std::cout << "    " << cloud.points[i].x
+    //               << " "    << cloud.points[i].y
+    //               << " "    << cloud.points[i].z << std::endl;
 
     _factory.processData(cloud);
     int i = 0;
@@ -56,13 +57,14 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &
     }
     std::cerr << "Send cloud event " << i << std::endl;
 
-    Json::Value     reply;
+    //To uncomment if you want to send only one cloud
+    // Json::Value     reply;
 
-    reply["data"]["exit"] = 0;
-    reply["status"]["code"] = 0;
-    reply["status"]["message"] = "ok";
-    this->sendDataTcp(reply);
-    exit(1);
+    // reply["data"]["exit"] = 0;
+    // reply["status"]["code"] = 0;
+    // reply["status"]["message"] = "ok";
+    // this->sendDataTcp(reply);
+    // exit(1);
 }
 
 void        AgentProtocol::sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl)
