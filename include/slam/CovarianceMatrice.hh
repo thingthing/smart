@@ -53,7 +53,7 @@ public:
   CovarianceMatrice(pcl::PointXYZ const &pos, float theta);
 
   void addLandmark(float x, float y, int slamId);
-  void addLandmark(pcl::PointXY const &pos, int slamId);
+
   void addLandmark(pcl::PointXYZ const &pos, int slamId);
   CovarianceMatrice(IAgent const *agent);
 
@@ -72,9 +72,10 @@ public:
 	void step3Covariance(JacobianMatriceJxr &Jxr, JacobianMatriceJz &Jz, SystemStateMatrice &stateM, int slamID);
 
 //private:
-  CovarianceMatrice(const CovarianceMatrice &);
+  //CovarianceMatrice(const CovarianceMatrice &);
   CovarianceMatrice &operator=(const CovarianceMatrice &);
 protected:
+	//matrice[y][x]; woops
   std::vector< std::vector<Case> > _matrice;
 
   /*

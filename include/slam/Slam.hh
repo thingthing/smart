@@ -78,9 +78,9 @@ private:
   IAgent     *_agent;
   DataAssociation *_data;
   KalmanGainMatrice *_kg;
-  SystemStateMatrice  *_state;
 
 public:
+  SystemStateMatrice  *_state;
   Landmarks   *_landmarkDb;
 	JacobianMatriceA *_jA;
   JacobianMatriceJxr *_jXR;

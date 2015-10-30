@@ -21,7 +21,7 @@ public:
 	//values for <x,y> according to the bearing
 	std::pair<double,double> getJacobianBearing(unsigned int landmarkNumber) const;
 	//set the values of H for the specified landmark
-	void JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice const &stateM, double range);
+	void JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice stateM);
 
 	//Utilities
 	void deleteLandmark(unsigned int landmarkNumber);
@@ -38,7 +38,7 @@ public:
 	std::map<unsigned int, std::tuple<double,double,double,double>> matrice;
 
 //private:
-  JacobianMatriceH(const JacobianMatriceH &);
+  //JacobianMatriceH(const JacobianMatriceH &);
   JacobianMatriceH &operator=(const JacobianMatriceH &);
 
 

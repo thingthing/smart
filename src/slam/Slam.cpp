@@ -57,12 +57,6 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *a
   this->_covariance->setRobotPosition(agent);
 	this->_covariance->step1RobotCovariance(*_jA);
 
- /* for (std::vector<Landmarks::Landmark *>::iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
-  {
-    ///@todo: Caculate kalman gain and uncertainity
-    ///@todo: Update state using kalman gain and uncertainity
-  }*/
-
 	//calculation of Kalman gain.
 	//this->_kg->updateLandmark(*this->_jH, *this->_covariance);
 
@@ -75,16 +69,21 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
 {
 	this->_jXR->JacobiMath(agent);
 	this->_jZ->JacobiMath(agent);
+
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
     int landmarkId = this->_landmarkDb->addToDB(**it);
     int slamId = (int)this->_state->addLandmarkPosition((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
+
+		this->_jH->JacobiAdd(slamId, *this->_state);
+
     //By default assume that landmark is perfectly observed
-    //Add landmark to JacobianH
-    this->_jH->JacobiAdd(slamId, *this->_state, (*it)->range);
-		//first add raw values to the covariance, then do step 3, new landmarks update.
+    //this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
+
+		/*//first add raw values to the covariance, then do step 3, new landmarks update.
 		this->_covariance->addLandmark((*it)->pos, slamId);
+		//it is done in step 3, because, you knoz, it is part of step 3*/
 		this->_covariance->step3Covariance(*this->_jXR, *this->_jZ, *this->_state, slamId);
   }
 }
