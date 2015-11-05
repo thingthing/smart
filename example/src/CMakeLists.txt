@@ -1,0 +1,10 @@
+FOREACH(subDir ${IMPLEMENT_SUBDIR})
+  SET(dir "${CMAKE_CURRENT_SOURCE_DIR}/${subDir}")
+  MESSAGE(STATUS "Process Directory: ${dir}")
+  ADD_SUBDIRECTORY("${dir}")
+ENDFOREACH(subDir)
+
+SET(SOURCES
+  ${SOURCES}
+  PARENT_SCOPE
+  )

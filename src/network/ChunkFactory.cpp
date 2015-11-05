@@ -70,6 +70,7 @@ void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointClou
         _tmpChunk += metadataPacket + packet; // The Packet
         pushTmpChunkToChunks();
     }
+    ++_packetID;
 }
 
 // Getters

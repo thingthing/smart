@@ -1,5 +1,5 @@
-#ifndef   _CAPTURE_HH_
-# define  _CAPTURE_HH_
+#ifndef   _ICAPTURE_HH_
+# define  _ICAPTURE_HH_
 
 #include <string>
 
@@ -7,21 +7,21 @@
 #include <pcl-1.7/pcl/impl/point_types.hpp>
 #include <pcl-1.7/pcl/common/projection_matrix.h>
 
-class   Capture
+class   ICapture
 {
 public:
 
 
-  Capture();
-  ~Capture();
+  ICapture();
+  virtual ~ICapture();
 
   pcl::PointCloud<pcl::PointXYZ> const &getData() const;
-  pcl::PointCloud<pcl::PointXYZ> const &captureData();
+  virtual pcl::PointCloud<pcl::PointXYZ> const &captureData() = 0;
 
-private:
+protected:
   pcl::PointCloud<pcl::PointXYZ>          _cloud;
 
 };
 
 
-#endif    /* !_CAPTURE_HH_ */
+#endif    /* !_ICAPTURE_HH_ */
