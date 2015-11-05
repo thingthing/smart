@@ -29,6 +29,7 @@ private:
 
 protected:
 	std::map<unsigned int, std::pair<std::pair<double, double>,std::pair<double, double>>> matrice;
+	std::map<unsigned int, std::pair<std::pair<double, double>,std::pair<double, double>>> Robot;
 	std::pair<double, double> RobotX;
 	std::pair<double, double> RobotY;
 	std::pair<double, double> RobotTheta;

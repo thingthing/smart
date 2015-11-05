@@ -344,7 +344,7 @@ void CovarianceMatrice::step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJ
 	//JzRJz[2] = JzR[2] * Jz[0] + JzR[3] * Jz[2];
 	JzRJz[3] = JzR[2] * Jz.getMatrice().at(1) + JzR[3] * Jz.getMatrice().at(3);
 
-	//stateM + JzRJz
+	//Pn+1n+1 = stateM + JzRJz
 	this->_matrice[this->_matrice.size()-2][this->_matrice.size()-2].setValue(this->_matrice[this->_matrice.size()-2][this->_matrice.size()-2].getValue() + JzRJz[0]);
 	this->_matrice[this->_matrice.size()-1][this->_matrice.size()-1].setValue(this->_matrice[this->_matrice.size()-1][this->_matrice.size()-1].getValue() + JzRJz[3]);
 

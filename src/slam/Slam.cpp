@@ -78,9 +78,6 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
     //By default assume that landmark is perfectly observed
     //this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
 
-		/*//first add raw values to the covariance, then do step 3, new landmarks update.
-		this->_covariance->addLandmark((*it)->pos, slamId);
-		//it is done in step 3, because, you knoz, it is part of step 3*/
 		this->_covariance->step3Covariance(*this->_jXR, *this->_jZ, *this->_state, slamId);
   }
 }
