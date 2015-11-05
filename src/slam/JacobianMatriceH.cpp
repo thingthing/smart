@@ -34,13 +34,12 @@ void JacobianMatriceH::setRnBMatrice(unsigned int landmarkNumber, SystemStateMat
 
 std::pair<double, double> JacobianMatriceH::getRnBMatrice(unsigned int landmarkNumber) const
 {
-	        std::cerr << "JacobianMatriceH getRnBMatrice before" << std::endl;
 	return rnbMatrice.at(landmarkNumber);
 }
 
 	/*for each landmark there are 4 elements, the first two for the range(X & Y) and
 	the other two for the bearing(X & Y)*/
-void JacobianMatriceH::JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice stateM)
+void JacobianMatriceH::JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice const &stateM)
 {
 	//range between Robot and Landmark
 	double range = sqrt(pow(stateM.getRobotPos().x - stateM.getLandmarkXPosition(landmarkNumber), 2) + pow(stateM.getRobotPos().y - stateM.getLandmarkYPosition(landmarkNumber), 2));

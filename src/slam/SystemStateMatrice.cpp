@@ -30,6 +30,7 @@ SystemStateMatrice::~SystemStateMatrice()
 **/
 unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXYZ &position)
 {
+  this->matrice.resize(slamID + 1);
 	this->matrice[slamID] = pcl::PointXYZ(position);
   return (slamID++);
 }
@@ -39,6 +40,7 @@ unsigned int SystemStateMatrice::addLandmarkPosition(const pcl::PointXYZ &positi
 **/
 unsigned int SystemStateMatrice::addLandmarkPosition(float x, float y, float z)
 {
+  this->matrice.resize(slamID + 1);
 	this->matrice[slamID] = pcl::PointXYZ(x,y,z);
   return (slamID++);
 }
@@ -91,20 +93,16 @@ void SystemStateMatrice::setRobotState(IAgent const *agent)
 
 const pcl::PointXYZ &SystemStateMatrice::getPosition(unsigned int landmarkNumber) const
 {
-  std::cerr << "SystemStateMatrice getPosition" << std::endl;
   return (this->matrice.at(landmarkNumber));
 }
 
 float SystemStateMatrice::getLandmarkXPosition(unsigned int landmarkNumber) const
 {
-    std::cerr << "SystemStateMatrice getLandmarkXPosition" << std::endl;
-
   return (this->matrice.at(landmarkNumber).x);
 }
 
 float SystemStateMatrice::getLandmarkYPosition(unsigned int landmarkNumber) const
 {
-    std::cerr << "SystemStateMatrice getLandmarkYPosition" << std::endl;
   return (this->matrice.at(landmarkNumber).y);
 }
 

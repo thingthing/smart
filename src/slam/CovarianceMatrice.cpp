@@ -254,7 +254,6 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 	//Step1
 	//Prr = A * Prr * A + Q
 
-  std::cerr << "Step1 robot covariance before PRR" << std::endl;
 	std::vector<double> Prr(9,0);
 	Prr.at(0) = JA.getMatrice().at(0) * this->_matrice[0][0].getValue() + JA.getMatrice().at(1) * this->_matrice[1][0].getValue() + JA.getMatrice().at(2) * this->_matrice[2][0].getValue();
 	Prr.at(1) = JA.getMatrice().at(0) * this->_matrice[0][1].getValue() + JA.getMatrice().at(1) * this->_matrice[1][1].getValue() + JA.getMatrice().at(2) * this->_matrice[2][1].getValue();
@@ -266,7 +265,6 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 	Prr.at(7) = JA.getMatrice().at(6) * this->_matrice[0][1].getValue() + JA.getMatrice().at(7) * this->_matrice[1][1].getValue() + JA.getMatrice().at(8) * this->_matrice[2][1].getValue();
 	Prr.at(8) = JA.getMatrice().at(6) * this->_matrice[0][2].getValue() + JA.getMatrice().at(7) * this->_matrice[1][2].getValue() + JA.getMatrice().at(8) * this->_matrice[2][2].getValue();
 
-  std::cerr << "Step1 robot covariance before APRRA" << std::endl;
 	std::vector<double> APrrA(9,0);
 	APrrA.at(0) = Prr.at(0) * JA.getMatrice().at(0) + Prr.at(1) * JA.getMatrice().at(3) + Prr.at(2) * JA.getMatrice().at(6);
 	APrrA.at(1) = Prr.at(0) * JA.getMatrice().at(1) + Prr.at(1) * JA.getMatrice().at(4) + Prr.at(2) * JA.getMatrice().at(7);
@@ -278,7 +276,6 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 	APrrA.at(7) = Prr.at(6) * JA.getMatrice().at(1) + Prr.at(7) * JA.getMatrice().at(4) + Prr.at(8) * JA.getMatrice().at(7);
 	APrrA.at(8) = Prr.at(6) * JA.getMatrice().at(2) + Prr.at(7) * JA.getMatrice().at(5) + Prr.at(8) * JA.getMatrice().at(8);
 
-  std::cerr << "Step1 robot covariance before Noise" << std::endl;
 	//need to add noise Q to APrrA
 	float Q = 0.0;
 	this->_matrice[0][0].setValue(APrrA.at(0)+Q);
@@ -291,7 +288,6 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 	this->_matrice[2][1].setValue(APrrA.at(7)+Q);
 	this->_matrice[2][2].setValue(APrrA.at(8)+Q);
 
-    std::cerr << "Step1 robot covariance before APRi" << std::endl;
 	//Pri = A * Pri
 	//Pri is the 3 first rows of the covariance matrice and the 2j columns for the j landmarks
 	std::vector<double> APri(6,0);
@@ -320,8 +316,6 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 		this->_matrice[j+1][1].setValue(APri.at(3));
 		this->_matrice[j+1][2].setValue(APri.at(5));
 	}
-
-    std::cerr << "Step1 robot covariance after APRi" << std::endl;
 
 }
 
