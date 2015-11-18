@@ -18,6 +18,8 @@ void KalmanGainMatrice::updateLandmark(JacobianMatriceH MatriceH, CovarianceMatr
 	std::pair <double,double> tempY;
 	std::pair <double,double> tempRX;
 	std::pair <double,double> tempRY;
+	double HJRX, HJBX, CRX, HJRY, HJBY, CRY;
+	double CLX, CLY;
 
 	this->RobotTheta = std::make_pair(0, pow(MatriceC.getRobotTheta(),2.0) * (-1));
 
@@ -27,30 +29,30 @@ void KalmanGainMatrice::updateLandmark(JacobianMatriceH MatriceH, CovarianceMatr
 
 		//Robot gain for this landmark
 		//X for the robot; range and bearing
-		tempRX = std::make_pair( (MatriceC.getRobotX() * (-std::get<0>(MatriceH.getJacobianRange(it->first)))) *
-		(-std::get<0>(MatriceH.getJacobianRange(it->first)) * MatriceC.getRobotX() * (-std::get<0>(MatriceH.getJacobianRange(it->first))))
-		, (MatriceC.getRobotX() * (-std::get<0>(MatriceH.getJacobianBearing(it->first)))) *
-		(-std::get<0>(MatriceH.getJacobianBearing(it->first)) * MatriceC.getRobotX() * (-std::get<0>(MatriceH.getJacobianBearing(it->first)))) );
+		HJRX = -std::get<0>(MatriceH.getJacobianRange(it->first));
+		HJBX = -std::get<0>(MatriceH.getJacobianBearing(it->first));
+		CRX = MatriceC.getRobotX();
+
+		tempRX = std::make_pair((CRX * HJRX) * (HJRX * CRX * HJRX), (CRX * HJBX) * (HJBX * CRX * HJBX));
 
 		//Y for the robot; range and bearing
-		tempRY = std::make_pair( (MatriceC.getRobotY() * (-std::get<1>(MatriceH.getJacobianRange(it->first)))) *
-		(-std::get<1>(MatriceH.getJacobianRange(it->first)) * MatriceC.getRobotY() * (-std::get<1>(MatriceH.getJacobianRange(it->first))))
-		, (MatriceC.getRobotY() * (-std::get<1>(MatriceH.getJacobianBearing(it->first)))) *
-		(-std::get<1>(MatriceH.getJacobianBearing(it->first)) * MatriceC.getRobotY() * (-std::get<0>(MatriceH.getJacobianBearing(it->first)))) );
+		HJRY = -std::get<1>(MatriceH.getJacobianRange(it->first));
+		HJBY = -std::get<1>(MatriceH.getJacobianBearing(it->first));
+		CRY = MatriceC.getRobotY();
+
+		tempRY = std::make_pair((CRY * HJRY) * (HJRY * CRY * HJRY), (CRY * HJBY) * (HJBY * CRY * HJBY));
 
 		this->Robot[it->first] = std::make_pair(tempRX, tempRY);
 
-		//X range and bearing
-		tempX = std::make_pair( (MatriceC.getLandmarkXCovariance(it->first) * std::get<0>(MatriceH.getJacobianRange(it->first))) *
-		(std::get<0>(MatriceH.getJacobianRange(it->first)) * MatriceC.getLandmarkXCovariance(it->first) * std::get<0>(MatriceH.getJacobianRange(it->first)))
-		,(MatriceC.getLandmarkXCovariance(it->first) * std::get<0>(MatriceH.getJacobianBearing(it->first))) *
-		(std::get<0>(MatriceH.getJacobianBearing(it->first)) * MatriceC.getLandmarkXCovariance(it->first) * std::get<0>(MatriceH.getJacobianBearing(it->first))) );
+		//X range and bearing for the landmark
+		CLX = MatriceC.getLandmarkXCovariance(it->first);
 
-		//Y range and bearing
-		tempY = std::make_pair( (MatriceC.getLandmarkYCovariance(it->first) * std::get<1>(MatriceH.getJacobianRange(it->first))) *
-		(std::get<1>(MatriceH.getJacobianRange(it->first)) * MatriceC.getLandmarkYCovariance(it->first) * std::get<1>(MatriceH.getJacobianRange(it->first)))
-		,(MatriceC.getLandmarkYCovariance(it->first) * std::get<1>(MatriceH.getJacobianBearing(it->first))) *
-		(std::get<1>(MatriceH.getJacobianBearing(it->first)) * MatriceC.getLandmarkYCovariance(it->first) * std::get<1>(MatriceH.getJacobianBearing(it->first))) );
+		tempX = std::make_pair((CLX * (-HJRX)) * ((-HJRX) * CLX * (-HJRX)), (CLX * (-HJBX)) * ((-HJBX) * CLX * (-HJBX)));
+
+		//Y range and bearing for the landmark
+		CLY = MatriceC.getLandmarkYCovariance(it->first); 
+
+		tempY = std::make_pair((CLY * (-HJRY)) * ((-HJRY) * CLY * (-HJRY)), (CLY * (-HJBY)) * ((-HJBY) * CLY * (-HJBY)));
 
 		//landmark gain for X(range, bearing) and Y(range, bearing)
 		this->matrice[it->first] = std::make_pair(tempX, tempY);
