@@ -23,7 +23,7 @@ public:
   void updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z);
   void updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXYZ &position);
   void updateRobotState(IAgent const *agent);
-  void setRobotState(IAgent const *);
+  void setRobotState(IAgent *);
 
   const pcl::PointXYZ getPosition(unsigned int landmarkNumber);
   float getLandmarkXPosition(unsigned int landmarkNumber);
