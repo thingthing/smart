@@ -18,7 +18,7 @@ public:
 
   void eraseLandmark(unsigned int landmarkNumber);
   void refresh(const std::vector<Landmarks *> &landmarks, double x, double y, double theta);
-  void updateLandmark(JacobianMatriceH MatriceH, CovarianceMatrice MatriceC);
+  void updateLandmark(JacobianMatriceH const &MatriceH, CovarianceMatrice const &MatriceC);
 
 	const std::pair<double, double> getXLandmarkKalmanGain(unsigned int landmarkNumber) const;
   const std::pair<double, double> getYLandmarkKalmanGain(unsigned int landmarkNumber) const;

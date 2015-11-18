@@ -53,15 +53,15 @@ CovarianceMatrice::CovarianceMatrice()
     this->_matrice[i].resize(CovarianceMatrice::SIZEINIT);
   this->_matrice[0][0].setState(CovarianceMatrice::POSITION);
   this->_matrice[0][0].setValue(0.0);
-	this->_matrice[0][0].setSlamID(ROBOTID);
+  this->_matrice[0][0].setSlamID(ROBOTID);
 
   this->_matrice[1][1].setState(CovarianceMatrice::POSITION);
   this->_matrice[1][1].setValue(0.0);
-	this->_matrice[1][1].setSlamID(ROBOTID);
+  this->_matrice[1][1].setSlamID(ROBOTID);
 
   this->_matrice[2][2].setState(CovarianceMatrice::POSITION);
   this->_matrice[2][2].setValue(0.0);
-	this->_matrice[2][2].setSlamID(ROBOTID);
+  this->_matrice[2][2].setSlamID(ROBOTID);
 
   this->_matrice[0][1].setState(CovarianceMatrice::NOTUSED);
   this->_matrice[0][2].setState(CovarianceMatrice::NOTUSED);
@@ -78,15 +78,15 @@ CovarianceMatrice::CovarianceMatrice(float X, float Y, float theta)
     this->_matrice[i].resize(CovarianceMatrice::SIZEINIT);
   this->_matrice[0][0].setState(CovarianceMatrice::POSITION);
   this->_matrice[0][0].setValue(X);
-	this->_matrice[0][0].setSlamID(ROBOTID);
+  this->_matrice[0][0].setSlamID(ROBOTID);
 
   this->_matrice[1][1].setState(CovarianceMatrice::POSITION);
   this->_matrice[1][1].setValue(Y);
-	this->_matrice[1][1].setSlamID(ROBOTID);
+  this->_matrice[1][1].setSlamID(ROBOTID);
 
   this->_matrice[2][2].setState(CovarianceMatrice::POSITION);
   this->_matrice[2][2].setValue(theta);
-	this->_matrice[2][2].setSlamID(ROBOTID);
+  this->_matrice[2][2].setSlamID(ROBOTID);
 
   this->_matrice[0][1].setState(CovarianceMatrice::NOTUSED);
   this->_matrice[0][2].setState(CovarianceMatrice::NOTUSED);
@@ -98,20 +98,20 @@ CovarianceMatrice::CovarianceMatrice(float X, float Y, float theta)
 
 CovarianceMatrice::CovarianceMatrice(pcl::PointXYZ const &pos, float theta)
 {
-    this->_matrice.resize(CovarianceMatrice::SIZEINIT);
+  this->_matrice.resize(CovarianceMatrice::SIZEINIT);
   for (unsigned int i = 0 ; i < CovarianceMatrice::SIZEINIT; ++i)
     this->_matrice[i].resize(CovarianceMatrice::SIZEINIT);
   this->_matrice[0][0].setState(CovarianceMatrice::POSITION);
   this->_matrice[0][0].setValue(pos.x);
-	this->_matrice[0][0].setSlamID(ROBOTID);
+  this->_matrice[0][0].setSlamID(ROBOTID);
 
   this->_matrice[1][1].setState(CovarianceMatrice::POSITION);
   this->_matrice[1][1].setValue(pos.y);
-	this->_matrice[1][1].setSlamID(ROBOTID);
+  this->_matrice[1][1].setSlamID(ROBOTID);
 
   this->_matrice[2][2].setState(CovarianceMatrice::POSITION);
   this->_matrice[2][2].setValue(theta);
-	this->_matrice[2][2].setSlamID(ROBOTID);
+  this->_matrice[2][2].setSlamID(ROBOTID);
 
   this->_matrice[0][1].setState(CovarianceMatrice::NOTUSED);
   this->_matrice[0][2].setState(CovarianceMatrice::NOTUSED);
@@ -121,22 +121,22 @@ CovarianceMatrice::CovarianceMatrice(pcl::PointXYZ const &pos, float theta)
   this->_matrice[2][1].setState(CovarianceMatrice::NOTUSED);
 }
 
-CovarianceMatrice::CovarianceMatrice(IAgent const &agent)
+CovarianceMatrice::CovarianceMatrice(IAgent const *agent)
 {
-    this->_matrice.resize(CovarianceMatrice::SIZEINIT);
+  this->_matrice.resize(CovarianceMatrice::SIZEINIT);
   for (unsigned int i = 0 ; i < CovarianceMatrice::SIZEINIT; ++i)
     this->_matrice[i].resize(CovarianceMatrice::SIZEINIT);
   this->_matrice[0][0].setState(CovarianceMatrice::POSITION);
-  this->_matrice[0][0].setValue(agent.getPos().x);
-	this->_matrice[0][0].setSlamID(ROBOTID);
+  this->_matrice[0][0].setValue(agent->getPos().x);
+  this->_matrice[0][0].setSlamID(ROBOTID);
 
   this->_matrice[1][1].setState(CovarianceMatrice::POSITION);
-  this->_matrice[1][1].setValue(agent.getPos().y);
-	this->_matrice[1][1].setSlamID(ROBOTID);
+  this->_matrice[1][1].setValue(agent->getPos().y);
+  this->_matrice[1][1].setSlamID(ROBOTID);
 
   this->_matrice[2][2].setState(CovarianceMatrice::POSITION);
-  this->_matrice[2][2].setValue(agent.getBearing());
-	this->_matrice[2][2].setSlamID(ROBOTID);
+  this->_matrice[2][2].setValue(agent->getBearing());
+  this->_matrice[2][2].setSlamID(ROBOTID);
 
   this->_matrice[0][1].setState(CovarianceMatrice::NOTUSED);
   this->_matrice[0][2].setState(CovarianceMatrice::NOTUSED);
@@ -198,11 +198,11 @@ void CovarianceMatrice::setRobotPosition(pcl::PointXYZ const &pos, float theta)
   this->_matrice[2][2].setValue(theta);
 }
 
-void CovarianceMatrice::setRobotPosition(IAgent const &agent)
+void CovarianceMatrice::setRobotPosition(IAgent const *agent)
 {
-  this->_matrice[0][0].setValue(agent.getPos().x);
-  this->_matrice[1][1].setValue(agent.getPos().y);
-  this->_matrice[2][2].setValue(agent.getBearing());
+  this->_matrice[0][0].setValue(agent->getPos().x);
+  this->_matrice[1][1].setValue(agent->getPos().y);
+  this->_matrice[2][2].setValue(agent->getBearing());
 }
 
 void CovarianceMatrice::addLandmark(float x, float y, int slamId)
@@ -213,15 +213,15 @@ void CovarianceMatrice::addLandmark(float x, float y, int slamId)
     this->_matrice[i].resize(oldSize + 2);
 
   // Two cases by landmark
-	//used to use (slamID * 2 + CovarianceMatrice::SIZEINIT) for index
-  unsigned int index = oldSize + 1;
+  //used to use (slamID * 2 + CovarianceMatrice::SIZEINIT) for index
+  unsigned int index = oldSize;
   this->_matrice[index][index].setValue(x);
   this->_matrice[index][index].setState(CovarianceMatrice::POSITION);
-	this->_matrice[index][index].setSlamID(slamId);
+  this->_matrice[index][index].setSlamID(slamId);
 
   this->_matrice[index + 1][index + 1].setValue(y);
   this->_matrice[index + 1][index + 1].setState(CovarianceMatrice::POSITION);
-	this->_matrice[index + 1][index + 1].setSlamID(slamId);
+  this->_matrice[index + 1][index + 1].setSlamID(slamId);
 
   this->_matrice[index][index + 1].setState(CovarianceMatrice::NOTUSED);
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
@@ -235,15 +235,15 @@ void CovarianceMatrice::addLandmark(pcl::PointXYZ const &pos, int slamId)
     this->_matrice[i].resize(oldSize + 2);
 
   // Two cases by landmark
-	//used to use (slamID * 2 + CovarianceMatrice::SIZEINIT) for index
-  unsigned int index = oldSize + 1;
+  //used to use (slamID * 2 + CovarianceMatrice::SIZEINIT) for index
+  unsigned int index = oldSize;
   this->_matrice[index][index].setValue(pos.x);
   this->_matrice[index][index].setState(CovarianceMatrice::POSITION);
-	this->_matrice[index][index].setSlamID(slamId);
+  this->_matrice[index][index].setSlamID(slamId);
 
   this->_matrice[index + 1][index + 1].setValue(pos.y);
   this->_matrice[index + 1][index + 1].setState(CovarianceMatrice::POSITION);
-	this->_matrice[index + 1][index + 1].setSlamID(slamId);
+  this->_matrice[index + 1][index + 1].setSlamID(slamId);
 
   this->_matrice[index][index + 1].setState(CovarianceMatrice::NOTUSED);
   this->_matrice[index + 1][index].setState(CovarianceMatrice::NOTUSED);
@@ -319,7 +319,7 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 
 }
 
-void CovarianceMatrice::step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz, SystemStateMatrice stateM, int slamID)
+void CovarianceMatrice::step3Covariance(JacobianMatriceJxr &Jxr, JacobianMatriceJz &Jz, SystemStateMatrice &stateM, int slamID)
 {
 	std::vector<double> R(4,0);
 	std::vector<double> JzR(4,0);

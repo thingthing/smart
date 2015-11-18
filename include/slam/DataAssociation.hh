@@ -37,7 +37,7 @@ public:
   * @param[out] resultLandmarks New landmark extracted from current mapping
   * @param[out] reobservedLandmarks Reobserved landmark extracted from current mapping
   */
-  void validationGate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const &agent, std::vector<Landmarks::Landmark *> &resultLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
+  void validationGate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent, std::vector<Landmarks::Landmark *> &resultLandmarks, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
   /**
    * @brief Set id and timeObserved for landamark base on closer landmark in db
    * 

@@ -55,7 +55,8 @@ public:
   void addLandmark(float x, float y, int slamId);
 
   void addLandmark(pcl::PointXYZ const &pos, int slamId);
-  CovarianceMatrice(IAgent const &agent);
+  CovarianceMatrice(IAgent const *agent);
+
   virtual ~CovarianceMatrice();
 
   float getRobotX() const;
@@ -66,9 +67,9 @@ public:
 
   void setRobotPosition(float X, float Y, float theta);
   void setRobotPosition(pcl::PointXYZ const &pos, float theta);
-  void setRobotPosition(IAgent const &agent);
+  void setRobotPosition(IAgent const *agent);
   void step1RobotCovariance(JacobianMatriceA &JA);
-	void step3Covariance(JacobianMatriceJxr Jxr, JacobianMatriceJz Jz, SystemStateMatrice stateM, int slamID);
+	void step3Covariance(JacobianMatriceJxr &Jxr, JacobianMatriceJz &Jz, SystemStateMatrice &stateM, int slamID);
 
 //private:
   //CovarianceMatrice(const CovarianceMatrice &);

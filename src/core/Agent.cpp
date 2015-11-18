@@ -65,7 +65,8 @@ pcl::PointXYZ   const   &Agent::getGoalPos() const
 
 pcl::PointCloud<pcl::PointXYZ> const &Agent::takeData()
 {
-  return (this->_capture.captureData());
+  static pcl::PointCloud<pcl::PointXYZ> cloud = this->_capture.captureData();
+  return cloud;
 }
 
 

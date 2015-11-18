@@ -44,6 +44,7 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &
     }
 }
 
+
 void        AgentProtocol::sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl)
 {
     _factory.processData(nl);
@@ -215,5 +216,10 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
 
 void        AgentProtocol::disconnectEvent()
 {
+    Json::Value     reply;
 
+    reply["data"]["exit"] = 0;
+    reply["status"]["code"] = 0;
+    reply["status"]["message"] = "ok";
+    this->sendDataTcp(reply);
 }

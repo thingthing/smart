@@ -5,12 +5,13 @@ Slam::Slam(IAgent *agent)
   this->_agent = agent;
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
   this->_data = new DataAssociation(this->_landmarkDb);
-  this->_state = new SystemStateMatrice(*agent);
-  this->_covariance = new CovarianceMatrice(agent->getPos().x, agent->getPos().y, agent->getBearing());
-	this->_jA = new JacobianMatriceA();
-	this->_jXR = new JacobianMatriceJxr();
-	this->_jZ = new JacobianMatriceJz();
-	this->_jH = new JacobianMatriceH();
+  this->_state = new SystemStateMatrice(agent);
+  this->_covariance = new CovarianceMatrice(agent);
+  this->_jA = new JacobianMatriceA();
+  this->_jXR = new JacobianMatriceJxr();
+  this->_jZ = new JacobianMatriceJz();
+  this->_jH = new JacobianMatriceH();
+  this->_kg = new KalmanGainMatrice();
 }
 
 Slam::~Slam()
@@ -23,17 +24,19 @@ Slam::~Slam()
     delete this->_state;
   if (this->_covariance)
     delete this->_covariance;
-	if (this->_jA)
-		delete this->_jA;
-	if (this->_jXR)
-		delete this->_jXR;
-	if (this->_jZ)
-		delete this->_jZ;
-	if (this->_jH)
-		delete this->_jH;
+  if (this->_jA)
+    delete this->_jA;
+  if (this->_jXR)
+    delete this->_jXR;
+  if (this->_jZ)
+    delete this->_jZ;
+  if (this->_jH)
+    delete this->_jH;
+  if (this->_kg)
+    delete this->_kg;
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent)
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent)
 {
   //Update state using odometry
   this->_state->setRobotState(agent);
@@ -45,17 +48,18 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &a
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
   this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
-
   this->addLandmarks(newLandmarks, agent);
-  this->dispatch("SendCloudEvent", cloud);
-  this->dispatch("SendNewLandmarkEvent", newLandmarks);
 
-	//update the covariance for the agent
+  // this->dispatch("SendCloudEvent", cloud);
+  // this->dispatch("SendNewLandmarkEvent", newLandmarks);
+
+  //update the covariance for the agent
   this->_covariance->setRobotPosition(agent);
-	this->_covariance->step1RobotCovariance(*_jA);
+  this->_covariance->step1RobotCovariance(*_jA);
 
-	//calculation of Kalman gain.
-	this->_kg.updateLandmark(*this->_jH, *this->_covariance);
+  //calculation of Kalman gain.
+  this->_kg->updateLandmark(*this->_jH, *this->_covariance);
+
 
 	//apply kalman gain to system state matrix and agent
 	std::map<unsigned int, pcl::PointXYZ>::iterator it;
@@ -67,14 +71,15 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &a
 	this->_state->setRobotState(*this->_agent);
 
   agent.setPos(this->_state->getRobotPos());
+
   //After all, remove bad landmarks
-  this->_landmarkDb->removeBadLandmarks(cloud, agent);
+  //this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
-void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent &agent)
+void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent *agent)
 {
-	this->_jXR->JacobiMath(agent);
-	this->_jZ->JacobiMath(agent);
+  this->_jXR->JacobiMath(agent);
+  this->_jZ->JacobiMath(agent);
 
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
@@ -82,11 +87,13 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
     int slamId = (int)this->_state->addLandmarkPosition((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
 
-		this->_jH->JacobiAdd(slamId, *this->_state);
+    this->_jH->JacobiAdd(slamId, *this->_state);
 
     //By default assume that landmark is perfectly observed
     //this->_kg.addLandmark(std::make_pair(0.0, 0.0), std::make_pair(0.0, 0.0), slamId);
 
+
 		this->_covariance->step3Covariance(*this->_jXR, *this->_jZ, *this->_state, slamId);
+
   }
 }

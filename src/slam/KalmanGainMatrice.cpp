@@ -8,11 +8,11 @@ KalmanGainMatrice::~KalmanGainMatrice()
 
 void KalmanGainMatrice::eraseLandmark(unsigned int landmarkNumber)
 {
-  this->matrice.erase(landmarkNumber);
-  this->matrice.erase(landmarkNumber);
+	this->matrice.erase(landmarkNumber);
+	this->matrice.erase(landmarkNumber);
 }
 
-void KalmanGainMatrice::updateLandmark(JacobianMatriceH MatriceH, CovarianceMatrice MatriceC)
+void KalmanGainMatrice::updateLandmark(JacobianMatriceH const &MatriceH, CovarianceMatrice const &MatriceC)
 {
 	std::pair <double,double> tempX;
 	std::pair <double,double> tempY;
@@ -21,9 +21,9 @@ void KalmanGainMatrice::updateLandmark(JacobianMatriceH MatriceH, CovarianceMatr
 	double HJRX, HJBX, CRX, HJRY, HJBY, CRY;
 	double CLX, CLY;
 
-	this->RobotTheta = std::make_pair(0, pow(MatriceC.getRobotTheta(),2.0) * (-1));
+	// this->RobotTheta = std::make_pair(0, pow(MatriceC.getRobotTheta(), 2.0) * (-1));
 
-	std::map<unsigned int, std::tuple<double,double,double,double>>::iterator it;
+	std::map<unsigned int, std::tuple<double, double, double, double>>::const_iterator it;
 
 	for (it = MatriceH.matrice.begin(); it != MatriceH.matrice.end(); ++it) {
 
@@ -54,6 +54,7 @@ void KalmanGainMatrice::updateLandmark(JacobianMatriceH MatriceH, CovarianceMatr
 
 		tempY = std::make_pair((CLY * (-HJRY)) * ((-HJRY) * CLY * (-HJRY)), (CLY * (-HJBY)) * ((-HJBY) * CLY * (-HJBY)));
 
+
 		//landmark gain for X(range, bearing) and Y(range, bearing)
 		this->matrice[it->first] = std::make_pair(tempX, tempY);
 	}
@@ -78,12 +79,12 @@ void KalmanGainMatrice::updateLandmark(JacobianMatriceH MatriceH, CovarianceMatr
 
 const std::pair<double, double> KalmanGainMatrice::getXLandmarkKalmanGain(unsigned int landmarkNumber) const
 {
-std::pair<double,double> pairing = std::get<0>(this->matrice.at(landmarkNumber));
-  return pairing;
+	std::pair<double, double> pairing = std::get<0>(this->matrice.at(landmarkNumber));
+	return pairing;
 }
 
 const std::pair<double, double> KalmanGainMatrice::getYLandmarkKalmanGain(unsigned int landmarkNumber) const
 {
-std::pair<double,double> pairing = std::get<1>(this->matrice.at(landmarkNumber));
-  return pairing;
+	std::pair<double, double> pairing = std::get<1>(this->matrice.at(landmarkNumber));
+	return pairing;
 }
