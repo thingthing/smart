@@ -57,6 +57,15 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &a
 	//calculation of Kalman gain.
 	this->_kg.updateLandmark(*this->_jH, *this->_covariance);
 
+	//apply kalman gain to system state matrix and agent
+	std::map<unsigned int, pcl::PointXYZ>::iterator it;
+
+	for (it = _state->getMatrice().begin(); it != _state->getMatrice().end(); ++it) {
+		this->_state->moveLandmarkPosition(it->first, std::get<0>(_kg.getXLandmarkKalmanGain(it->first)), std::get<0>(_kg.getYLandmarkKalmanGain(it->first)), 0);
+	}
+	this->_agent->setPos(agent.getPos().x + _state->getRobotPos().x, agent.getPos().y + _state->getRobotPos().y, agent.getPos().z);
+	this->_state->setRobotState(*this->_agent);
+
   agent.setPos(this->_state->getRobotPos());
   //After all, remove bad landmarks
   this->_landmarkDb->removeBadLandmarks(cloud, agent);

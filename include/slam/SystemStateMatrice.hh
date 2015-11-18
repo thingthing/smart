@@ -19,25 +19,27 @@ public:
 
   unsigned int addLandmarkPosition(const pcl::PointXYZ &position);
   unsigned int addLandmarkPosition(float x, float y, float z);
+	void moveLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z);
   void updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z);
   void updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXYZ &position);
   void updateRobotState(IAgent const &agent);
   void setRobotState(IAgent const &);
 
-  const pcl::PointXYZ &getPosition(unsigned int landmarkNumber) const;
-  float getLandmarkXPosition(unsigned int landmarkNumber) const;
-  float getLandmarkYPosition(unsigned int landmarkNumber) const;
+  const pcl::PointXYZ getPosition(unsigned int landmarkNumber);
+  float getLandmarkXPosition(unsigned int landmarkNumber);
+  float getLandmarkYPosition(unsigned int landmarkNumber);
   pcl::PointXYZ const &getRobotPos() const;
   float getRobotTeta() const;
 	pcl::PointXYZ const &getRobotOldPos() const;
   float getRobotOldTeta() const;
+	std::map<unsigned int, pcl::PointXYZ> getMatrice();
 
 protected:
   float tetaRobot, oldTetaRobot;
   pcl::PointXYZ posRobot;
 	pcl::PointXYZ oldPosRobot;
 	unsigned int slamID;
-  std::vector<pcl::PointXYZ> matrice;
+  std::map<unsigned int, pcl::PointXYZ> matrice;
 
 };
 

@@ -43,24 +43,26 @@ unsigned int SystemStateMatrice::addLandmarkPosition(float x, float y, float z)
   return (slamID++);
 }
 
+//to apply kalman gain
+void SystemStateMatrice::moveLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z)
+{
+	this->matrice[landmarkNumber].x = this->matrice[landmarkNumber].x + x;
+	this->matrice[landmarkNumber].y = this->matrice[landmarkNumber].y + y;
+	this->matrice[landmarkNumber].z = this->matrice[landmarkNumber].z + z;
+}
+
 void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, float x, float y, float z)
 {
-  if (landmarkNumber < this->matrice.size())
-    {
       this->matrice[landmarkNumber].x = x;
       this->matrice[landmarkNumber].y = y;
       this->matrice[landmarkNumber].z = z;
-    }
 }
 
 void SystemStateMatrice::updateLandmarkPosition(unsigned int landmarkNumber, const pcl::PointXYZ &position)
 {
-    if (landmarkNumber < this->matrice.size())
-    {
       this->matrice[landmarkNumber].x = position.x;
       this->matrice[landmarkNumber].y = position.y;
       this->matrice[landmarkNumber].z = position.z;
-    }
 }
 
 void SystemStateMatrice::updateRobotState(IAgent const &agent)
@@ -89,17 +91,17 @@ void SystemStateMatrice::setRobotState(IAgent const &agent)
   this->tetaRobot = agent.getBearing();
 }
 
-const pcl::PointXYZ &SystemStateMatrice::getPosition(unsigned int landmarkNumber) const
+const pcl::PointXYZ SystemStateMatrice::getPosition(unsigned int landmarkNumber)
 {
   return (this->matrice[landmarkNumber]);
 }
 
-float SystemStateMatrice::getLandmarkXPosition(unsigned int landmarkNumber) const
+float SystemStateMatrice::getLandmarkXPosition(unsigned int landmarkNumber)
 {
   return (this->matrice[landmarkNumber].x);
 }
 
-float SystemStateMatrice::getLandmarkYPosition(unsigned int landmarkNumber) const
+float SystemStateMatrice::getLandmarkYPosition(unsigned int landmarkNumber)
 {
   return (this->matrice[landmarkNumber].y);
 }
@@ -122,4 +124,9 @@ pcl::PointXYZ const &SystemStateMatrice::getRobotOldPos() const
 float SystemStateMatrice::getRobotOldTeta() const
 {
   return (this->oldTetaRobot);
+}
+
+std::map<unsigned int, pcl::PointXYZ> SystemStateMatrice::getMatrice()
+{
+	return this->matrice;
 }
