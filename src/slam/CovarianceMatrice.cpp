@@ -253,28 +253,28 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 {
 	//Step1
 	//Prr = A * Prr * A + Q
-
+	std::vector<double> tempJA = JA.getMatrice();
 	std::vector<double> Prr(9,0);
-	Prr.at(0) = JA.getMatrice().at(0) * this->_matrice[0][0].getValue() + JA.getMatrice().at(1) * this->_matrice[1][0].getValue() + JA.getMatrice().at(2) * this->_matrice[2][0].getValue();
-	Prr.at(1) = JA.getMatrice().at(0) * this->_matrice[0][1].getValue() + JA.getMatrice().at(1) * this->_matrice[1][1].getValue() + JA.getMatrice().at(2) * this->_matrice[2][1].getValue();
-	Prr.at(2) = JA.getMatrice().at(0) * this->_matrice[0][2].getValue() + JA.getMatrice().at(1) * this->_matrice[1][2].getValue() + JA.getMatrice().at(2) * this->_matrice[2][2].getValue();
-	Prr.at(3) = JA.getMatrice().at(3) * this->_matrice[0][0].getValue() + JA.getMatrice().at(4) * this->_matrice[1][0].getValue() + JA.getMatrice().at(5) * this->_matrice[2][0].getValue();
-	Prr.at(4) = JA.getMatrice().at(3) * this->_matrice[0][1].getValue() + JA.getMatrice().at(4) * this->_matrice[1][1].getValue() + JA.getMatrice().at(5) * this->_matrice[2][1].getValue();
-	Prr.at(5) = JA.getMatrice().at(3) * this->_matrice[0][2].getValue() + JA.getMatrice().at(4) * this->_matrice[1][2].getValue() + JA.getMatrice().at(5) * this->_matrice[2][2].getValue();
-	Prr.at(6) = JA.getMatrice().at(6) * this->_matrice[0][0].getValue() + JA.getMatrice().at(7) * this->_matrice[1][0].getValue() + JA.getMatrice().at(8) * this->_matrice[2][0].getValue();
-	Prr.at(7) = JA.getMatrice().at(6) * this->_matrice[0][1].getValue() + JA.getMatrice().at(7) * this->_matrice[1][1].getValue() + JA.getMatrice().at(8) * this->_matrice[2][1].getValue();
-	Prr.at(8) = JA.getMatrice().at(6) * this->_matrice[0][2].getValue() + JA.getMatrice().at(7) * this->_matrice[1][2].getValue() + JA.getMatrice().at(8) * this->_matrice[2][2].getValue();
+	Prr.at(0) = tempJA.at(0) * this->_matrice[0][0].getValue() + tempJA.at(1) * this->_matrice[1][0].getValue() + tempJA.at(2) * this->_matrice[2][0].getValue();
+	Prr.at(1) = tempJA.at(0) * this->_matrice[0][1].getValue() + tempJA.at(1) * this->_matrice[1][1].getValue() + tempJA.at(2) * this->_matrice[2][1].getValue();
+	Prr.at(2) = tempJA.at(0) * this->_matrice[0][2].getValue() + tempJA.at(1) * this->_matrice[1][2].getValue() + tempJA.at(2) * this->_matrice[2][2].getValue();
+	Prr.at(3) = tempJA.at(3) * this->_matrice[0][0].getValue() + tempJA.at(4) * this->_matrice[1][0].getValue() + tempJA.at(5) * this->_matrice[2][0].getValue();
+	Prr.at(4) = tempJA.at(3) * this->_matrice[0][1].getValue() + tempJA.at(4) * this->_matrice[1][1].getValue() + tempJA.at(5) * this->_matrice[2][1].getValue();
+	Prr.at(5) = tempJA.at(3) * this->_matrice[0][2].getValue() + tempJA.at(4) * this->_matrice[1][2].getValue() + tempJA.at(5) * this->_matrice[2][2].getValue();
+	Prr.at(6) = tempJA.at(6) * this->_matrice[0][0].getValue() + tempJA.at(7) * this->_matrice[1][0].getValue() + tempJA.at(8) * this->_matrice[2][0].getValue();
+	Prr.at(7) = tempJA.at(6) * this->_matrice[0][1].getValue() + tempJA.at(7) * this->_matrice[1][1].getValue() + tempJA.at(8) * this->_matrice[2][1].getValue();
+	Prr.at(8) = tempJA.at(6) * this->_matrice[0][2].getValue() + tempJA.at(7) * this->_matrice[1][2].getValue() + tempJA.at(8) * this->_matrice[2][2].getValue();
 
 	std::vector<double> APrrA(9,0);
-	APrrA.at(0) = Prr.at(0) * JA.getMatrice().at(0) + Prr.at(1) * JA.getMatrice().at(3) + Prr.at(2) * JA.getMatrice().at(6);
-	APrrA.at(1) = Prr.at(0) * JA.getMatrice().at(1) + Prr.at(1) * JA.getMatrice().at(4) + Prr.at(2) * JA.getMatrice().at(7);
-	APrrA.at(2) = Prr.at(0) * JA.getMatrice().at(2) + Prr.at(1) * JA.getMatrice().at(5) + Prr.at(2) * JA.getMatrice().at(8);
-	APrrA.at(3) = Prr.at(3) * JA.getMatrice().at(0) + Prr.at(4) * JA.getMatrice().at(3) + Prr.at(5) * JA.getMatrice().at(6);
-	APrrA.at(4) = Prr.at(3) * JA.getMatrice().at(1) + Prr.at(4) * JA.getMatrice().at(4) + Prr.at(5) * JA.getMatrice().at(7);
-	APrrA.at(5) = Prr.at(3) * JA.getMatrice().at(2) + Prr.at(4) * JA.getMatrice().at(5) + Prr.at(5) * JA.getMatrice().at(8);
-	APrrA.at(6) = Prr.at(6) * JA.getMatrice().at(0) + Prr.at(7) * JA.getMatrice().at(3) + Prr.at(8) * JA.getMatrice().at(6);
-	APrrA.at(7) = Prr.at(6) * JA.getMatrice().at(1) + Prr.at(7) * JA.getMatrice().at(4) + Prr.at(8) * JA.getMatrice().at(7);
-	APrrA.at(8) = Prr.at(6) * JA.getMatrice().at(2) + Prr.at(7) * JA.getMatrice().at(5) + Prr.at(8) * JA.getMatrice().at(8);
+	APrrA.at(0) = Prr.at(0) * tempJA.at(0) + Prr.at(1) * tempJA.at(3) + Prr.at(2) * tempJA.at(6);
+	APrrA.at(1) = Prr.at(0) * tempJA.at(1) + Prr.at(1) * tempJA.at(4) + Prr.at(2) * tempJA.at(7);
+	APrrA.at(2) = Prr.at(0) * tempJA.at(2) + Prr.at(1) * tempJA.at(5) + Prr.at(2) * tempJA.at(8);
+	APrrA.at(3) = Prr.at(3) * tempJA.at(0) + Prr.at(4) * tempJA.at(3) + Prr.at(5) * tempJA.at(6);
+	APrrA.at(4) = Prr.at(3) * tempJA.at(1) + Prr.at(4) * tempJA.at(4) + Prr.at(5) * tempJA.at(7);
+	APrrA.at(5) = Prr.at(3) * tempJA.at(2) + Prr.at(4) * tempJA.at(5) + Prr.at(5) * tempJA.at(8);
+	APrrA.at(6) = Prr.at(6) * tempJA.at(0) + Prr.at(7) * tempJA.at(3) + Prr.at(8) * tempJA.at(6);
+	APrrA.at(7) = Prr.at(6) * tempJA.at(1) + Prr.at(7) * tempJA.at(4) + Prr.at(8) * tempJA.at(7);
+	APrrA.at(8) = Prr.at(6) * tempJA.at(2) + Prr.at(7) * tempJA.at(5) + Prr.at(8) * tempJA.at(8);
 
 	//need to add noise Q to APrrA
 	float Q = 0.0;
@@ -293,12 +293,12 @@ void CovarianceMatrice::step1RobotCovariance(JacobianMatriceA &JA)
 	std::vector<double> APri(6,0);
 	for (unsigned int j = 3; j < this->_matrice.size() - 1; j += 2)
 	{
-		APri.at(0) = JA.getMatrice().at(0) * this->_matrice[0][j].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j].getValue();
-		APri.at(1) = JA.getMatrice().at(0) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(1) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(2) * this->_matrice[2][j+1].getValue();
-		APri.at(2) = JA.getMatrice().at(3) * this->_matrice[0][j].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j].getValue();
-		APri.at(3) = JA.getMatrice().at(3) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(4) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(5) * this->_matrice[2][j+1].getValue();
-		APri.at(4) = JA.getMatrice().at(6) * this->_matrice[0][j].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j].getValue();
-		APri.at(5) = JA.getMatrice().at(6) * this->_matrice[0][j+1].getValue() + JA.getMatrice().at(7) * this->_matrice[1][j+1].getValue() + JA.getMatrice().at(8) * this->_matrice[2][j+1].getValue();
+		APri.at(0) = tempJA.at(0) * this->_matrice[0][j].getValue() + tempJA.at(1) * this->_matrice[1][j].getValue() + tempJA.at(2) * this->_matrice[2][j].getValue();
+		APri.at(1) = tempJA.at(0) * this->_matrice[0][j+1].getValue() + tempJA.at(1) * this->_matrice[1][j+1].getValue() + tempJA.at(2) * this->_matrice[2][j+1].getValue();
+		APri.at(2) = tempJA.at(3) * this->_matrice[0][j].getValue() + tempJA.at(4) * this->_matrice[1][j].getValue() + tempJA.at(5) * this->_matrice[2][j].getValue();
+		APri.at(3) = tempJA.at(3) * this->_matrice[0][j+1].getValue() + tempJA.at(4) * this->_matrice[1][j+1].getValue() + tempJA.at(5) * this->_matrice[2][j+1].getValue();
+		APri.at(4) = tempJA.at(6) * this->_matrice[0][j].getValue() + tempJA.at(7) * this->_matrice[1][j].getValue() + tempJA.at(8) * this->_matrice[2][j].getValue();
+		APri.at(5) = tempJA.at(6) * this->_matrice[0][j+1].getValue() + tempJA.at(7) * this->_matrice[1][j+1].getValue() + tempJA.at(8) * this->_matrice[2][j+1].getValue();
 
 
 		this->_matrice[0][j].setValue(APri.at(0));
@@ -324,6 +324,7 @@ void CovarianceMatrice::step3Covariance(JacobianMatriceJxr &Jxr, JacobianMatrice
 	std::vector<double> R(4,0);
 	std::vector<double> JzR(4,0);
 	std::vector<double> JzRJz(4,0);
+	std::vector<double> tempJxr = Jxr.getMatrice();
 
 	//Pn+1n+1 = JxrPJxr + JzRJz
 	//JxrPJxr = 1 * P * 1 = P; P = stateM
@@ -350,17 +351,17 @@ void CovarianceMatrice::step3Covariance(JacobianMatriceJxr &Jxr, JacobianMatrice
 
 	//Prn+1 = PrrJxr
 	//xx
-	this->_matrice[0][this->_matrice.size()-2].setValue(this->_matrice[0][0].getValue() * Jxr.getMatrice().at(0));
+	this->_matrice[0][this->_matrice.size()-2].setValue(this->_matrice[0][0].getValue() * tempJxr.at(0));
 	//xy
-	this->_matrice[0][this->_matrice.size()-1].setValue(this->_matrice[0][0].getValue() * Jxr.getMatrice().at(3));
+	this->_matrice[0][this->_matrice.size()-1].setValue(this->_matrice[0][0].getValue() * tempJxr.at(3));
 	//yx
-	this->_matrice[1][this->_matrice.size()-2].setValue(this->_matrice[1][1].getValue() * Jxr.getMatrice().at(1));
+	this->_matrice[1][this->_matrice.size()-2].setValue(this->_matrice[1][1].getValue() * tempJxr.at(1));
 	//yy
-	this->_matrice[1][this->_matrice.size()-1].setValue(this->_matrice[1][1].getValue() * Jxr.getMatrice().at(4));
+	this->_matrice[1][this->_matrice.size()-1].setValue(this->_matrice[1][1].getValue() * tempJxr.at(4));
 	//thetax
-	this->_matrice[2][this->_matrice.size()-2].setValue(this->_matrice[2][2].getValue() * Jxr.getMatrice().at(2));
+	this->_matrice[2][this->_matrice.size()-2].setValue(this->_matrice[2][2].getValue() * tempJxr.at(2));
 	//thetay
-	this->_matrice[2][this->_matrice.size()-1].setValue(this->_matrice[2][2].getValue() * Jxr.getMatrice().at(5));
+	this->_matrice[2][this->_matrice.size()-1].setValue(this->_matrice[2][2].getValue() * tempJxr.at(5));
 
 	//Pn+1r
 	this->_matrice[this->_matrice.size()-2][0].setValue(this->_matrice[0][this->_matrice.size()-2].getValue());
@@ -372,10 +373,10 @@ void CovarianceMatrice::step3Covariance(JacobianMatriceJxr &Jxr, JacobianMatrice
 
 	for (unsigned int i = 3; i < this->_matrice.size() - 2; i += 2) {
 		//Pn+1i = Jxr * Pri
-		this->_matrice[this->_matrice.size()-2][i].setValue(Jxr.getMatrice().at(0) * this->_matrice[i][0].getValue());
-		this->_matrice[this->_matrice.size()-1][i].setValue(Jxr.getMatrice().at(3) * this->_matrice[i][0].getValue());
-		this->_matrice[this->_matrice.size()-2][i+1].setValue(Jxr.getMatrice().at(1) * this->_matrice[i+1][1].getValue());
-		this->_matrice[this->_matrice.size()-1][i+1].setValue(Jxr.getMatrice().at(4) * this->_matrice[i+1][1].getValue());
+		this->_matrice[this->_matrice.size()-2][i].setValue(tempJxr.at(0) * this->_matrice[i][0].getValue());
+		this->_matrice[this->_matrice.size()-1][i].setValue(tempJxr.at(3) * this->_matrice[i][0].getValue());
+		this->_matrice[this->_matrice.size()-2][i+1].setValue(tempJxr.at(1) * this->_matrice[i+1][1].getValue());
+		this->_matrice[this->_matrice.size()-1][i+1].setValue(tempJxr.at(4) * this->_matrice[i+1][1].getValue());
 
 		//Pin+1
 		this->_matrice[i][this->_matrice.size()-2].setValue(this->_matrice[this->_matrice.size()-2][i].getValue());
