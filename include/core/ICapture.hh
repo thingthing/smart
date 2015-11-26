@@ -19,7 +19,7 @@ public:
   virtual pcl::PointCloud<pcl::PointXYZ> const &captureData() = 0;
 
 protected:
-  pcl::PointCloud<pcl::PointXYZ>          _cloud;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr          _cloud;
 
 };
 

@@ -226,7 +226,7 @@ void            NetworkManager::run()
                     // std::cout << "Byte written" << std::endl;
                     if (connector->getWriteBuffer().getSpaceUsed() == 0)
                     {
-                        std::cerr << "Reseting write buffer" << std::endl;
+		      //std::cerr << "Reseting write buffer" << std::endl;
                         it->second.events &= ~POLLOUT;              // A race condition with send may arise here, but we don't care for now
                         connector->getWriteBuffer().reset();
                     }
@@ -238,5 +238,3 @@ void            NetworkManager::run()
     }
 }
 }
-
-
