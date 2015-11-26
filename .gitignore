@@ -33,6 +33,7 @@
 # other legit files
 !*.txt
 !*.cmake
+!*.oni
 
 # Specific exceptions
 CMakeCache.txt
