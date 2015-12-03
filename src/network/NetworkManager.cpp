@@ -166,14 +166,14 @@ void            NetworkManager::run()
 
             if (it->second.revents & POLLIN)
             {
-                std::cerr << "Pollin for is == " << it->first << std::endl;
+                //std::cerr << "Pollin for is == " << it->first << std::endl;
                 if ((_byteRead = connector->getReadBuffer().readFrom(connector->getSocket())) > 0)
                 {
                     _byteRead = connector->getReadBuffer().getSpaceUsed();
                     /// Check if packet has minimum size: packet header size
                     if (_packet.getPacketHeader().packetSize == sizeof(Network::s_ComPacketHeader))
                     {
-                        std::cerr << "Packet size is minimum so set header with buffer" << std::endl;
+                        //std::cerr << "Packet size is minimum so set header with buffer" << std::endl;
                         if (_byteRead > (int)sizeof(Network::ComPacket))
                         {
                             unsigned short tmp;

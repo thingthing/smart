@@ -4,6 +4,7 @@
 #include <string>
 
 #include "IAgent.hh"
+#include "Capture.hh"
 
 class       Agent : public IAgent
 {

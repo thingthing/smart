@@ -23,8 +23,8 @@ Core::~Core()
 
 void        Core::update()
 {
-    //std::cout << "Updating" << std::endl;
-    pcl::PointCloud<pcl::PointXYZ> cloud = _agent->takeData();
+    std::cout << "Updating" << std::endl;
+    // pcl::PointCloud<pcl::PointXYZ> cloud = _agent->takeData();
     //_slam->updateState(cloud, *_agent);
     _agent->updateState();
 }
@@ -33,7 +33,7 @@ void        Core::run()
 {
     while (1)
     {
-        usleep(1000000);
+        usleep(10000);
         this->update();
     }
 }

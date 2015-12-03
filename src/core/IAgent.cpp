@@ -2,7 +2,7 @@
 
 IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _bearing(0),
-    _name(name), _thrust(0), _theta(0), _deltaTheta(0), _battery(battery)
+    _name(name), _status("OK"),  _thrust(0), _theta(0), _deltaTheta(0), _battery(battery)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -61,7 +61,7 @@ void    IAgent::setBearing(double bearing)
   this->_bearing = bearing;
 }
 
-Capture const &IAgent::getCapture() const
+ICapture const *IAgent::getCapture() const
 {
   return (this->_capture);
 }

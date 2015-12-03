@@ -69,5 +69,25 @@ INCLUDE_DIRECTORIES(${INCLUDE_DIR} ${IMPLEMENT_INCLUDE_DIR})
 
 ADD_EXECUTABLE(agent ${SOURCES})
 
-TARGET_LINK_LIBRARIES(agent ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES})
+TARGET_LINK_LIBRARIES(agent ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 TARGET_LINK_LIBRARIES(agent ${Jsoncpp_LIBRARIES})
+
+# -- looking for PCL_COMMON
+# -- looking for PCL_KDTREE
+# -- looking for PCL_OCTREE
+# -- looking for PCL_SEARCH
+# -- looking for PCL_SURFACE
+# -- looking for PCL_SAMPLE_CONSENSUS
+# -- looking for PCL_IO
+# -- looking for PCL_FILTERS
+# -- looking for PCL_FEATURES
+# -- looking for PCL_GEOMETRY
+# -- looking for PCL_KEYPOINTS
+# -- looking for PCL_REGISTRATION
+# -- looking for PCL_SEGMENTATION
+# -- looking for PCL_RECOGNITION
+# -- looking for PCL_VISUALIZATION
+# -- looking for PCL_PEOPLE
+# -- looking for PCL_OUTOFCORE
+# -- looking for PCL_TRACKING
+# -- looking for PCL_APPS
