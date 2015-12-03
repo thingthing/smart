@@ -16,11 +16,11 @@ public:
   ICapture();
   virtual ~ICapture();
 
-  pcl::PointCloud<pcl::PointXYZ> const &getData() const;
-  virtual void captureData(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&) = 0;
+  pcl::PointCloud<pcl::PointXYZRGBA> const &getData() const;
+  virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) = 0;
 
 protected:
-  pcl::PointCloud<pcl::PointXYZ>::Ptr          _cloud;
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr          _cloud;
 
 };
 

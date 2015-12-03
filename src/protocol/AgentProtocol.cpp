@@ -30,11 +30,11 @@ void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
     agent->registerCallback("SendPacketEvent", [this](IAgent * agent) {sendPacketEvent(agent);});
     agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     ///@todo: Register in the factory (process data)
-    agent->registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const & cloud) {sendCloudEvent(cloud);});
+    agent->registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZRGBA> const & cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
 }
 
-void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud)
+void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud)
 {
     // To decomment to see the cloud to be send
     // for (size_t i = 0; i < cloud.points.size (); ++i)

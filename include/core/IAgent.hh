@@ -41,7 +41,7 @@ public:
     void            setPos(double x, double y, double z);
     std::string const &status(std::string const &status);
 
-    virtual pcl::PointCloud<pcl::PointXYZ> const &takeData() = 0;
+    virtual pcl::PointCloud<pcl::PointXYZRGBA> const &takeData() = 0;
     virtual void            updateState() = 0;
     virtual void            goTowardsGoal() = 0;
 

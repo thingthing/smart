@@ -3,7 +3,7 @@
 Capture::Capture()
   : _grabber(new pcl::io::OpenNI2Grabber())
 {
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
   _grabber->registerCallback(getData);
   _grabber->start();
 }
@@ -14,7 +14,7 @@ Capture::~Capture()
   delete _grabber;
 }
 
-void Capture::captureData(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
+void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
 {
   // if (pcl::io::loadPCDFile<pcl::PointXYZ> ("pcdData/data/tutorials/ism_test_cat.pcd", _cloud) == -1) //* load the file
   // {

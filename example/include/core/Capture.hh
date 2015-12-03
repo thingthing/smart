@@ -19,7 +19,7 @@ public:
   Capture();
   virtual ~Capture();
 
-  virtual void captureData(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+  virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
 private:
   pcl::Grabber *_grabber;

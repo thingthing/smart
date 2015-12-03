@@ -20,7 +20,7 @@ public:
     void            setGoalPos(pcl::PointXYZ const &pos);
     void            setGoalPos(double x, double y, double z);
 
-    virtual pcl::PointCloud<pcl::PointXYZ> const &takeData();
+    virtual pcl::PointCloud<pcl::PointXYZRGBA> const &takeData();
     virtual void            updateState();
     virtual void            goTowardsGoal();
     bool            isAtDestination() const;

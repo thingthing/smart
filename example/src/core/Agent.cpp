@@ -65,13 +65,13 @@ pcl::PointXYZ   const   &Agent::getGoalPos() const
   return (this->_goalPos);
 }
 
-pcl::PointCloud<pcl::PointXYZ> const &Agent::takeData()
+pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud = _capture->getData();
+  pcl::PointCloud<pcl::PointXYZRGBA> cloud = _capture->getData();
   /// @todo: Move cloud according to rotation of agent
   // Last three parameters are in order: roll, pitch, yaw
   Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, 0, 0, 0);
-  pcl::transformPointCloud<pcl::PointXYZ>(cloud, cloud, transfo);
+  pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
   this->dispatch("SendCloudEvent", cloud);
   return (_capture->getData());
 }
