@@ -88,3 +88,13 @@ const std::pair<double, double> KalmanGainMatrice::getYLandmarkKalmanGain(unsign
 	std::pair<double, double> pairing = std::get<1>(this->matrice.at(landmarkNumber));
 	return pairing;
 }
+
+const std::pair<double,double> KalmanGainMatrice::getRobotXKalmanGain() const
+{
+	return this->RobotX;
+}
+
+const std::pair<double,double> KalmanGainMatrice::getRobotYKalmanGain() const
+{
+	return this->RobotY;
+}

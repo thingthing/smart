@@ -38,6 +38,8 @@
 #include "IAgent.hh"
 #include "event/Dispatcher.h"
 
+#include "test.hh"
+
 class   Slam : public Utils::Dispatcher
 {
 public:
@@ -87,6 +89,7 @@ public:
   JacobianMatriceJz *_jZ;
 	JacobianMatriceH *_jH;
   CovarianceMatrice *_covariance;
+	Test *_test;
 };
 
 

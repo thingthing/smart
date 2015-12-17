@@ -22,6 +22,8 @@ public:
 
 	const std::pair<double, double> getXLandmarkKalmanGain(unsigned int landmarkNumber) const;
   const std::pair<double, double> getYLandmarkKalmanGain(unsigned int landmarkNumber) const;
+	const std::pair<double,double> getRobotYKalmanGain() const;
+	const std::pair<double,double> getRobotXKalmanGain() const;
 
 private:
   KalmanGainMatrice(const KalmanGainMatrice &);
