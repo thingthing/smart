@@ -34,7 +34,7 @@ void        Core::run()
     while (1)
     {
         usleep(10000);
-        this->update();
+        //this->update();
     }
 }
 

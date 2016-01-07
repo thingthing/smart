@@ -40,6 +40,7 @@ public:
   std::string   getChunk();
 
 private:
+  void setTrueStringFromPoints(float data, std::string &stringPoints);
   void          pushTmpChunkToChunks();
 
   std::string   fromLandmarkToString(const Landmarks::Landmark&);

@@ -46,7 +46,7 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
     int i = 0;
     bool is_ready = true;
     std::string toSend = "";
-    std::cerr << "Start of send pointCloud" << std::endl;
+    std::cerr << "Start of send pointCloud "<< cloud.points.size() << std::endl;
     while (_factory.isFullChunkReady())
     {
         if (is_ready) {

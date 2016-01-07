@@ -142,10 +142,14 @@ bool            NetworkManager::send(const std::string &chunk, const std::string
     // std::cout << "Chunk size in udp is == " << chunk_size << std::endl;
     if (chunk_size <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
     {
+        FILE *stream = fdopen(_connectors.at(connector_id)->getSocket(), "w+");
+        fwrite (chunk.c_str(), sizeof(char), chunk_size, stream);
+        //write(_connectors.at(connector_id)->getSocket(), chunk.c_str(), chunk_size);
+        fflush(stream); 
         // std::cout << "Sending chunk" << std::endl;
-        _connectors.at(connector_id)->getWriteBuffer().write(chunk.c_str(), chunk_size);
+        //_connectors.at(connector_id)->getWriteBuffer().write(chunk.c_str(), chunk_size);
         ///@todo: check if fd exists
-        (_fdsetList.at(connector_id)).events |= POLLOUT;
+        //(_fdsetList.at(connector_id)).events |= POLLOUT;
         return (true);
     }
     return (false);
