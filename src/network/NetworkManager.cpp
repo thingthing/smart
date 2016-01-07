@@ -228,7 +228,7 @@ void            NetworkManager::run()
                 // std::cout << "Writting on socket : " <<  connector->getSocket() << std::endl;
                 if ((_byteWritten = connector->getWriteBuffer().writeTo(connector->getSocket())) > 0)
                 {
-                    // std::cout << "Byte written" << std::endl;
+                    std::cout << "Byte written" << std::endl;
                     if (connector->getWriteBuffer().getSpaceUsed() == 0)
                     {
 		      //std::cerr << "Reseting write buffer" << std::endl;

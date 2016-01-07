@@ -11,14 +11,14 @@ JacobianMatriceA::JacobianMatriceA()
 JacobianMatriceA::~JacobianMatriceA()
 {}
 
-void JacobianMatriceA::JacobiMath(IAgent const &agent)
+void JacobianMatriceA::JacobiMath(IAgent const *agent)
 {
 	//warning, thrust != speed
 
 	//-deltaY
-	matrice.at(2) = -agent.getThrust() * sin(agent.getTheta());
+	matrice.at(2) = -agent->getThrust() * sin(agent->getTheta());
 	//deltaX
-	matrice.at(5) = agent.getThrust() * cos(agent.getTheta());
+	matrice.at(5) = agent->getThrust() * cos(agent->getTheta());
 }
 
 const std::vector<double> &JacobianMatriceA::getMatrice() const

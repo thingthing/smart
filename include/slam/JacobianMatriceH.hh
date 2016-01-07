@@ -21,12 +21,12 @@ public:
 	//values for <x,y> according to the bearing
 	std::pair<double,double> getJacobianBearing(unsigned int landmarkNumber) const;
 	//set the values of H for the specified landmark
-	void JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice stateM, double range);
+	void JacobiAdd(unsigned int landmarkNumber, SystemStateMatrice &stateM);
 
 	//Utilities
 	void deleteLandmark(unsigned int landmarkNumber);
 
-	void setRnBMatrice(unsigned int landmarkNumber, SystemStateMatrice stateM);
+	void setRnBMatrice(unsigned int landmarkNumber, SystemStateMatrice &stateM);
 	std::pair<double, double> getRnBMatrice(unsigned int landmarkNumber) const;
 
 //protected:
@@ -37,8 +37,8 @@ public:
 	the other two for the bearing(X & Y)*/
 	std::map<unsigned int, std::tuple<double,double,double,double>> matrice;
 
-private:
-  JacobianMatriceH(const JacobianMatriceH &);
+//private:
+  //JacobianMatriceH(const JacobianMatriceH &);
   JacobianMatriceH &operator=(const JacobianMatriceH &);
 
 

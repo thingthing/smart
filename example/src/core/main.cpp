@@ -113,5 +113,7 @@ int     main(int argc, char **argv)
     }
     networkAdapter.start();
     core.run();
+    //If code is here, you are exited, so send the disconnect info to server
+    networkAdapter.dispatch("DisconnectEvent");
     return (0);
 }
