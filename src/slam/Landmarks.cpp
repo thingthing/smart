@@ -193,7 +193,7 @@ double Landmarks::calculateBearing(double x, double y, IAgent const *agent) cons
   return (atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getBearing());
 }
 
-void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b)
+void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b)
 {
   double y; //y coordinate
   double x; //x coordinate
@@ -382,7 +382,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const
   return (lm);
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent)
 {
   unsigned int sampleNumber = cloud.points.size();
 
@@ -535,7 +535,7 @@ void Landmarks::alignLandmarkData(std::vector<Landmark *> const &extractedLandma
   }
 }
 
-std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent)
+std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent)
 {
   // lines found
   std::vector<double> la;
@@ -654,7 +654,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
   return foundLandmarks;
 }
 
-void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent)
+void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent)
 {
   double maxrange = 0;
   double rangeBefore = this->distance(cloud.points[0].x, cloud.points[0].y, agent->getPos().x, agent->getPos().y);

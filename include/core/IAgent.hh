@@ -5,10 +5,11 @@
 
 #include <pcl-1.7/pcl/common/common.h>
 #include <pcl-1.7/pcl/impl/point_types.hpp>
+#include <pcl-1.7/pcl/common/transforms.h>
 #include <pcl-1.7/pcl/common/projection_matrix.h>
 
 #include "event/Dispatcher.h"
-#include "Capture.hh"
+#include "ICapture.hh"
 
 class       IAgent : public Utils::Dispatcher
 {
@@ -25,7 +26,7 @@ public:
 
     pcl::PointXYZ   const   &getPos() const;
     double          getBearing() const;
-    Capture const & getCapture() const;
+    ICapture const  *getCapture() const;
     double          getThrust() const;
     double          getTheta() const;
     double          getDeltaTheta() const;
@@ -40,7 +41,7 @@ public:
     void            setPos(double x, double y, double z);
     std::string const &status(std::string const &status);
 
-    virtual pcl::PointCloud<pcl::PointXYZ> const &takeData() = 0;
+    virtual pcl::PointCloud<pcl::PointXYZRGBA> const &takeData() = 0;
     virtual void            updateState() = 0;
     virtual void            goTowardsGoal() = 0;
 
@@ -55,7 +56,7 @@ protected:
     pcl::PointXYZ   _pos;
     std::string     _name;
     std::string     _status;
-    Capture         _capture;
+    ICapture         *_capture;
     double          _thrust;
     double          _theta;
     double          _deltaTheta;

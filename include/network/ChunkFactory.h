@@ -18,7 +18,7 @@ namespace Network
  * @brief Split 3D information into chunks to sent it through UDP.
  * @details The maximum size of a chunk is 512 Bytes.
  * The classes encoded are tagged with: \n
- * "P" for pcl::PointCloud::PointXYZ \n
+ * "P" for pcl::PointCloud::PointXYZRGBA \n
  * "L" for Landmarks::Landmark
  * @author Maxence
  * @version 1.0
@@ -31,7 +31,7 @@ public:
 
   void  processData(const std::vector<Landmarks::Landmark*>&);
   void  processData(const Landmarks::Landmark&);
-  void  processData(const pcl::PointCloud<pcl::PointXYZ>&);
+  void  processData(const pcl::PointCloud<pcl::PointXYZRGBA>&);
 
   // Getters
   bool  isFullChunkReady() const;
@@ -40,18 +40,20 @@ public:
   std::string   getChunk();
 
 private:
+  void setTrueStringFromPoints(float data, std::string &stringPoints);
   void          pushTmpChunkToChunks();
 
   std::string   fromLandmarkToString(const Landmarks::Landmark&);
 
-  int           calculateTotalPacketNeeded(const pcl::PointCloud<pcl::PointXYZ>&);
+  int           calculateTotalPacketNeeded(const pcl::PointCloud<pcl::PointXYZRGBA>&);
   std::string   createPacketMetadata(unsigned int currentPacket,
                                      unsigned int totalPacket,
                                      std::string &packet
                                     );
-  std::string   convertDataPacket(const pcl::PointCloud<pcl::PointXYZ> &, unsigned int &cloudIndex);
-  std::string   convertRangeOfPoint(const pcl::PointCloud<pcl::PointXYZ> &cloud, unsigned int &cloudIndex, unsigned int nbOfPoint);
+  std::string   convertDataPacket(const pcl::PointCloud<pcl::PointXYZRGBA> &, unsigned int &cloudIndex);
+  std::string   convertRangeOfPoint(const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, unsigned int &cloudIndex, unsigned int nbOfPoint);
   std::string   fromPclPointToString(const pcl::PointXYZ&);
+  std::string   fromPclPointRGBToString(const pcl::PointXYZRGBA& points);
 
   std::string   encodeNbIntoString(void*, unsigned long);
 
@@ -79,7 +81,7 @@ private:
                            + sizeof(unsigned int)                       // [total packet nb]
                            + sizeof(unsigned short);                    // [current packet's size];
   const unsigned int   SIZE_IN_PACKET = (MAX_SIZE_CHUNK - CHUNK_HEADER_SIZE) - POINTCLOUD_HEADER_SIZE;
-  const unsigned short SIZE_OF_POINT_XYZ = 12;
+  const unsigned short SIZE_OF_POINT_XYZ = 24;
 };
 
 } // end of namespace

@@ -5,9 +5,10 @@
 
 #include <pcl-1.7/pcl/common/common.h>
 #include <pcl-1.7/pcl/impl/point_types.hpp>
-#include <pcl-1.7/pcl/common/projection_matrix.h>
+// #include <pcl-1.7/pcl/common/projection_matrix.h>
+#include "event/Dispatcher.h"
 
-class   ICapture
+class   ICapture : public Utils::Dispatcher
 {
 public:
 
@@ -15,11 +16,11 @@ public:
   ICapture();
   virtual ~ICapture();
 
-  pcl::PointCloud<pcl::PointXYZ> const &getData() const;
-  virtual pcl::PointCloud<pcl::PointXYZ> const &captureData() = 0;
+  pcl::PointCloud<pcl::PointXYZRGBA> const &getData() const;
+  virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) = 0;
 
 protected:
-  pcl::PointCloud<pcl::PointXYZ>::Ptr          _cloud;
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr          _cloud;
 
 };
 

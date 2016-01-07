@@ -20,7 +20,7 @@ public:
     virtual void        disconnectEvent();
     virtual void        sendPacketEvent(IAgent *);
     void                sendDataTcp(Json::Value &root);
-    void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud);
+    void                sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud);
     void                sendNewLandmarkEvent(std::vector<Landmarks::Landmark *> &nl);
     void                sendStatusEvent(std::string const &status);
 

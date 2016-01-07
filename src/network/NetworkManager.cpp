@@ -142,6 +142,11 @@ bool            NetworkManager::send(const std::string &chunk, const std::string
     // std::cout << "Chunk size in udp is == " << chunk_size << std::endl;
     if (chunk_size <= _connectors.at(connector_id)->getWriteBuffer().getSpaceLeft())
     {
+        //FILE *stream = fdopen(_connectors.at(connector_id)->getSocket(), "w+");
+        //fwrite (chunk.c_str(), sizeof(char), chunk_size, stream);
+        //std::cerr << "Send string to server" <<std::endl;
+        //write(_connectors.at(connector_id)->getSocket(), chunk.c_str(), chunk_size);
+        //fflush(stream); 
         // std::cout << "Sending chunk" << std::endl;
         _connectors.at(connector_id)->getWriteBuffer().write(chunk.c_str(), chunk_size);
         ///@todo: check if fd exists
@@ -166,14 +171,14 @@ void            NetworkManager::run()
 
             if (it->second.revents & POLLIN)
             {
-                std::cerr << "Pollin for is == " << it->first << std::endl;
+                //std::cerr << "Pollin for is == " << it->first << std::endl;
                 if ((_byteRead = connector->getReadBuffer().readFrom(connector->getSocket())) > 0)
                 {
                     _byteRead = connector->getReadBuffer().getSpaceUsed();
                     /// Check if packet has minimum size: packet header size
                     if (_packet.getPacketHeader().packetSize == sizeof(Network::s_ComPacketHeader))
                     {
-                        std::cerr << "Packet size is minimum so set header with buffer" << std::endl;
+                        //std::cerr << "Packet size is minimum so set header with buffer" << std::endl;
                         if (_byteRead > (int)sizeof(Network::ComPacket))
                         {
                             unsigned short tmp;
@@ -223,7 +228,7 @@ void            NetworkManager::run()
                 // std::cout << "Writting on socket : " <<  connector->getSocket() << std::endl;
                 if ((_byteWritten = connector->getWriteBuffer().writeTo(connector->getSocket())) > 0)
                 {
-                    std::cout << "Byte written" << std::endl;
+                    //std::cout << "Byte written" << std::endl;
                     if (connector->getWriteBuffer().getSpaceUsed() == 0)
                     {
 		      //std::cerr << "Reseting write buffer" << std::endl;

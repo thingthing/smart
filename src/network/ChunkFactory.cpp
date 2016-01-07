@@ -47,11 +47,11 @@ void ChunkFactory::processData(const Landmarks::Landmark& landmark_)
 }
 
 /**
- * @brief Convert a PointCloud of PointXYZ into packets of string(s) to put in chunk(s)
+ * @brief Convert a PointCloud of PointXYZRGBA into packets of string(s) to put in chunk(s)
  * @details
  * @param points PointCloud containing only 3D point informations about the captured points
  */
-void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZ >& pointCloud)
+void ChunkFactory::processData(const pcl::PointCloud< pcl::PointXYZRGBA >& pointCloud)
 {
     unsigned int cloudIndex = 0;
     unsigned int packetDone = 0;
@@ -129,11 +129,11 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
 
     strLandmark += fromPclPointToString(landmark_.pos);
     strLandmark += fromPclPointToString(landmark_.robotPos);
-    strLandmark += encodeNbIntoString((void*)&(landmark_.id), sizeof(landmark_.id));
-    strLandmark += encodeNbIntoString((void*)&(landmark_.life), sizeof(landmark_.life));
-    strLandmark += encodeNbIntoString((void*)&(landmark_.totalTimeObserved), sizeof(landmark_.totalTimeObserved));
-    strLandmark += encodeNbIntoString((void*)&(landmark_.bearing), sizeof(landmark_.bearing));
-    strLandmark += encodeNbIntoString((void*)&(landmark_.range), sizeof(landmark_.range));
+    strLandmark += encodeNbIntoString((void*) & (landmark_.id), sizeof(landmark_.id));
+    strLandmark += encodeNbIntoString((void*) & (landmark_.life), sizeof(landmark_.life));
+    strLandmark += encodeNbIntoString((void*) & (landmark_.totalTimeObserved), sizeof(landmark_.totalTimeObserved));
+    strLandmark += encodeNbIntoString((void*) & (landmark_.bearing), sizeof(landmark_.bearing));
+    strLandmark += encodeNbIntoString((void*) & (landmark_.range), sizeof(landmark_.range));
 
     return strLandmark;
 }
@@ -141,12 +141,13 @@ std::string ChunkFactory::fromLandmarkToString(const Landmarks::Landmark& landma
 /*
  * Calculate the total number of packet we need to do to send the cloud
  */
-int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXYZ >& cloud)
+int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXYZRGBA >& cloud)
 {
     unsigned int        totalPacketNeeded = 0;
     unsigned int        totalNbOfPoint = cloud.size();
     unsigned int        nbOfPointInPacket;
 
+    std::cerr << "Size of point is " << SIZE_OF_POINT_XYZ << std::endl;
     nbOfPointInPacket = SIZE_IN_PACKET / SIZE_OF_POINT_XYZ;
     totalPacketNeeded = (totalNbOfPoint / nbOfPointInPacket);
 
@@ -158,15 +159,15 @@ std::string ChunkFactory::createPacketMetadata(unsigned int currentPacket, unsig
     unsigned short      packetSize = (unsigned short)(packet.size());
     std::string         metadata = "";
 
-    metadata += encodeNbIntoString((void*)&(_packetID), sizeof(_packetID));
-    metadata += encodeNbIntoString((void*)&(currentPacket), sizeof(currentPacket));
-    metadata += encodeNbIntoString((void*)&(totalPacket), sizeof(totalPacket));
-    metadata += encodeNbIntoString((void*)&(packetSize), sizeof(packetSize));
+    metadata += encodeNbIntoString((void*) & (_packetID), sizeof(_packetID));
+    metadata += encodeNbIntoString((void*) & (currentPacket), sizeof(currentPacket));
+    metadata += encodeNbIntoString((void*) & (totalPacket), sizeof(totalPacket));
+    metadata += encodeNbIntoString((void*) & (packetSize), sizeof(packetSize));
 
     return metadata;
 }
 
-std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex)
+std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZRGBA >& cloud, unsigned int& cloudIndex)
 {
     std::string packetData = "";
     unsigned int nbOfPoint;
@@ -178,13 +179,13 @@ std::string ChunkFactory::convertDataPacket(const pcl::PointCloud< pcl::PointXYZ
     return packetData;
 }
 
-std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointXYZ >& cloud, unsigned int& cloudIndex, unsigned int nbOfPoint)
+std::string ChunkFactory::convertRangeOfPoint(const pcl::PointCloud< pcl::PointXYZRGBA >& cloud, unsigned int& cloudIndex, unsigned int nbOfPoint)
 {
     std::string convertedPoints = "";
     unsigned int i;
 
     for (i = 0; i < nbOfPoint; ++i)
-        convertedPoints += fromPclPointToString(cloud[cloudIndex + i]);
+        convertedPoints += fromPclPointRGBToString(cloud[cloudIndex + i]);
 
     cloudIndex += i;
     return convertedPoints;
@@ -215,12 +216,72 @@ std::string ChunkFactory::fromPclPointToString(const pcl::PointXYZ& points)
     //std::cout << points.x << " " << points.y << " " << points.z << std::endl;
     // std::cout << std::hex << dumper4(&points.x) << " " << dumper4(&points.y) << " " << dumper4(&points.z) << std::endl;
 
-    stringPoints += encodeNbIntoString((void*) &(points.x), sizeof(points.x));
-    stringPoints += encodeNbIntoString((void*) &(points.y), sizeof(points.y));
-    stringPoints += encodeNbIntoString((void*) &(points.z), sizeof(points.z));
+    stringPoints += encodeNbIntoString((void*) & (points.x), sizeof(points.x));
+    stringPoints += encodeNbIntoString((void*) & (points.y), sizeof(points.y));
+    stringPoints += encodeNbIntoString((void*) & (points.z), sizeof(points.z));
 
     return stringPoints;
 }
+
+void ChunkFactory::setTrueStringFromPoints(float data, std::string &stringPoints) {
+    float default_value = 0;
+    if (data == data)
+        stringPoints += encodeNbIntoString((void*) & (data), sizeof(data));
+    else
+        stringPoints += encodeNbIntoString((void*) & (default_value), sizeof(float));
+    //std::cerr << "data in float "<< data << std::endl;
+}
+/**
+ * @brief Convert PointXYZRGBA into a string
+ * @details It convert in a string the variable x, y and z
+ * So the length of the string would be sizeof(x) + sizeof(y) + sizeof(z)
+ * @return An encoded string containing PointXYZRGBA informations
+ */
+std::string ChunkFactory::fromPclPointRGBToString(const pcl::PointXYZRGBA& points)
+{
+    std::string stringPoints = "";
+
+    //std::cerr << points.x << " " << points.y << " " << points.z << std::endl;
+
+    // std::cerr << (int)points.r << " " << (int)points.g << " " << (int)points.b << std::endl;
+    // std::cerr << "size of points " << sizeof((float)points.r) << sizeof(uint8_t) << std::endl;
+    // std::cout << std::hex << dumper4(&points.x) << " " << dumper4(&points.y) << " " << dumper4(&points.z) << std::endl;
+    // std::cerr << "size of point.r == " << sizeof(float)  << std::endl;
+    // std::cerr << "size of cloud == " << sizeof(points)  << std::endl;
+    //To do to check if points.x is set, strange but that how it works
+    setTrueStringFromPoints(points.x, stringPoints);
+    setTrueStringFromPoints(points.y, stringPoints);
+    setTrueStringFromPoints(points.z, stringPoints);
+    setTrueStringFromPoints(points.r, stringPoints);
+    setTrueStringFromPoints(points.g, stringPoints);
+    setTrueStringFromPoints(points.b, stringPoints);
+    // stringPoints += encodeNbIntoString((void*) & (((float)points.r)), sizeof(float));
+    // stringPoints += encodeNbIntoString((void*) & (((float)points.g)), sizeof(float));
+    // stringPoints += encodeNbIntoString((void*) & (((float)points.b)), sizeof(float));
+
+    //std::cerr << "stringPoints to send " << stringPoints << std::endl;
+    // if (points.x == points.x)
+    //     stringPoints += encodeNbIntoString((void*) & (points.x), sizeof(points.x));
+    // else
+    //     stringPoints += encodeNbIntoString((void*) & (0), sizeof(float));
+    // if (points.y == points.y)
+    //     stringPoints += encodeNbIntoString((void*) & (points.y), sizeof(points.y));
+    // else
+    //     stringPoints += encodeNbIntoString((void*) & (0), sizeof(float));
+    // if (points.z == points.z)
+    //     stringPoints += encodeNbIntoString((void*) & (points.z), sizeof(points.z));
+    // else
+    //     stringPoints += encodeNbIntoString((void*) & (0), sizeof(float));
+    // if (points.r == points.r)
+    //     stringPoints += encodeNbIntoString((void*) & (points.r), sizeof(float));
+    // else
+    //     stringPoints += encodeNbIntoString((void*) & (0), sizeof(float));
+    // stringPoints += encodeNbIntoString((void*) & (g), sizeof(float));
+    // stringPoints += encodeNbIntoString((void*) & (b), sizeof(float));
+
+    return stringPoints;
+}
+
 
 /**
  * @brief Convert any atomic variable into a string
@@ -254,7 +315,7 @@ void ChunkFactory::decreaseSizeChunks(unsigned int cSize) { _sizeChunks -= cSize
 /// @brief Return a new Chunk ID in a string and increase it
 std::string ChunkFactory::getNewChunkID()
 {
-    std::string tmpChunkID = encodeNbIntoString((void*) &(_chunkID), sizeof(_chunkID));
+    std::string tmpChunkID = encodeNbIntoString((void*) & (_chunkID), sizeof(_chunkID));
     ++_chunkID;
 
     return tmpChunkID;

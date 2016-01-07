@@ -20,7 +20,7 @@ Landmarks *DataAssociation::getLandmarkDb() const
   return (this->_landmarkDb);
 }
 
-void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZ> const &cloud,
+void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud,
                                         IAgent const *agent,
                                         std::vector<Landmarks::Landmark *> &resultLandmarks,
                                         std::vector<Landmarks::Landmark *> &reobservedLandmarks)
