@@ -32,8 +32,13 @@
 #include "CovarianceMatrice.hh"
 #include "Landmarks.hh"
 #include "JacobianMatriceA.hh"
+#include "JacobianMatriceJxr.hh"
+#include "JacobianMatriceJz.hh"
+#include "JacobianMatriceH.hh"
 #include "IAgent.hh"
 #include "event/Dispatcher.h"
+
+#include "test.hh"
 
 class   Slam : public Utils::Dispatcher
 {
@@ -58,7 +63,7 @@ public:
    * @param cloud Current mapping
    * @param agent Agent we want the state updated
    */
-  void    updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent &agent);
+  void    updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent);
 
   /**
   * @brief Add a landmark
@@ -66,21 +71,25 @@ public:
   *
   * @param newLandmarks New landmark extracted from the current mapping
   */
-  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks);
+  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent *agent);
 
 private:
   Slam();
 
 private:
-  JacobianMatriceA _jA;
   IAgent     *_agent;
   DataAssociation *_data;
-  KalmanGainMatrice _kg;
-  SystemStateMatrice  *_state;
-  CovarianceMatrice *_covariance;
+  KalmanGainMatrice *_kg;
 
 public:
+  SystemStateMatrice  *_state;
   Landmarks   *_landmarkDb;
+	JacobianMatriceA *_jA;
+  JacobianMatriceJxr *_jXR;
+  JacobianMatriceJz *_jZ;
+	JacobianMatriceH *_jH;
+  CovarianceMatrice *_covariance;
+	Test *_test;
 };
 
 

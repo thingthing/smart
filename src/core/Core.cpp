@@ -2,7 +2,7 @@
 #include "Core.h"
 #include "TCPConnector.h"
 #include "Agent.hh"
-
+#include <exception>
 #include <thread> // test, to be removed
 
 // TODO : try to reconnect when disconnected
@@ -23,18 +23,21 @@ Core::~Core()
 
 void        Core::update()
 {
-    //std::cout << "Updating" << std::endl;
     pcl::PointCloud<pcl::PointXYZ> cloud = _agent->takeData();
-    //_slam->updateState(cloud, *_agent);
+    _slam->updateState(cloud, _agent);
     _agent->updateState();
 }
 
 void        Core::run()
 {
-    while (1)
-    {
-        usleep(1000000);
-        this->update();
+    try {
+        while (1)
+        {
+            usleep(1000000);
+            this->update();
+        }
+    } catch (std::exception &e) {
+        std::cout << "Error catch == " << e.what() << std::endl;
     }
 }
 
