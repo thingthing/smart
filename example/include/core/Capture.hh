@@ -3,13 +3,15 @@
 
 #include <string>
 
-#include <pcl-1.7/pcl/common/common.h>
-#include <pcl-1.7/pcl/impl/point_types.hpp>
-#include <pcl-1.7/pcl/io/pcd_io.h>
-#include <pcl-1.7/pcl/io/openni2_grabber.h>
-#include <pcl-1.7/pcl/io/oni_grabber.h>
-#include <pcl-1.7/pcl/point_types.h>
-#include <pcl-1.7/pcl/common/projection_matrix.h>
+#include <pcl-1.8/pcl/io/openni2_grabber.h>
+#include <pcl-1.8/pcl/common/common.h>
+#include <pcl-1.8/pcl/impl/point_types.hpp>
+#include <pcl-1.8/pcl/io/pcd_io.h>
+#include <pcl-1.8/pcl/io/openni_grabber.h>
+#include <pcl-1.8/pcl/io/oni_grabber.h>
+#include <pcl-1.8/pcl/point_types.h>
+#include <pcl-1.8/pcl/common/projection_matrix.h>
+
 #include "ICapture.hh"
 
 class   Capture : public ICapture
