@@ -27,21 +27,44 @@ void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
 {
     this->registerCallback("SetGoalPosEvent", [agent](pcl::PointXYZ pos) {dynamic_cast<Agent *>(agent)->setGoalPos(pos);});
     this->registerCallback("SetPosEvent", [agent](pcl::PointXYZ pos) {agent->setPos(pos);});
-    agent->registerCallback("SendPacketEvent", [this](IAgent *agent) {sendPacketEvent(agent);});
+    agent->registerCallback("SendPacketEvent", [this](IAgent * agent) {sendPacketEvent(agent);});
     agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     ///@todo: Register in the factory (process data)
-    slam.registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const & cloud) {sendCloudEvent(cloud);});
+    agent->registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZ> const & cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
 }
 
 void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZ> const &cloud)
 {
+    // To decomment to see the cloud to be send
+    // for (size_t i = 0; i < cloud.points.size (); ++i)
+    //     std::cout << "    " << cloud.points[i].x
+    //               << " "    << cloud.points[i].y
+    //               << " "    << cloud.points[i].z << std::endl;
+
     _factory.processData(cloud);
+    int i = 0;
+    bool is_ready = true;
+    std::string toSend = "";
     while (_factory.isFullChunkReady())
     {
-        std::string toSend = _factory.getChunk();
-        _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+        if (is_ready) {
+            ++i;
+            toSend  = _factory.getChunk();
+        }
+        is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+        usleep(100);
     }
+    std::cerr << "Send cloud event " << i << std::endl;
+
+    //To uncomment if you want to send only one cloud
+    // Json::Value     reply;
+
+    // reply["data"]["exit"] = 0;
+    // reply["status"]["code"] = 0;
+    // reply["status"]["message"] = "ok";
+    // this->sendDataTcp(reply);
+    // exit(1);
 }
 
 
@@ -59,7 +82,7 @@ void        AgentProtocol::sendDataTcp(Json::Value &root)
 {
     _outPacket.clear();
     std::string buffer = root.toStyledString();
-    // buffer.erase(std::remove_if(buffer.begin(), 
+    // buffer.erase(std::remove_if(buffer.begin(),
     //                           buffer.end(),
     //                           [](char x){return std::isspace(x);}),
     //            buffer.end());

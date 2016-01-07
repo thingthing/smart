@@ -150,66 +150,72 @@ bool            NetworkManager::send(const std::string &chunk, const std::string
     }
     return (false);
 }
+
 void            NetworkManager::run()
 {
     // TODO one day : try to reconnect in case it fails ?
     //if (_connector->isConnected() == true)
     //{
-    if (poll(_fdset, _fdsetList.size(), 100) > 0)
+    if (poll(_fdset, _fdsetList.size(), 0) > 0)
     {
-        // std::cout << "Poll start" << std::endl;
         for (std::map<std::string, pollfd &>::iterator it = _fdsetList.begin();
                 it != _fdsetList.end(); ++it)
+
         {
             IConnector *connector = _connectors[it->first];
+
             if (it->second.revents & POLLIN)
             {
-                // std::cout << "Pollin for is == " << it->first << std::endl;
+                std::cerr << "Pollin for is == " << it->first << std::endl;
                 if ((_byteRead = connector->getReadBuffer().readFrom(connector->getSocket())) > 0)
                 {
                     _byteRead = connector->getReadBuffer().getSpaceUsed();
                     /// Check if packet has minimum size: packet header size
                     if (_packet.getPacketHeader().packetSize == sizeof(Network::s_ComPacketHeader))
                     {
-                        // std::cout << "Packet size is minimum so set header with buffer" << std::endl;
+                        std::cerr << "Packet size is minimum so set header with buffer" << std::endl;
                         if (_byteRead > (int)sizeof(Network::ComPacket))
-                            {
-                                unsigned short tmp;
-                                connector->getReadBuffer() >> tmp;
-                                _packet.getPacketHeader().magic = ntohs(tmp);
-                                connector->getReadBuffer() >> tmp;
-                                _packet.getPacketHeader().packetSize = ntohs(tmp);
-                                connector->getReadBuffer() >> tmp;
-                                _packet.getPacketHeader().version = ntohs(tmp);
-                                connector->getReadBuffer() >> tmp;
-                                _packet.getPacketHeader().headerSize = ntohs(tmp);
-                            }
+                        {
+                            unsigned short tmp;
+                            connector->getReadBuffer() >> tmp;
+                            _packet.getPacketHeader().magic = ntohs(tmp);
+                            connector->getReadBuffer() >> tmp;
+                            _packet.getPacketHeader().packetSize = ntohs(tmp);
+                            connector->getReadBuffer() >> tmp;
+                            _packet.getPacketHeader().version = ntohs(tmp);
+                            connector->getReadBuffer() >> tmp;
+                            _packet.getPacketHeader().headerSize = ntohs(tmp);
+                        }
                     }
-                    else
+                    //else
+                    //{
+                    // std::cout << "Packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
+                    if (_packet.getPacketHeader().packetSize > _packet.getPacketSize())
                     {
-                        // std::cout << "Packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
-                        if (_packet.getPacketHeader().packetSize > _packet.getPacketSize())
-                        {
-                            const int      bytesMissing = _packet.getPacketHeader().packetSize - _packet.getPacketSize();
-                            // std::cout << "Byte missing in packet add " << bytesMissing << " bytes" << std::endl;
-                            _packet.appendFromCircularBuffer(connector->getReadBuffer(), (_byteRead > (bytesMissing)) ? bytesMissing : _byteRead);
-                            // std::cout << "After append packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
-                        }
-                        if (_packet.getPacketHeader().packetSize == _packet.getPacketSize())
-                        {
-                            std::cout << "Packet completly recieved, dispatch event" << std::endl;
-                            this->dispatch("ReceivePacketEvent", &_packet);
-                            // std::cout << "After dispatching" << std::endl;
-                            _packet.clear();
-                        }
+                        const int      bytesMissing = _packet.getPacketHeader().packetSize - _packet.getPacketSize();
+                        // std::cout << "Byte missing in packet add " << bytesMissing << " bytes" << std::endl;
+                        _packet.appendFromCircularBuffer(connector->getReadBuffer(), (_byteRead > (bytesMissing)) ? bytesMissing : _byteRead);
+                        // std::cout << "After append packet initiated size in header = " << _packet.getPacketHeader().packetSize << " real size == " << _packet.getPacketSize() << std::endl;
                     }
+                    if (_packet.getPacketHeader().packetSize == _packet.getPacketSize())
+                    {
+                        std::cout << "Packet completly recieved, dispatch event" << std::endl;
+                        this->dispatch("ReceivePacketEvent", &_packet);
+                        // std::cout << "After dispatching" << std::endl;
+                        _packet.clear();
+                    }
+                    //}
                     if (connector->getReadBuffer().getSpaceLeft() == 0)                                 // Some random data, drop it. Should never happen.
+                    {
+                        std::cerr << "Reseting read buffer" << std::endl;
                         connector->getReadBuffer().reset();
+                    }
                 }
                 else
                     connector->disconnect();
             }
-            else if ((it->second.revents & POLLOUT))
+
+            if ((it->second.revents & POLLOUT))
             {
                 // std::cout << "Pollout for is == " << it->first << std::endl;
                 if (!connector->isConnected())
@@ -220,7 +226,7 @@ void            NetworkManager::run()
                     std::cout << "Byte written" << std::endl;
                     if (connector->getWriteBuffer().getSpaceUsed() == 0)
                     {
-                        // std::cout << "Reset buffer" << std::endl;
+		      //std::cerr << "Reseting write buffer" << std::endl;
                         it->second.events &= ~POLLOUT;              // A race condition with send may arise here, but we don't care for now
                         connector->getWriteBuffer().reset();
                     }
@@ -228,8 +234,7 @@ void            NetworkManager::run()
             }
 
         }
-        //}
+
     }
 }
-
 }
