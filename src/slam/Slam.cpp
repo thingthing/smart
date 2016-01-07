@@ -38,7 +38,7 @@ Slam::~Slam()
     delete this->_kg;*/
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent)
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
 {
   /*//Update state using odometry
   this->_state->setRobotState(agent);
@@ -62,7 +62,7 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *a
 
   /*//calculation of Kalman gain.
   this->_kg->updateLandmark(*this->_jH, *this->_covariance);*/
-	this->_test->updatePositions(1.0); //this shit should do the shit
+	this->_test->updatePositions(0.0); //this shit should do the shit
 
 	/*//apply kalman gain to system state matrix and agent
 	std::map<unsigned int, pcl::PointXYZ>::iterator it;
@@ -75,7 +75,7 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *a
 	std::cout << "new agent pos: x = " << agent->getPos().x << "; y = " << agent->getPos().y << "; z = " << agent->getPos().z << std::endl;
 	this->_state->setRobotState(this->_agent);*/
 
-  //agent->setPos(this->_state->getRobotPos());
+  agent->setPos(this->_test->getNewRobotPos());
 
   //After all, remove bad landmarks
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);

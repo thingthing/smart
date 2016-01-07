@@ -151,7 +151,7 @@ public:
    * @param cloud Capture data from agent
    * @param agent IAgent information
    */
-  void removeBadLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
+  void removeBadLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud,
                           IAgent const *agent);
   /**
    * @brief Remove duplicated landmarks
@@ -212,7 +212,7 @@ public:
    *
    * @return Extracted landmarks
    */
-  std::vector<Landmark *> extractLineLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
+  std::vector<Landmark *> extractLineLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud,
       IAgent const *agent);
 
 
@@ -275,11 +275,11 @@ public: // ONLY FOR UNIT TESTS
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
-  std::vector<Landmark *> extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZ> const &cloud,
+  std::vector<Landmark *> extractSpikeLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud,
       IAgent const *agent);
 
   //Other
-  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;

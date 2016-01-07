@@ -110,7 +110,7 @@ void            Agent::updateState()
   if (this->isAtDestination() == false)
   {
     std::cout << "Going goTowardsGoal" << std::endl;
-    //this->goTowardsGoal();
+    this->goTowardsGoal();
   } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
   {
     this->chargeBattery(1);
