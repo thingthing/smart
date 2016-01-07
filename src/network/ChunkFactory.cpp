@@ -229,6 +229,7 @@ void ChunkFactory::setTrueStringFromPoints(float data, std::string &stringPoints
         stringPoints += encodeNbIntoString((void*) & (data), sizeof(data));
     else
         stringPoints += encodeNbIntoString((void*) & (default_value), sizeof(float));
+    //std::cerr << "data in float "<< data << std::endl;
 }
 /**
  * @brief Convert PointXYZRGBA into a string
@@ -240,7 +241,10 @@ std::string ChunkFactory::fromPclPointRGBToString(const pcl::PointXYZRGBA& point
 {
     std::string stringPoints = "";
 
-    std::cout << points.x << " " << points.y << " " << points.z << std::endl;
+    //std::cerr << points.x << " " << points.y << " " << points.z << std::endl;
+
+    // std::cerr << (int)points.r << " " << (int)points.g << " " << (int)points.b << std::endl;
+    // std::cerr << "size of points " << sizeof((float)points.r) << sizeof(uint8_t) << std::endl;
     // std::cout << std::hex << dumper4(&points.x) << " " << dumper4(&points.y) << " " << dumper4(&points.z) << std::endl;
     // std::cerr << "size of point.r == " << sizeof(float)  << std::endl;
     // std::cerr << "size of cloud == " << sizeof(points)  << std::endl;
@@ -251,6 +255,11 @@ std::string ChunkFactory::fromPclPointRGBToString(const pcl::PointXYZRGBA& point
     setTrueStringFromPoints(points.r, stringPoints);
     setTrueStringFromPoints(points.g, stringPoints);
     setTrueStringFromPoints(points.b, stringPoints);
+    // stringPoints += encodeNbIntoString((void*) & (((float)points.r)), sizeof(float));
+    // stringPoints += encodeNbIntoString((void*) & (((float)points.g)), sizeof(float));
+    // stringPoints += encodeNbIntoString((void*) & (((float)points.b)), sizeof(float));
+
+    //std::cerr << "stringPoints to send " << stringPoints << std::endl;
     // if (points.x == points.x)
     //     stringPoints += encodeNbIntoString((void*) & (points.x), sizeof(points.x));
     // else

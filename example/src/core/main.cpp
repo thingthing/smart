@@ -30,23 +30,23 @@
 //             // sor.setMeanK(50);
 //             // sor.setStddevMulThresh(1.0);
 //             // sor.filter(*cloudClean);
-//             pcl::VoxelGrid<pcl::PointXYZRGBA> vox;
-//             vox.setInputCloud(cloud);
-//             vox.setLeafSize(0.05f, 0.05f, 0.05f);
-//             vox.filter(*cloudClean);
+//             // pcl::VoxelGrid<pcl::PointXYZRGBA> vox;
+//             // vox.setInputCloud(cloud);
+//             // vox.setLeafSize(0.05f, 0.05f, 0.05f);
+//             // vox.filter(*cloudClean);
 
 //             // float theta = M_PI / 2; // The angle of rotation in radians
 //             // Eigen::Affine3f transform_1 = Eigen::Affine3f::Identity();
 //             // transform_1.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitX()));
 //             // pcl::transformPointCloud (*cloudClean, *cloudClean, transform_1);
 
-//             viewer.showCloud (cloudClean);
+//             viewer.showCloud (cloud);
 // //      pcl::PCDWriter w;
 //             sprintf (buf, "frame_%06d.pcd", i);
 // //      w.writeBinaryCompressed (buf, *cloud);
-//             PCL_INFO ("Wrote a cloud with %zu (%ux%u) points in %s from cloud with %zu (%ux%u)points.\n", cloudClean->size (),
-//                       cloudClean->width, cloudClean->height, buf, cloud->size (),
-//                       cloud->width, cloud->height);
+//             // PCL_INFO ("Wrote a cloud with %zu (%ux%u) points in %s from cloud with %zu (%ux%u)points.\n", cloudClean->size (),
+//             //           cloudClean->width, cloudClean->height, buf, cloud->size (),
+//             //           cloud->width, cloud->height);
 //             ++i;
 //         }
 
@@ -66,7 +66,7 @@
 //         while (!viewer.wasStopped())
 //         {
 //             //viewer.spinOnce (100);
-//             interface->start();//to update each frame from the oni file
+//             //interface->start();//to update each frame from the oni file
 //             boost::this_thread::sleep (boost::posix_time::millisec (500));
 //         }
 //         PCL_INFO ("Successfully processed %d frames.\n", i);
@@ -79,6 +79,7 @@
 // int main ()
 // {
 //     SimpleOpenNIViewer v;
+//     std::cout << "HEY" << std::endl;
 //     v.run ();
 //     return 0;
 // }
