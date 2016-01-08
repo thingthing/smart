@@ -4,9 +4,9 @@
 #include <string>
 
 #include "event/Dispatcher.h"
-#include <pcl-1.8/pcl/common/common.h>
-#include <pcl-1.8/pcl/impl/point_types.hpp>
-#include <pcl-1.8/pcl/common/projection_matrix.h>
+#include <pcl/common/common.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/common/projection_matrix.h>
 
 class   ICapture : public Utils::Dispatcher
 {
