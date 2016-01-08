@@ -44,9 +44,6 @@ public:
 
 private:
 
-    void set_blocking (int should_block);
-    int  set_interface_attribs (int parity);
-
     struct pos3f
     {
         float x;
