@@ -21,21 +21,38 @@ void    Movement::connectArduinoSerial()
     set_interface_attribs (0);  // set speed to 115,200 bps, 8n1 (no parity)
     set_blocking (0);   // set no blocking
 
-    sleep(5);
 
-    std::cout << "gonna send character to make the agent run" << std::endl;
+    while (true)
+    {
+        sleep(4);
 
-    int sizeSent = 2;
-    write (fdSerial, "az", sizeSent); // send 2 character greeting
+        char buf [100];
+        int n = read (fdSerial, buf, sizeof buf);  // read up to 100 characters if ready to read
+        if (n > 0)
+        {
+                buf[n] = '\n';
+                int g = 0;
+                std::cout << "We read : " << n << std::endl;
+                while (buf[g] != '\n' && g < n)
+                {
+                    std::cout << buf[g];
+                    ++g;
+                }
+                std::cout << std::endl;
+        }
+        else
+            std::cout << "nothing sent" << std::endl;
 
-    usleep ((sizeSent + 25) * 100); // sleep enough to transmit the 2 plus
-                                    // receive 25:  approx 100 uS per char transmit
-    char buf [100];
-    int n = read (fdSerial, buf, sizeof buf);  // read up to 100 characters if ready to read
-    if (n > 0)
-        std::cout << "read: '" << buf << "'" << std::endl;
-    else
-        std::cout << "nothing sent" << std::endl;
+        sleep(3);
+        int sizeSent = 1;
+        n = write (fdSerial, "g", sizeSent);
+
+        std::cout << "the number written: " << n << std::endl;
+        //    usleep ((sizeSent + 25) * 100); // sleep enough to transmit the 2 plus
+                                        // receive 25:  approx 100 uS per char transmit
+    }
+
+
 }
 
 int     Movement::set_interface_attribs (int parity)

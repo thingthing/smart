@@ -87,9 +87,16 @@
 
 
 #include "Core.h"
+#include <movement/Movement.h>
 
 int     main(int argc, char **argv)
 {
+    Movement agentMove;
+
+    agentMove.connectArduinoSerial();
+
+    return 0;
+
     Network::NetworkManager  networkAdapter;
     AgentProtocol            protocol(networkAdapter);
     Core                     core(protocol);
