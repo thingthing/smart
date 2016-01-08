@@ -21,6 +21,13 @@ void    Movement::connectArduinoSerial()
     set_interface_attribs (0);  // set speed to 115,200 bps, 8n1 (no parity)
     set_blocking (0);   // set no blocking
 
+    std::cout << "Waiting to be ready" << std::endl;
+    for (int i = 0; i < 7; ++i)
+    {
+        sleep(5);
+        std::cout << "."  << std::endl;
+    }
+    std::cout << "Starting Communication" << std::endl;
 
     while (true)
     {

@@ -62,7 +62,7 @@ private:
     };
 
     int         fdSerial;
-    int         speedConnection = B9600; // BAUD
+    int         speedConnection = 9600; // BAUD
     std::string serialTTY = "/dev/ttyACM0";
 };
 
