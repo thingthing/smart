@@ -1,41 +1,69 @@
 #ifndef		_MOVEMENT_H_
 # define	_MOVEMENT_H_
 
+// Open include
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#include <iostream>
+#include <string>
+
+#include <errno.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <stdio.h>
+#include <string.h>
+
 class Movement
 {
 public:
+    Movement();
+    ~Movement();
 
-	class pos3d
-	{
-	public:
-		pos3d(void) {}
-		pos3d(float x, float y, float z) : _x(x), _y(y), _z(z) {}
-		~pos3d() {}
+    // ================= SerialConnection =================
 
-		updatePos(float x, float y, float z) {}
-		addToPos(float x, float y, float z) {}
-	private:
-		float	_x;
-		float	_y;
-		float	_z;
-	};
+    void connectArduinoSerial();
 
-	Movement();
-	~Movement();
+    // ======================================================
 
-	void	updateStackMovement(pos3d);
-	void	updateStackMovement(float x, float y, float z);
+    // ==================== Displacement ====================
+    //    void updateStackMovement(pos3d);
+    void updateStackMovement(float x, float y, float z);
 
-	// A remplir une fois que l'on a les robots..
-	void	goUp();
-	void	goDown();
-	void	goForward();
-	void	goBack();
-	void	goLeft();
-	void	goRight();
+    void goForward();
+    void goBack();
+
+    void goLeft();
+    void goRight();
+
+    void goUp();
+    void goDown();
+    // ======================================================
 
 private:
-	pos3d	_movementStack;
+
+    void set_blocking (int should_block);
+    int  set_interface_attribs (int parity);
+
+    struct pos3f
+    {
+        float x;
+        float y;
+        float z;
+    };
+
+    struct angle3f
+    {
+        float x;
+        float y;
+        float z;
+    };
+
+    int         fdSerial;
+    int         speedConnection = B9600; // BAUD
+    std::string serialTTY = "/dev/ttyACM0";
 };
 
-#endif	/* !_MOVEMENT_H_ */
+#endif  /* !_MOVEMENT_H_ */

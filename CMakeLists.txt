@@ -33,6 +33,7 @@ SET(SUBDIR
   protocol
   slam
   utils
+  movement
   )
 
 #Change the path to your implements files
