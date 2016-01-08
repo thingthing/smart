@@ -45,12 +45,15 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
   this->_jA->JacobiMath(agent);
   ///@todo: update process noise matrice
 */
-
+//  std::cout << "SLAM updateState" << std::endl;
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
+  //std::cout << "Before validationGate" << std::endl;
   this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
-  this->addLandmarks(newLandmarks, agent);
+  //std::cout << "Before add landmarks" << std::endl;
+  this->addLandmarks(newLandmarks);
+  //std::cout << "After add landmarks" << std::endl;
 
   // this->dispatch("SendCloudEvent", cloud);
   // this->dispatch("SendNewLandmarkEvent", newLandmarks);
@@ -81,7 +84,7 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
-void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent *agent)
+void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
 {
   /*this->_jXR->JacobiMath(agent);
   this->_jZ->JacobiMath(agent);
