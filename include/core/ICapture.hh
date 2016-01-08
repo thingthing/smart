@@ -18,6 +18,8 @@ public:
 
   pcl::PointCloud<pcl::PointXYZRGBA> const &getData() const;
   virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) = 0;
+  virtual void start() const = 0;
+  virtual void stop() const = 0;
 
 protected:
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr          _cloud;
