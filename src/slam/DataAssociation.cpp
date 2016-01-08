@@ -27,7 +27,8 @@ void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZRGBA> const
 {
   std::vector<Landmarks::Landmark *>  newLandmarks;
 
-  newLandmarks = this->_landmarkDb->extractLineLandmarks(cloud, agent);
+  if (!cloud.empty())
+    newLandmarks = this->_landmarkDb->extractLineLandmarks(cloud, agent);
   for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
     //First associate landmark

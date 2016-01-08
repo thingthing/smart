@@ -22,6 +22,8 @@ public:
   virtual ~Capture();
 
   virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+  virtual void start() const;
+  virtual void stop() const;
 
 private:
   pcl::Grabber *_grabber;

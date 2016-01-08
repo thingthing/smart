@@ -5,13 +5,23 @@ Capture::Capture()
 {
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
   _grabber->registerCallback(getData);
-  _grabber->start();
+  this->start();
 }
 
 Capture::~Capture()
 {
   _grabber->stop();
   delete _grabber;
+}
+
+void Capture::start() const {
+  _grabber->start();
+  std::cerr << "grabber start" << std::endl;
+}
+
+void Capture::stop() const {
+  _grabber->stop();
+  std::cerr << "grabber stop" << std::endl;
 }
 
 void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
@@ -41,7 +51,9 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   // vox.setInputCloud(cloudClean);
   // vox.setLeafSize(0.05f, 0.05f, 0.05f);
   // vox.filter(*cloudClean);
-
+  std::cerr << "Start capture" << std::endl;
+  if (!_cloud->empty())
+      _cloud->clear();
   pcl::copyPointCloud(*cloud, *_cloud);
   this->dispatch("takeDataEvent");
   boost::this_thread::sleep(boost::posix_time::millisec(10));

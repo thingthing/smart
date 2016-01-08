@@ -111,9 +111,11 @@ int     main(int argc, char **argv)
         std::cout << "failed to connect udp" << std::endl;
         return (-1);
     }
+    std::cout << "Starting networkAdapter" << std::endl;
     networkAdapter.start();
+    std::cout << "Runing core" << std::endl;
     core.run();
     //If code is here, you are exited, so send the disconnect info to server
-    networkAdapter.dispatch("DisconnectEvent");
+    networkAdapter.disconnect();
     return (0);
 }

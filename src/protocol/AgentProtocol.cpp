@@ -30,6 +30,8 @@ void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
     agent->registerCallback("SendPacketEvent", [this](IAgent * agent) {sendPacketEvent(agent);});
     agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     ///@todo: Register in the factory (process data)
+    this->registerCallback("StopCaptureEvent", [agent]() {agent->getCapture()->stop();});
+    this->registerCallback("StartCaptureEvent", [agent]() {agent->getCapture()->start();});
     agent->registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZRGBA> const & cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
 }
@@ -41,7 +43,8 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
     //     std::cout << "    " << cloud.points[i].x
     //               << " "    << cloud.points[i].y
     //               << " "    << cloud.points[i].z << std::endl;
-
+    //Stopping capture before sending
+    this->dispatch("StopCaptureEvent");
     _factory.processData(cloud);
     int i = 0;
     bool is_ready = true;
@@ -57,7 +60,8 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
         boost::this_thread::sleep(boost::posix_time::millisec(10));
     }
     std::cerr << "Send cloud event " << i << " packets with " << cloud.points.size() << " points" << std::endl;
-
+    //Cloud sent we can now restart capture
+    this->dispatch("StartCaptureEvent");
     //To uncomment if you want to send only one cloud
     // Json::Value     reply;
 
