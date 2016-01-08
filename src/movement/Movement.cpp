@@ -14,30 +14,26 @@ void    Movement::connectArduinoSerial()
     {
             std::cerr << "error " << errno << " opening fdSerial: " << fdSerial << std::endl;
             return;
-            memset(poll_set, '\0', sizeof(poll_set));
-            poll_set[0].fd = fdSerial;
-            poll_set[0].events = POLLIN;
     }
     else
+    {
         std::cout << "fdSerial Opened!" << std::endl;
+        memset(&poll_set, '\0', sizeof(poll_set));
+        poll_set.fd = fdSerial;
+        poll_set.events = POLLIN;
+    }
 
     std::cout << "Waiting to be ready" << std::endl;
-    for (int i = 0; i < 1; ++i)
-    {
-        sleep(2);
-        std::cout << "."  << std::endl;
-    }
+    sleep(3);
     std::cout << "Starting Communication" << std::endl;
 
-    poll(poll_set, 1, -1); // 1 = numFds // -1 je sais pas pourquoi
+
+    poll(&poll_set, 1, -1); // 1 = numFds // -1 je sais pas pourquoi
     int n;
     while (true)
     {
-        sleep(1);
-        std::cout << "yata" << std::endl;
-        if (poll_set[0].revents & POLLIN)
+        if (poll_set.revents & POLLIN)
         {
-            std::cout << "yata2" << std::endl;
             int nbRead = 100;
             char buf [nbRead];
             memset(buf, '\0', sizeof(char) * nbRead);
@@ -58,12 +54,12 @@ void    Movement::connectArduinoSerial()
             else
                 std::cout << "nothing sent" << std::endl;
         }
-std::cout << "yata3" << std::endl;
-        sleep(1);
-        int sizeSent = 1;
-        n = write (fdSerial, "g", sizeSent);
+        /*
+            int sizeSent = 1;
+            n = write (fdSerial, "g", sizeSent);
 
-        std::cout << "the number written: " << n << std::endl;
+            std::cout << "the number written: " << n << std::endl;
+        */
         //    usleep ((sizeSent + 25) * 100); // sleep enough to transmit the 2 plus
                                         // receive 25:  approx 100 uS per char transmit
     }
