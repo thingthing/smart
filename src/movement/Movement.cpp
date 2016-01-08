@@ -14,28 +14,39 @@ void    Movement::connectArduinoSerial()
     {
             std::cerr << "error " << errno << " opening fdSerial: " << fdSerial << std::endl;
             return;
+            memset(poll_set, '\0', sizeof(poll_set));
+            poll_set[0].fd = fdSerial;
+            poll_set[0].events = POLLIN;
     }
     else
         std::cout << "fdSerial Opened!" << std::endl;
 
     std::cout << "Waiting to be ready" << std::endl;
-    for (int i = 0; i < 5; ++i)
+    for (int i = 0; i < 1; ++i)
     {
-        sleep(5);
+        sleep(2);
         std::cout << "."  << std::endl;
     }
     std::cout << "Starting Communication" << std::endl;
 
+    poll(poll_set, 1, -1); // 1 = numFds // -1 je sais pas pourquoi
+    int n;
     while (true)
     {
-        sleep(4);
-
-        char buf [100];
-        int n = read (fdSerial, buf, sizeof buf);  // read up to 100 characters if ready to read
-        if (n > 0)
+        sleep(1);
+        std::cout << "yata" << std::endl;
+        if (poll_set[0].revents & POLLIN)
         {
+            std::cout << "yata2" << std::endl;
+            int nbRead = 100;
+            char buf [nbRead];
+            memset(buf, '\0', sizeof(char) * nbRead);
+            n = read (fdSerial, buf, sizeof(char) * nbRead );  // read up to 100 characters if ready to read
+            int g;
+            if (n > 0)
+            {
                 buf[n] = '\n';
-                int g = 0;
+                g = 0;
                 std::cout << "We read : " << n << std::endl;
                 while (buf[g] != '\n' && g < n)
                 {
@@ -43,11 +54,12 @@ void    Movement::connectArduinoSerial()
                     ++g;
                 }
                 std::cout << std::endl;
+            }
+            else
+                std::cout << "nothing sent" << std::endl;
         }
-        else
-            std::cout << "nothing sent" << std::endl;
-
-        sleep(3);
+std::cout << "yata3" << std::endl;
+        sleep(1);
         int sizeSent = 1;
         n = write (fdSerial, "g", sizeSent);
 

@@ -16,6 +16,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <poll.h>
+
+#define POLL_SIZE 32
+
+//# stty -F /dev/YOUR_DEVICE 9600 # set speed on connection
+//# stty -F /dev/YOUR_DEVICE -hupcl # unable auto reset
+
 class Movement
 {
 public:
@@ -58,9 +65,10 @@ private:
         float z;
     };
 
-    int         fdSerial;
-    int         speedConnection = 9600; // BAUD
-    std::string serialTTY = "/dev/ttyACM0";
+    int           fdSerial;
+    int           speedConnection = 9600; // BAUD
+    std::string   serialTTY = "/dev/ttyACM0";
+    struct pollfd poll_set[POLL_SIZE];
 };
 
 #endif  /* !_MOVEMENT_H_ */
