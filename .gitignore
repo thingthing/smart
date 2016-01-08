@@ -33,8 +33,11 @@
 # other legit files
 !*.txt
 !*.cmake
+!*.oni
 
 # Specific exceptions
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
+documentation/html
+documentation/latex
