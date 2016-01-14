@@ -12,7 +12,7 @@
  *
  * This class is meant as a entry point to Slam algorithm for an Agent
  *
- * @author Nicolas
+ * @author Nicolas, Martin
  *
  * @version 1.0
  *
@@ -38,11 +38,35 @@
 #include "IAgent.hh"
 #include "event/Dispatcher.h"
 
-#include "test.hh"
+#include <map>
+#include <cmath>
+#include <iostream>
 
 class   Slam : public Utils::Dispatcher
 {
 public:
+
+	class Case
+	{
+	public:
+		Case();
+		Case(const pcl::PointXYZ &landmark);
+		Case(float x, float y, float z);
+		virtual ~Case();
+		State getState() const;
+    void setState(State _state);
+		pcl::PointXYZ getOldPosition() const;
+		void setOldPosition(pcl::PointXYZ landmark);
+		pcl::PointXYZ getCurrentPosition() const;
+		void setCurrentPosition(pcl::PointXYZ landmark);
+		void setCurrentPosition(float x, float y);
+
+	protected:
+		pcl::PointXYZ oldPosition;
+		pcl::PointXYZ currentPosition;
+		State state;
+	};
+
   /**
   * @brief SLAM constructor
   * @details Take an agent wich will be link to the SLAM algorithm and
@@ -82,14 +106,24 @@ private:
   KalmanGainMatrice *_kg;
 
 public:
-  SystemStateMatrice  *_state;
+	unsigned int addLandmarkToMatrix(const pcl::PointXYZ &position);
+	void moveLandmark(unsigned int landmarkNumber, const pcl::PointXYZ &position);
+	void moveAgent(IAgent const *agent);
+	void updatePositions(int trustPercentageOnRobotMovement);
+
   Landmarks   *_landmarkDb;
-	JacobianMatriceA *_jA;
-  JacobianMatriceJxr *_jXR;
-  JacobianMatriceJz *_jZ;
-	JacobianMatriceH *_jH;
-  CovarianceMatrice *_covariance;
-	Test *_test;
+
+	pcl::PointXYZ oldRobotPos;
+	pcl::PointXYZ currentRobotPos;
+	std::map<unsigned int, Case> matrix;
+	unsigned int landmarkNumber;
+
+	enum State
+	{
+		UPDATING,
+		MOVED,
+		UPTODATE
+	};
 };
 
 
