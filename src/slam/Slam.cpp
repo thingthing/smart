@@ -33,12 +33,12 @@ Slam::Case::~Case()
 {
 }
 
-Slam::State Test::Case::getState() const
+Slam::State Slam::Case::getState() const
 {
 	return (state);
 }
 
-void Slam::Case::setState(Test::State _state)
+void Slam::Case::setState(Slam::State _state)
 {
 	this->state = _state;
 }
@@ -85,7 +85,7 @@ Slam::~Slam()
     delete this->_data;
   if (this->_landmarkDb)
     delete this->_landmarkDb;
-	this->matrix.clear();
+  this->matrix.clear();
 }
 
 void Slam::moveAgent(IAgent const *agent)
@@ -145,7 +145,6 @@ float actualRobotDisplacementY = 0;
 	}
 }
 
-
 void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
 {
   //Update state using reobserved landmark
@@ -164,10 +163,13 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
     std::cerr << "Error during addlandmarks" << std::endl;
   }
     //std::cout << "After add landmarks" << std::endl;
+	this->moveLandmarks(reobservedLandmarks);
 
 	this->moveAgent(agent);
 
 	this->updatePositions(0.0);
+
+  agent->setPos(this->currentRobotPos);
 
   //After all, remove bad landmarks
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);
@@ -178,7 +180,7 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
     int landmarkId = this->_landmarkDb->addToDB(**it);
-		int slamId = (int)this->addLandmarkToMatrix((*it)->pos);
+    int slamId = (int)this->addLandmarkToMatrix((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
   }
 }
@@ -190,14 +192,40 @@ unsigned int Slam::addLandmarkToMatrix(const pcl::PointXYZ &position)
 	tempX = position.x * cos(this->_agent->getYaw()) - position.y * sin(this->_agent->getYaw());
 	tempY = position.x * sin(this->_agent->getYaw()) + position.y * cos(this->_agent->getYaw());
 
-	tempXX = position.tempX * cos(this->_agent->getPitch()) - position.tempZ * sin(this->_agent->getPitch());
-	tempZ = position.tempX * sin(this->_agent->getPitch()) + position.tempZ * cos(this->_agent->getPitch());
+	tempXX = tempX * cos(this->_agent->getPitch()) - position.z * sin(this->_agent->getPitch());
+	tempZ = tempX * sin(this->_agent->getPitch()) + position.z * cos(this->_agent->getPitch());
 
-	tempYY = position.tempY * cos(this->_agent->getYaw()) - position.tempZ * sin(this->_agent->getYaw());
-	tempZZ = position.tempY * sin(this->_agent->getYaw()) + position.tempZ * cos(this->_agent->getYaw());
+	tempYY = tempY * cos(this->_agent->getYaw()) - tempZ * sin(this->_agent->getYaw());
+	tempZZ = tempY * sin(this->_agent->getYaw()) + tempZ * cos(this->_agent->getYaw());
 
-	Test::Case tempCase = Test::Case(tempX, tempY, position.z);
+	Slam::Case tempCase = Slam::Case(tempXX, tempYY, tempZZ);
+
 	this->matrix[this->landmarkNumber] = tempCase;
 
 	return(this->landmarkNumber++);
+}
+
+void Slam::moveLandmarks(std::vector<Landmarks::Landmark *> const &reobservedLandmarks)
+{
+  for (std::vector<Landmarks::Landmark *>::const_iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
+    this->moveLandmark(*it);
+}
+
+void Slam::moveLandmark(Landmarks::Landmark *landmark)
+{
+	float tempX, tempXX, tempY, tempYY, tempZ, tempZZ;
+
+	tempX = landmark->pos.x * cos(this->_agent->getYaw()) - landmark->pos.y * sin(this->_agent->getYaw());
+	tempY = landmark->pos.x * sin(this->_agent->getYaw()) + landmark->pos.y * cos(this->_agent->getYaw());
+
+	tempXX = tempX * cos(this->_agent->getPitch()) - landmark->pos.z * sin(this->_agent->getPitch());
+	tempZ = tempX * sin(this->_agent->getPitch()) + landmark->pos.z * cos(this->_agent->getPitch());
+
+	tempYY = tempY * cos(this->_agent->getRoll()) - tempZ * sin(this->_agent->getRoll());
+	tempZZ = tempY * sin(this->_agent->getRoll()) + tempZ * cos(this->_agent->getRoll());
+
+	this->matrix.at(landmark->id).setOldPosition(this->matrix.at(landmark->id).getCurrentPosition());
+	this->matrix.at(landmark->id).setCurrentPosition(pcl::PointXYZ(tempXX, tempYY, tempZZ));
+
+	this->matrix.at(landmarkNumber).setState(MOVED);
 }

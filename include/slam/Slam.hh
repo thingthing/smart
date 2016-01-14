@@ -38,6 +38,12 @@
 class   Slam : public Utils::Dispatcher
 {
 public:
+  	enum State
+	{
+		UPDATING,
+		MOVED,
+		UPTODATE
+	};
 
 	class Case
 	{
@@ -98,9 +104,10 @@ private:
   DataAssociation *_data;
 
 public:
-<<<<<<< HEAD
+
 	unsigned int addLandmarkToMatrix(const pcl::PointXYZ &position);
-	void moveLandmark(unsigned int landmarkNumber, const pcl::PointXYZ &position);
+	void moveLandmarks(std::vector<Landmarks::Landmark *> const &reobservedLandmarks);
+	void moveLandmark(Landmarks::Landmark *landmark);
 	void moveAgent(IAgent const *agent);
 	void updatePositions(int trustPercentageOnRobotMovement);
 
@@ -111,16 +118,6 @@ public:
 	std::map<unsigned int, Case> matrix;
 	unsigned int landmarkNumber;
 
-	enum State
-	{
-		UPDATING,
-		MOVED,
-		UPTODATE
-	};
-=======
-  Landmarks   *_landmarkDb;
-	Test *_test;
->>>>>>> fa30941927b96451fcdd2386c9985ad2adb1c9b3
 };
 
 

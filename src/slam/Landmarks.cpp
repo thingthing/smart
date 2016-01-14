@@ -184,13 +184,13 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
 // y = (x_view * sin(bearing) + y_view * cos(bearing)) + agenty
 static void parametricConvert(IAgent const *agent, double x_view, double y_view, double &x, double &y)
 {
-  x = (cos(agent->getBearing() * Landmarks::CONVERSION) * x_view - sin(agent->getBearing() * Landmarks::CONVERSION) * y_view) + agent->getPos().x;
-  y = (sin(agent->getBearing() * Landmarks::CONVERSION) * x_view + cos(agent->getBearing() * Landmarks::CONVERSION) * y_view) + agent->getPos().y;
+  x = (cos(agent->getYaw() * Landmarks::CONVERSION) * x_view - sin(agent->getYaw() * Landmarks::CONVERSION) * y_view) + agent->getPos().x;
+  y = (sin(agent->getYaw() * Landmarks::CONVERSION) * x_view + cos(agent->getYaw() * Landmarks::CONVERSION) * y_view) + agent->getPos().y;
 }
 
 double Landmarks::calculateBearing(double x, double y, IAgent const *agent) const
 {
-  return (atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getBearing());
+  return (atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getYaw());
 }
 
 void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b)
@@ -703,14 +703,14 @@ void Landmarks::removeBadLandmarks(pcl::PointCloud<pcl::PointXYZRGBA> const &clo
   double *Ybounds = new double[4];
 
   //get bounds of rectangular box to remove bad landmarks from
-  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().x;
-  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().y;
-  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
-  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().x;
-  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange + agent->getPos().y;
-  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
-  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getBearing() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[0] = cos((this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange + agent->getPos().x;
+  Ybounds[0] = sin((this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange + agent->getPos().y;
+  Xbounds[1] = Xbounds[0] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[1] = Ybounds[0] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange;
+  Xbounds[2] = cos((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange + agent->getPos().x;
+  Ybounds[2] = sin((359 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange + agent->getPos().y;
+  Xbounds[3] = Xbounds[2] + cos((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange;
+  Ybounds[3] = Ybounds[2] + sin((180 * this->degreePerScan * Landmarks::CONVERSION) + (agent->getYaw() * Landmarks::CONVERSION)) * maxrange;
 
   //now check DB for landmarks that are within this box
   //decrease life of all landmarks in box. If the life reaches zero, remove landmark
