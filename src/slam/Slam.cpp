@@ -131,9 +131,10 @@ float actualRobotDisplacementY = 0;
 
 	actualRobotDisplacementX = (averageLandmarkMovementX * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementX * trustPercentageOnRobotMovement);
 	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
-
+  std::cerr << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << std::endl;
 	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
 	this->currentRobotPos.y = this->oldRobotPos.y + actualRobotDisplacementY;
+  std::cerr << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << std::endl;
 
 	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
 	{
@@ -224,8 +225,9 @@ void Slam::moveLandmark(Landmarks::Landmark *landmark)
 	tempYY = tempY * cos(this->_agent->getRoll()) - tempZ * sin(this->_agent->getRoll());
 	tempZZ = tempY * sin(this->_agent->getRoll()) + tempZ * cos(this->_agent->getRoll());
 
-	this->matrix.at(landmark->id).setOldPosition(this->matrix.at(landmark->id).getCurrentPosition());
-	this->matrix.at(landmark->id).setCurrentPosition(pcl::PointXYZ(tempXX, tempYY, tempZZ));
+  int slamId = this->_landmarkDb->getSLamId(landmark->id);
+	this->matrix.at(slamId).setOldPosition(this->matrix.at(slamId).getCurrentPosition());
+	this->matrix.at(slamId).setCurrentPosition(pcl::PointXYZ(tempXX, tempYY, tempZZ));
 
 	this->matrix.at(landmarkNumber).setState(MOVED);
 }

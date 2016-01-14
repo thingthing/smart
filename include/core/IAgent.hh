@@ -51,10 +51,10 @@ public:
 
 protected:
     pcl::PointXYZ   _pos;
+  double    _yaw;
     std::string     _name;
     std::string     _status;
   double	_roll;
-  double	_yaw;
   double	_pitch;
     ICapture         *_capture;
     int             _battery;
