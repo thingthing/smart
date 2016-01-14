@@ -188,6 +188,10 @@ void Test::moveAgent(IAgent const *agent)
 	this->robotTheta = agent->getBearing();
 }
 
+pcl::PointXYZ const &Test::getNewRobotPos() const {
+	return this->currentRobotPos;
+}
+
 //trustPercentageOnRobotMovement must be between 0 and 1.
 void Test::updatePositions(int trustPercentageOnRobotMovement)
 {

@@ -20,33 +20,48 @@ Landmarks *DataAssociation::getLandmarkDb() const
   return (this->_landmarkDb);
 }
 
-void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZ> const &cloud,
+void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud,
                                         IAgent const *agent,
                                         std::vector<Landmarks::Landmark *> &resultLandmarks,
                                         std::vector<Landmarks::Landmark *> &reobservedLandmarks)
 {
   std::vector<Landmarks::Landmark *>  newLandmarks;
 
-  newLandmarks = this->_landmarkDb->extractLineLandmarks(cloud, agent);
-  for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
-  {
-    //First associate landmark
-    this->associateLandmarks(*it);
+  try {
+    if (!cloud.empty())
+      newLandmarks = this->_landmarkDb->extractLineLandmarks(cloud, agent);
+  } catch (...) {
+    std::cerr << "Error during extractlineLandmarks " << this->_landmarkDb->getLandmarkDB().size() << std::endl;
+    return;
+  }
+
+  try {
+    for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+      {
+	//First associate landmark
+	this->associateLandmarks(*it);
+      }
+  } catch (...) {
+    std::cerr << "Error during associatelandmarks" << std::endl;
   }
   //Can't remove Doubles because not really associated yet
   ///@todo: Find where we can removeDouble
   //newLandmarks = this->_landmarkDb->removeDouble(newLandmarks, resultLandmarks);
-  //Pass non doubles through gate
-  for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
-  {
-    if (this->_landmarkDb->getAssociation(*(*it)) == -1)
-    {
-      //Landmark not found, should add it
-      resultLandmarks.push_back(*it);
-      //this->_landmarkDb->addToDB(*(*it));
-    }
-    else
-      reobservedLandmarks.push_back(*it);
+  try {
+    //Pass non doubles through gate
+    for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+      {
+	if (this->_landmarkDb->getAssociation(*(*it)) == -1)
+	  {
+	    //Landmark not found, should add it
+	    resultLandmarks.push_back(*it);
+	    //this->_landmarkDb->addToDB(*(*it));
+	  }
+	else
+	  reobservedLandmarks.push_back(*it);
+      }
+  } catch (...) {
+    std::cerr << "Error during landmarkassociationresult" << std::endl;
   }
 }
 

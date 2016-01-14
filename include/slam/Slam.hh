@@ -27,14 +27,7 @@
 #include <pcl/impl/point_types.hpp>
 #include <pcl/common/projection_matrix.h>
 #include "DataAssociation.hh"
-#include "KalmanGainMatrice.hh"
-#include "SystemStateMatrice.hh"
-#include "CovarianceMatrice.hh"
 #include "Landmarks.hh"
-#include "JacobianMatriceA.hh"
-#include "JacobianMatriceJxr.hh"
-#include "JacobianMatriceJz.hh"
-#include "JacobianMatriceH.hh"
 #include "IAgent.hh"
 #include "event/Dispatcher.h"
 
@@ -87,7 +80,7 @@ public:
    * @param cloud Current mapping
    * @param agent Agent we want the state updated
    */
-  void    updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent);
+  void    updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent);
 
   /**
   * @brief Add a landmark
@@ -95,7 +88,7 @@ public:
   *
   * @param newLandmarks New landmark extracted from the current mapping
   */
-  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent *agent);
+  void    addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks);
 
 private:
   Slam();
@@ -103,9 +96,9 @@ private:
 private:
   IAgent     *_agent;
   DataAssociation *_data;
-  KalmanGainMatrice *_kg;
 
 public:
+<<<<<<< HEAD
 	unsigned int addLandmarkToMatrix(const pcl::PointXYZ &position);
 	void moveLandmark(unsigned int landmarkNumber, const pcl::PointXYZ &position);
 	void moveAgent(IAgent const *agent);
@@ -124,6 +117,10 @@ public:
 		MOVED,
 		UPTODATE
 	};
+=======
+  Landmarks   *_landmarkDb;
+	Test *_test;
+>>>>>>> fa30941927b96451fcdd2386c9985ad2adb1c9b3
 };
 
 

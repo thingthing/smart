@@ -57,6 +57,8 @@ public:
 	void moveAgent(float X, float Y, float Z, float Theta);
 	void moveAgent(IAgent const *agent);
 	void updatePositions(int trustPercentageOnRobotMovement);
+	pcl::PointXYZ const &getNewRobotPos() const;
+
 
 protected:
 	pcl::PointXYZ oldRobotPos;

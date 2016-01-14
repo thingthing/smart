@@ -23,9 +23,17 @@ Core::~Core()
 
 void        Core::update()
 {
-    pcl::PointCloud<pcl::PointXYZ> cloud = _agent->takeData();
-    _slam->updateState(cloud, _agent);
-    _agent->updateState();
+    pcl::PointCloud<pcl::PointXYZRGBA> cloud = _agent->getCapture()->getData();
+    try {    
+      _slam->updateState(cloud, _agent);
+    } catch(...) {
+      std::cerr << "Error during slam update" << std::endl;
+    }
+    try {
+      _agent->updateState();
+    } catch(...) {
+      std::cerr << "Error during agent update" << std::endl;
+    }
 }
 
 void        Core::run()

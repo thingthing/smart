@@ -3,13 +3,18 @@
 
 #include <string>
 
-#include <pcl-1.7/pcl/common/common.h>
-#include <pcl-1.7/pcl/impl/point_types.hpp>
-#include <pcl-1.7/pcl/io/pcd_io.h>
-#include <pcl-1.7/pcl/io/openni_grabber.h>
-#include <pcl-1.7/pcl/io/oni_grabber.h>
-#include <pcl-1.7/pcl/point_types.h>
-#include <pcl-1.7/pcl/common/projection_matrix.h>
+#include <pcl/io/openni2_grabber.h>
+#include <pcl/common/common.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/oni_grabber.h>
+#include <pcl/point_types.h>
+#include <pcl/common/projection_matrix.h>
+#include <pcl/filters/filter.h>
+#include <pcl/filters/voxel_grid.h>
+
+
 #include "ICapture.hh"
 
 class   Capture : public ICapture
@@ -19,7 +24,9 @@ public:
   Capture();
   virtual ~Capture();
 
-  virtual pcl::PointCloud<pcl::PointXYZ> const &captureData();
+  virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+  virtual void start() const;
+  virtual void stop() const;
 
 private:
   pcl::Grabber *_grabber;

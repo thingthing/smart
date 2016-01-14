@@ -145,25 +145,35 @@ float actualRobotDisplacementY = 0;
 	}
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent)
+
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
 {
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
-  this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
-  this->addLandmarks(newLandmarks, agent);
+  //std::cout << "Before validationGate" << std::endl;
+  try {
+    this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
+  } catch (...) {
+    std::cerr << "Error during dataassociation" << std::endl;
+  }
+  //std::cout << "Before add landmarks" << std::endl;
+  try {
+    this->addLandmarks(newLandmarks);
+  } catch (...) {
+    std::cerr << "Error during addlandmarks" << std::endl;
+  }
+    //std::cout << "After add landmarks" << std::endl;
 
 	this->moveAgent(agent);
 
 	this->updatePositions(0.0);
 
-  agent->setPos(this->currentRobotPos);
-
   //After all, remove bad landmarks
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
-void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks, IAgent *agent)
+void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
 {
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
@@ -175,10 +185,16 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
 
 unsigned int Slam::addLandmarkToMatrix(const pcl::PointXYZ &position)
 {
-	float tempX, tempY;
+	float tempX, tempXX, tempY, tempYY, tempZ, tempZZ;
 
 	tempX = position.x * cos(this->_agent->getYaw()) - position.y * sin(this->_agent->getYaw());
 	tempY = position.x * sin(this->_agent->getYaw()) + position.y * cos(this->_agent->getYaw());
+
+	tempXX = position.tempX * cos(this->_agent->getPitch()) - position.tempZ * sin(this->_agent->getPitch());
+	tempZ = position.tempX * sin(this->_agent->getPitch()) + position.tempZ * cos(this->_agent->getPitch());
+
+	tempYY = position.tempY * cos(this->_agent->getYaw()) - position.tempZ * sin(this->_agent->getYaw());
+	tempZZ = position.tempY * sin(this->_agent->getYaw()) + position.tempZ * cos(this->_agent->getYaw());
 
 	Test::Case tempCase = Test::Case(tempX, tempY, position.z);
 	this->matrix[this->landmarkNumber] = tempCase;
