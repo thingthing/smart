@@ -1,11 +1,82 @@
 #include "Slam.hh"
 
+Slam::Case::Case() :
+	state(UPTODATE)
+{
+	this->currentPosition.x = 0.0;
+	this->currentPosition.y = 0.0;
+	this->currentPosition.z = 0.0;
+
+	this->oldPosition.x = 0.0;
+	this->oldPosition.y = 0.0;
+	this->oldPosition.z = 0.0;
+}
+
+Slam::Case::Case(const pcl::PointXYZ &landmark) :
+	oldPosition(landmark), currentPosition(landmark), state(UPTODATE)
+{
+}
+
+Slam::Case::Case(float x, float y, float z) :
+	state(UPTODATE)
+{
+	this->currentPosition.x = x;
+	this->currentPosition.y = y;
+	this->currentPosition.z = z;
+
+	this->oldPosition.x = x;
+	this->oldPosition.y = y;
+	this->oldPosition.z = z;
+}
+
+Slam::Case::~Case()
+{
+}
+
+Slam::State Test::Case::getState() const
+{
+	return (state);
+}
+
+void Slam::Case::setState(Test::State _state)
+{
+	this->state = _state;
+}
+
+pcl::PointXYZ Slam::Case::getOldPosition() const
+{
+	return (this->oldPosition);
+}
+
+void Slam::Case::setOldPosition(pcl::PointXYZ landmark)
+{
+	this->oldPosition = landmark;
+}
+
+pcl::PointXYZ Slam::Case::getCurrentPosition() const
+{
+	return (this->currentPosition);
+}
+
+void Slam::Case::setCurrentPosition(pcl::PointXYZ landmark)
+{
+	this->currentPosition = landmark;
+}
+
+void Slam::Case::setCurrentPosition(float x, float y)
+{
+	this->currentPosition.x = x;
+	this->currentPosition.y = y;
+}
+
 Slam::Slam(IAgent *agent)
 {
   this->_agent = agent;
+	this->currentRobotPos = agent->getPos();
+	this->oldRobotPos = agent->getPos();
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
   this->_data = new DataAssociation(this->_landmarkDb);
-  this->_test = new Test();
+	this->landmarkNumber = 0;
 }
 
 Slam::~Slam()
@@ -14,12 +85,68 @@ Slam::~Slam()
     delete this->_data;
   if (this->_landmarkDb)
     delete this->_landmarkDb;
+  this->matrix.clear();
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
+void Slam::moveAgent(IAgent const *agent)
 {
-  /*//Update state using odometry*/
-  //  std::cout << "SLAM updateState" << std::endl;
+	this->oldRobotPos = this->currentRobotPos;
+	this->currentRobotPos = agent->getPos();
+}
+
+//trustPercentageOnRobotMovement must be between 0 and 1.
+//0 means trust the landmarks; 1 means trust the agent's odometry
+void Slam::updatePositions(int trustPercentageOnRobotMovement)
+{
+float averageLandmarkMovementX = 0;
+float averageLandmarkMovementY = 0;
+int landmarksMoved = 0;
+
+float supposedRobotDisplacementX = 0;
+float supposedRobotDisplacementY = 0;
+
+float actualRobotDisplacementX = 0;
+float actualRobotDisplacementY = 0;
+
+	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
+	{
+		if (it->second.getState() == MOVED)
+			{
+				averageLandmarkMovementX += it->second.getCurrentPosition().x - it->second.getOldPosition().x;
+				averageLandmarkMovementY += it->second.getCurrentPosition().y - it->second.getOldPosition().y;
+
+				landmarksMoved++;
+				it->second.setState(UPDATING);
+			}
+	}
+
+	if (landmarksMoved > 0)
+	{
+		averageLandmarkMovementX /= landmarksMoved; 
+		averageLandmarkMovementY /= landmarksMoved;
+	}
+
+	supposedRobotDisplacementX = this->currentRobotPos.x - this->oldRobotPos.x;
+	supposedRobotDisplacementY = this->currentRobotPos.y - this->oldRobotPos.y;
+
+	actualRobotDisplacementX = (averageLandmarkMovementX * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementX * trustPercentageOnRobotMovement);
+	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
+
+	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
+	this->currentRobotPos.y = this->oldRobotPos.y + actualRobotDisplacementY;
+
+	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
+	{
+		if (it->second.getState() == UPDATING)
+		{
+			it->second.setCurrentPosition(it->second.getOldPosition().x + actualRobotDisplacementX, it->second.getOldPosition().y + actualRobotDisplacementY);
+			it->second.setState(UPTODATE);
+		}
+	}
+}
+
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent)
+{
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
@@ -37,15 +164,11 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
   }
     //std::cout << "After add landmarks" << std::endl;
 
-  // this->dispatch("SendNewLandmarkEvent", newLandmarks);
+	this->moveAgent(agent);
 
-  /*//update the covariance for the agent*/
-  this->_test->moveAgent(agent);
+	this->updatePositions(0.0);
 
-  /*//calculation of Kalman gain.*/
-  this->_test->updatePositions(0.0); //this shit should do the shit
-
-  agent->setPos(this->_test->getNewRobotPos());
+  agent->setPos(this->currentRobotPos);
 
   //After all, remove bad landmarks
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);
@@ -56,9 +179,21 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
     int landmarkId = this->_landmarkDb->addToDB(**it);
-    int slamId = (int)this->_test->addLandmark((*it)->pos);
+    int slamId = (int)this->addLandmarkToMatrix((*it)->pos);
     this->_landmarkDb->addSlamId(landmarkId, slamId);
-
-    //By default assume that landmark is perfectly observed
   }
 }
+
+unsigned int Slam::addLandmarkToMatrix(const pcl::PointXYZ &position)
+{
+	float tempX, tempY;
+
+	tempX = position.x * cos(this->_agent->getYaw()) - position.y * sin(this->_agent->getYaw());
+	tempY = position.x * sin(this->_agent->getYaw()) + position.y * cos(this->_agent->getYaw());
+
+	Test::Case tempCase = Test::Case(tempX, tempY, position.z);
+	this->matrix[this->landmarkNumber] = tempCase;
+
+	return(this->landmarkNumber++);
+}
+s
