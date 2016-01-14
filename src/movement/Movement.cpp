@@ -57,23 +57,22 @@ void    Movement::connectArduinoSerial()
                     std::cout << "nothing recieved" << std::endl;
             }
 
-
-        }
-
-                    // ============================================
-            if (wannaWriteModaFoka )//&& (poll_set.revents & POLLOUT))
+            // ============================================
+            if (wannaWriteModaFoka && (poll_set.revents & POLLOUT))
             {
                 wannaWriteModaFoka = false;
                 int sizeSent = 1;
                 n = write (fdSerial, "g", sizeSent);
-                //poll_set.events &= ~POLLOUT;
+                poll_set.events &= ~POLLOUT;
             }
+        }
+
         usleep(100000);
         ++k;
         if (k % 10 == 0)
         {
             wannaWriteModaFoka = true;
-            //poll_set.events &= POLLOUT;
+            poll_set.events &= POLLOUT;
         }
     }
 }
