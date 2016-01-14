@@ -58,6 +58,7 @@ void    Movement::connectArduinoSerial()
             }
 
             // ============================================
+
             if (wannaWriteModaFoka && (poll_set.revents & POLLOUT))
             {
                 wannaWriteModaFoka = false;
@@ -72,7 +73,7 @@ void    Movement::connectArduinoSerial()
         if (k % 10 == 0)
         {
             wannaWriteModaFoka = true;
-            poll_set.events &= POLLOUT;
+            poll_set.events |= POLLOUT;
         }
     }
 }
