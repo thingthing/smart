@@ -38,6 +38,12 @@
 class   Slam : public Utils::Dispatcher
 {
 public:
+  	enum State
+	{
+		UPDATING,
+		MOVED,
+		UPTODATE
+	};
 
 	class Case
 	{
@@ -110,12 +116,6 @@ public:
 	std::map<unsigned int, Case> matrix;
 	unsigned int landmarkNumber;
 
-	enum State
-	{
-		UPDATING,
-		MOVED,
-		UPTODATE
-	};
 };
 
 

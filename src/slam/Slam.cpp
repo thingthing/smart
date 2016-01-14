@@ -33,12 +33,12 @@ Slam::Case::~Case()
 {
 }
 
-Slam::State Test::Case::getState() const
+Slam::State Slam::Case::getState() const
 {
 	return (state);
 }
 
-void Slam::Case::setState(Test::State _state)
+void Slam::Case::setState(Slam::State _state)
 {
 	this->state = _state;
 }
@@ -145,7 +145,7 @@ float actualRobotDisplacementY = 0;
 	}
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZ> const &cloud, IAgent *agent)
+void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
 {
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
@@ -191,9 +191,9 @@ unsigned int Slam::addLandmarkToMatrix(const pcl::PointXYZ &position)
 	tempX = position.x * cos(this->_agent->getYaw()) - position.y * sin(this->_agent->getYaw());
 	tempY = position.x * sin(this->_agent->getYaw()) + position.y * cos(this->_agent->getYaw());
 
-	Test::Case tempCase = Test::Case(tempX, tempY, position.z);
+	Slam::Case tempCase = Slam::Case(tempX, tempY, position.z);
 	this->matrix[this->landmarkNumber] = tempCase;
 
 	return(this->landmarkNumber++);
 }
-s
+
