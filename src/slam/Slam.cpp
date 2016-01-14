@@ -163,6 +163,7 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
     std::cerr << "Error during addlandmarks" << std::endl;
   }
     //std::cout << "After add landmarks" << std::endl;
+	this->moveLandmarks(reobservedLandmarks);
 
 	this->moveAgent(agent);
 
@@ -186,14 +187,45 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
 
 unsigned int Slam::addLandmarkToMatrix(const pcl::PointXYZ &position)
 {
-	float tempX, tempY;
+	float tempX, tempXX, tempY, tempYY, tempZ, tempZZ;
 
 	tempX = position.x * cos(this->_agent->getYaw()) - position.y * sin(this->_agent->getYaw());
 	tempY = position.x * sin(this->_agent->getYaw()) + position.y * cos(this->_agent->getYaw());
 
-	Slam::Case tempCase = Slam::Case(tempX, tempY, position.z);
+	tempXX = tempX * cos(this->_agent->getPitch()) - position.z * sin(this->_agent->getPitch());
+	tempZ = tempX * sin(this->_agent->getPitch()) + position.z * cos(this->_agent->getPitch());
+
+	tempYY = tempY * cos(this->_agent->getYaw()) - tempZ * sin(this->_agent->getYaw());
+	tempZZ = tempY * sin(this->_agent->getYaw()) + tempZ * cos(this->_agent->getYaw());
+
+	Slam::Case tempCase = Slam::Case(tempXX, tempYY, tempZZ);
+
 	this->matrix[this->landmarkNumber] = tempCase;
 
 	return(this->landmarkNumber++);
 }
 
+void Slam::moveLandmarks(std::vector<Landmarks::Landmark *> const &reobservedLandmarks)
+{
+  for (std::vector<Landmarks::Landmark *>::const_iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
+    this->moveLandmark(*it);
+}
+
+void Slam::moveLandmark(Landmarks::Landmark *landmark)
+{
+	float tempX, tempXX, tempY, tempYY, tempZ, tempZZ;
+
+	tempX = landmark->pos.x * cos(this->_agent->getYaw()) - landmark->pos.y * sin(this->_agent->getYaw());
+	tempY = landmark->pos.x * sin(this->_agent->getYaw()) + landmark->pos.y * cos(this->_agent->getYaw());
+
+	tempXX = tempX * cos(this->_agent->getPitch()) - landmark->pos.z * sin(this->_agent->getPitch());
+	tempZ = tempX * sin(this->_agent->getPitch()) + landmark->pos.z * cos(this->_agent->getPitch());
+
+	tempYY = tempY * cos(this->_agent->getRoll()) - tempZ * sin(this->_agent->getRoll());
+	tempZZ = tempY * sin(this->_agent->getRoll()) + tempZ * cos(this->_agent->getRoll());
+
+	this->matrix.at(landmark->id).setOldPosition(this->matrix.at(landmark->id).getCurrentPosition());
+	this->matrix.at(landmark->id).setCurrentPosition(pcl::PointXYZ(tempXX, tempYY, tempZZ));
+
+	this->matrix.at(landmarkNumber).setState(MOVED);
+}

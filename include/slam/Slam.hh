@@ -104,8 +104,10 @@ private:
   DataAssociation *_data;
 
 public:
+
 	unsigned int addLandmarkToMatrix(const pcl::PointXYZ &position);
-	void moveLandmark(unsigned int landmarkNumber, const pcl::PointXYZ &position);
+	void moveLandmarks(std::vector<Landmarks::Landmark *> const &reobservedLandmarks);
+	void moveLandmark(Landmarks::Landmark *landmark);
 	void moveAgent(IAgent const *agent);
 	void updatePositions(int trustPercentageOnRobotMovement);
 
