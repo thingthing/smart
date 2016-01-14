@@ -38,7 +38,7 @@ void        Core::update()
 
 void        Core::run()
 {
-    try {
+ try {
         while (1)
         {
             usleep(1000000);
