@@ -1,8 +1,8 @@
 #include "IAgent.hh"
 
 IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery)
-  : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _bearing(0),
-    _name(name), _status("OK"),  _thrust(0), _theta(0), _deltaTheta(0), _battery(battery)
+  : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _yaw(0),
+    _name(name), _status("OK"),  _roll(0), _pitch(0), _battery(battery)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -37,9 +37,9 @@ pcl::PointXYZ const &IAgent::getPos() const
   return (this->_pos);
 }
 
-double    IAgent::getBearing() const
+double    IAgent::getRoll() const
 {
-  return (this->_bearing);
+  return (this->_roll);
 }
 
 void    IAgent::setPos(pcl::PointXYZ const &pos)
@@ -56,9 +56,9 @@ void    IAgent::setPos(double x, double y , double z)
   this->_pos.z = z;
 }
 
-void    IAgent::setBearing(double bearing)
+void    IAgent::setRoll(double roll)
 {
-  this->_bearing = bearing;
+  this->_roll = roll;
 }
 
 ICapture const *IAgent::getCapture() const
@@ -66,32 +66,22 @@ ICapture const *IAgent::getCapture() const
   return (this->_capture);
 }
 
-double          IAgent::getThrust() const
+double          IAgent::getYaw() const
 {
-  return (this->_thrust);
+  return (this->_yaw);
 }
 
-double          IAgent::getTheta() const
+double          IAgent::getPitch() const
 {
-  return (this->_theta);
+  return (this->_pitch);
 }
 
-double          IAgent::getDeltaTheta() const
+void            IAgent::setYaw(double yaw)
 {
-  return (this->_deltaTheta);
+  this->_yaw = yaw;
 }
 
-void            IAgent::setThrust(double thrust)
+void            IAgent::setPitch(double pitch)
 {
-  this->_thrust = thrust;
-}
-
-void            IAgent::setTheta(double theta)
-{
-  this->_theta = theta;
-}
-
-void            IAgent::setDeltaTheta(double deltaTheta)
-{
-  this->_deltaTheta = deltaTheta;
+  this->_pitch = pitch;
 }

@@ -5,7 +5,7 @@ Capture::Capture()
 {
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
   _grabber->registerCallback(getData);
-  this->start();
+  //this->start();
 }
 
 Capture::~Capture()
@@ -15,8 +15,10 @@ Capture::~Capture()
 }
 
 void Capture::start() const {
-  _grabber->start();
-  std::cerr << "grabber start" << std::endl;
+  if (!_grabber->isRunning()) {
+    _grabber->start();
+    std::cerr << "grabber start" << std::endl;
+  }
 }
 
 void Capture::stop() const {

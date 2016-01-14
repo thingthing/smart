@@ -57,7 +57,7 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
             toSend  = _factory.getChunk();
         }
         is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
-        boost::this_thread::sleep(boost::posix_time::millisec(50));
+        boost::this_thread::sleep(boost::posix_time::millisec(5));
     }
     std::cerr << "Send cloud event " << i << " packets with " << cloud.points.size() << " points" << std::endl;
     //Cloud sent we can now restart capture
@@ -196,6 +196,7 @@ pcl::PointXYZ AgentProtocol::getPosFromJson(Json::Value const &root)
 
 void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      // only for test 4 now, will change
 {
+  static bool first_order = true;
     Json::Reader        reader;
     Json::Value         root;
     std::string         serverReply((const char *)packet->data() + sizeof(Network::s_ComPacketHeader), packet->getPacketSize() - sizeof(Network::s_ComPacketHeader));
@@ -219,7 +220,11 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
                 {
                     pos = this->getPosFromJson(*it);
                     std::cout << "Order goal pos got == " << pos << std::endl;
-                    this->dispatch("SetGoalPosEvent", pos);
+		    if (first_order) {
+		      first_order = false;
+		      this->dispatch("StartCaptureEvent");
+                    }
+		    this->dispatch("SetGoalPosEvent", pos);
                 }
                 else if (command == "position")
                 {
