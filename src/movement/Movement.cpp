@@ -27,41 +27,54 @@ void    Movement::connectArduinoSerial()
     sleep(3);
     std::cout << "Starting Communication" << std::endl;
 
-
-    poll(&poll_set, 1, -1); // 1 = numFds // -1 je sais pas pourquoi
     int n;
+    int k = 0;
+    bool wannaWriteModaFoka = false;
     while (true)
     {
-        if (poll_set.revents & POLLIN)
+        if (poll(&poll_set, 1, 0) > 0) // 1 = numFds
         {
-            int nbRead = 100;
-            char buf [nbRead];
-            memset(buf, '\0', sizeof(char) * nbRead);
-            n = read (fdSerial, buf, sizeof(char) * nbRead );  // read up to 100 characters if ready to read
-            int g;
-            if (n > 0)
+            if (poll_set.revents & POLLIN)
             {
-                buf[n] = '\n';
-                g = 0;
-                std::cout << "We read : " << n << std::endl;
-                while (buf[g] != '\n' && g < n)
+                int nbRead = 100;
+                char buf [nbRead];
+                memset(buf, '\0', sizeof(char) * nbRead);
+                n = read (fdSerial, buf, sizeof(char) * nbRead );  // read up to 100 characters if ready to read
+                int g;
+                if (n > 0)
                 {
-                    std::cout << buf[g];
-                    ++g;
+                    buf[n] = '\n';
+                    g = 0;
+                    //std::cout << "We read : " << n << std::endl;
+                    while (buf[g] != '\n' && g < n)
+                    {
+                        std::cout << buf[g];
+                        ++g;
+                    }
+                    std::cout << " <----- received : " << g << std::endl;
                 }
-                std::cout << std::endl;
+                else
+                    std::cout << "nothing recieved" << std::endl;
             }
-            else
-                std::cout << "nothing sent" << std::endl;
-        }
-        /*
-            int sizeSent = 1;
-            n = write (fdSerial, "g", sizeSent);
 
-            std::cout << "the number written: " << n << std::endl;
-        */
-        //    usleep ((sizeSent + 25) * 100); // sleep enough to transmit the 2 plus
-                                        // receive 25:  approx 100 uS per char transmit
+
+        }
+
+                    // ============================================
+            if (wannaWriteModaFoka )//&& (poll_set.revents & POLLOUT))
+            {
+                wannaWriteModaFoka = false;
+                int sizeSent = 1;
+                n = write (fdSerial, "g", sizeSent);
+                //poll_set.events &= ~POLLOUT;
+            }
+        usleep(100000);
+        ++k;
+        if (k % 10 == 0)
+        {
+            wannaWriteModaFoka = true;
+            //poll_set.events &= POLLOUT;
+        }
     }
 }
 
