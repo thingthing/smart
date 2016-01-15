@@ -48,6 +48,8 @@ public:
     void goDown();
     // ======================================================
 
+    void processReceivedData(unsigned int size);
+    void updateSerial();
 private:
 
     struct pos3f
