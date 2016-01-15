@@ -34,6 +34,7 @@ SET(SUBDIR
   slam
   utils
   movement
+  serial
   )
 
 #Change the path to your implements files

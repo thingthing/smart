@@ -1,0 +1,5 @@
+SET(SOURCES
+  ${SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/circular_buffer.c
+  PARENT_SCOPE
+  )
