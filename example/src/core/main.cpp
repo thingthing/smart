@@ -90,9 +90,13 @@
 
 int     main(int argc, char **argv)
 {
+  std::cout << "start" << std::endl;
     Network::NetworkManager  networkAdapter;
+  std::cout << "net ok" << std::endl;
     AgentProtocol            protocol(networkAdapter);
+  std::cout << "prot ok" << std::endl;
     Core                     core(protocol);
+  std::cout << "core ok" << std::endl;
     std::string              server_ip = "54.148.17.11";
 
     if (argc > 1)

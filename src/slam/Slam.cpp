@@ -151,21 +151,24 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
-  //std::cout << "Before validationGate" << std::endl;
+
   try {
     this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
   } catch (...) {
     std::cerr << "Error during dataassociation" << std::endl;
   }
-  //std::cout << "Before add landmarks" << std::endl;
+
   try {
     this->addLandmarks(newLandmarks);
   } catch (...) {
     std::cerr << "Error during addlandmarks" << std::endl;
   }
-    //std::cout << "After add landmarks" << std::endl;
-	this->moveLandmarks(reobservedLandmarks);
 
+  try {
+  	this->moveLandmarks(reobservedLandmarks);
+  } catch (std::exception &e) {
+    std::cerr << "error during move landmarks " << e.what() << std::endl;
+  }
 	this->moveAgent(agent);
 
 	this->updatePositions(0.0);
@@ -226,8 +229,9 @@ void Slam::moveLandmark(Landmarks::Landmark *landmark)
 	tempZZ = tempY * sin(this->_agent->getRoll()) + tempZ * cos(this->_agent->getRoll());
 
   int slamId = this->_landmarkDb->getSLamId(landmark->id);
+
 	this->matrix.at(slamId).setOldPosition(this->matrix.at(slamId).getCurrentPosition());
 	this->matrix.at(slamId).setCurrentPosition(pcl::PointXYZ(tempXX, tempYY, tempZZ));
 
-	this->matrix.at(landmarkNumber).setState(MOVED);
+	this->matrix.at(slamId).setState(MOVED);
 }
