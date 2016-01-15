@@ -79,13 +79,7 @@ void        Movement::updateSerial()
 
 // ================ Movement =======================
 
-void    Movement::sendMotorSpeed(uint motorNo, short speed)
-{
-    unsigned char buff[] = {'\r', (!motorNo) ? '\x00' : '\x02', (speed & 0xFF),
-                            'r',  (!motorNo) ? '\x01' : '\x03', ((speed >> 8) & 0xFF)};
-    circular_buffer_write(&_txBuffer, buffer, sizeof(buff));
-    poll_set.events |= POLLOUT;
-}
+
 
 void    Movement::updateMotorsSpeed()
 {
