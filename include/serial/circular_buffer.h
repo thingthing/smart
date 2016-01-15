@@ -1,5 +1,5 @@
-#ifndef     CIRCULAR_BUFFER_H_
-# define    CIRCULAR_BUFFER_H_
+#ifndef     Y_CIRCULAR_BUFFER_H_
+# define    Y_CIRCULAR_BUFFER_H_
 
 # define    CIRCULAR_BUFFER_SIZE        (2048) //Should be a power of 2. (here : 2KB)
 # define    CIRCULAR_BUFFER_SIZE_MASK     (CIRCULAR_BUFFER_SIZE - 1)
