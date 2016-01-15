@@ -36,7 +36,7 @@ void        Movement::processReceivedData(unsigned int size)
     char    buf[64] = {0};
     int     parseCursor = 2;
 
-    circular_buffer_read(&_rxBuffer, buf, size);
+    circular_buffer_read(&_rxBuffer, (unsigned char *)buf, size);
 
     float p = atof(buf + parseCursor);
     while (buf[parseCursor] != ':')
@@ -46,7 +46,7 @@ void        Movement::processReceivedData(unsigned int size)
     while (buf[parseCursor] != ':')
         ++parseCursor;
     float r = atof(buf + parseCursor);
-    printf("bite : %f %f %f\n", p, t, r);
+    printf("b : %f %f %f\n", p, y, r);
 }
 
 void        Movement::updateSerial()
@@ -55,11 +55,11 @@ void        Movement::updateSerial()
     {
         if (poll_set.revents & POLLIN)
         {
-            static char tmpbuf[64];
-            int ret = read (fdSerial, tmpbuf, sizeof(char) * 64 );
+            static unsigned char tmpbuf[64];
+            int ret = read (fdSerial, (char*)tmpbuf, sizeof(char) * 64 );
             if (ret > 0)
             {
-                circular_buffer_write(&_rxBuffer, tmpbuf, ret);
+	      circular_buffer_write(&_rxBuffer, tmpbuf, ret);
                 while (_rxBuffer.availableData && _rxBuffer.buf[_rxBuffer.readIdx] != 'p')
                     circular_buffer_read_one(&_txBuffer);
 
