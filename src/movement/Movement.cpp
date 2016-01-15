@@ -79,9 +79,39 @@ void        Movement::updateSerial()
 
 // ================ Movement =======================
 
+void    Movement::sendMotorSpeed(uint motorNo, short speed)
+{
+    unsigned char buff[] = {'\r', (!motorNo) ? '\x00' : '\x02', (speed & 0xFF),
+                            'r',  (!motorNo) ? '\x01' : '\x03', ((speed >> 8) & 0xFF)};
+    circular_buffer_write(&_txBuffer, buffer, sizeof(buff));
+    poll_set.events |= POLLOUT;
+}
+
+void    Movement::updateMotorsSpeed()
+{
+    char c = 'g';
+    circular_buffer_write(&_txBuffer, &c, 1);
+    poll_set.events |= POLLOUT;
+}
+
+
+void    Movement::increaseMotorSpeed(uint motorNo)
+{
+    char c = (motorNo) ? 'q' : 'a';
+    circular_buffer_write(&_txBuffer, &c, 1);
+    poll_set.events |= POLLOUT;
+}
+
+void    Movement::decreaseMotorSpeed(uint motorNo)
+{
+    char c = (motorNo) ? 's' : 'z';
+    circular_buffer_write(&_txBuffer, &c, 1);
+    poll_set.events |= POLLOUT;
+}
+
+
 void    Movement::updateStackMovement(float x, float y, float z)
 {
-
 }
 
 void    Movement::goForward()

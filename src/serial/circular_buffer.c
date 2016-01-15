@@ -9,7 +9,7 @@
 #endif
 
 
-void        init_circular_buffer(volatile t_circular_buffer *self)
+void        init_circular_buffer(t_circular_buffer *self)
 {
     self->availableData = 0;
     self->readIdx = 0;
@@ -18,7 +18,7 @@ void        init_circular_buffer(volatile t_circular_buffer *self)
 
 // WARNING : MAKE SURE TO deactive interrupts before calling these !
 // Beware not to read more than there is data available.
-void         circular_buffer_read(volatile t_circular_buffer *self, unsigned char *buf, unsigned int size)
+void         circular_buffer_read(t_circular_buffer *self, unsigned char *buf, unsigned int size)
 {
 #ifdef rtos
     __disable_irq();
@@ -42,7 +42,7 @@ void         circular_buffer_read(volatile t_circular_buffer *self, unsigned cha
 }
 
 
-void         circular_buffer_write(volatile t_circular_buffer *self, const unsigned char *buf, unsigned int size)
+void         circular_buffer_write(t_circular_buffer *self, const unsigned char *buf, unsigned int size)
 {
 #ifdef rtos
     __disable_irq();
@@ -67,7 +67,7 @@ void         circular_buffer_write(volatile t_circular_buffer *self, const unsig
 }
 
 
-unsigned char        circular_buffer_read_one(volatile t_circular_buffer *self)
+unsigned char        circular_buffer_read_one(t_circular_buffer *self)
 {
 #ifdef rtos
     __disable_irq();
@@ -84,7 +84,7 @@ unsigned char        circular_buffer_read_one(volatile t_circular_buffer *self)
 }
 
 
-void        circular_buffer_write_one(volatile t_circular_buffer *self, const unsigned char c)
+void        circular_buffer_write_one(t_circular_buffer *self, const unsigned char c)
 {
 #ifdef rtos
     __disable_irq();
@@ -97,7 +97,7 @@ void        circular_buffer_write_one(volatile t_circular_buffer *self, const un
 #endif
 }
 
-unsigned int        circular_buffer_write_to(volatile t_circular_buffer *self, unsigned int fd)
+unsigned int        circular_buffer_write_to(t_circular_buffer *self, unsigned int fd)
 {
     unsigned int    toRead = self->availableData;
 
@@ -117,7 +117,7 @@ unsigned int        circular_buffer_write_to(volatile t_circular_buffer *self, u
 }
 
 
-unsigned int        getAvailableData(volatile t_circular_buffer *self)
+unsigned int        getAvailableData(t_circular_buffer *self)
 {
 #ifdef rtos
     __disable_irq();

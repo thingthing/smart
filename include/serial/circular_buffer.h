@@ -13,11 +13,11 @@ typedef struct      s_circular_buffer
     unsigned char   buf[CIRCULAR_BUFFER_SIZE];
 }                   t_circular_buffer;
 
-void        init_circular_buffer(volatile t_circular_buffer *self);
-void        circular_buffer_read(volatile t_circular_buffer *self, unsigned char *buf, unsigned int size);
-unsigned char circular_buffer_read_one(volatile t_circular_buffer *self);
-void        circular_buffer_write(volatile t_circular_buffer *self, unsigned  const char *buf, unsigned int size);
-void        circular_buffer_write_one(volatile t_circular_buffer *self, const unsigned char buf);
-unsigned int getAvailableData(volatile t_circular_buffer *self);
-unsigned int        circular_buffer_write_to(volatile t_circular_buffer *self, unsigned int fd);
+void        init_circular_buffer(t_circular_buffer *self);
+void        circular_buffer_read(t_circular_buffer *self, unsigned char *buf, unsigned int size);
+unsigned char circular_buffer_read_one(t_circular_buffer *self);
+void        circular_buffer_write(t_circular_buffer *self, unsigned  const char *buf, unsigned int size);
+void        circular_buffer_write_one(t_circular_buffer *self, const unsigned char buf);
+unsigned int getAvailableData(t_circular_buffer *self);
+unsigned int        circular_buffer_write_to(t_circular_buffer *self, unsigned int fd);
 #endif

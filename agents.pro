@@ -74,7 +74,7 @@ SOURCES += \
     test/test_landmark_extraction.cpp \
     test/test_slam_common.cpp \
     misc/odroidIOinterface/main.c \
-    src/serial/src/circular_buffer.c
+    src/serial/circular_buffer.c
 
 HEADERS += \
     include/network/CircularBuffer.h \
@@ -184,7 +184,7 @@ HEADERS += \
     test/igloo-igloo.1.1.1/tests/igloo_self_test.h \
     test/CustomConstraint.hh \
     test/test_slam_common.hh \
-    include/serial/includes/circular_buffer.h
+    include/serial/circular_buffer.h
 
 INCLUDEPATH += include \
               include/core \
@@ -192,7 +192,7 @@ INCLUDEPATH += include \
               include/protocol  \
               include/slam    \
               include/utils    \
-              include/serial/includes \
+              include/serial \
               /usr/include/jsoncpp
 
 OTHER_FILES += \
