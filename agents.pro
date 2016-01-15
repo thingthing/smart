@@ -22,7 +22,59 @@ SOURCES += \
     src/network/ComPacket.cpp \
     src/network/ChunkFactory.cpp \
     src/network/NetworkManager.cpp \
-    src/network/UDPConnector.cpp
+    src/network/UDPConnector.cpp \
+    example/src/core/Agent.cpp \
+    example/src/core/Capture.cpp \
+    example/src/core/main.cpp \
+    example/src/network/TCPConnector.cpp \
+    example/src/network/UDPConnector.cpp \
+    src/core/IAgent.cpp \
+    src/core/ICapture.cpp \
+    src/movement/Movement.cpp \
+    src/slam/test.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/assertmacro_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/boolean_constraints.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/container_spec.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/custom_matchers_test.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/exceptions_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/expression_error_handling.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/main.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/map_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/operator_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/sequence_container_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/string_line_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/string_tests.cpp \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/spec/stringize_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/context_provider/marked_as_only_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/context_registry/specs_marked_as_only_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/context_registry/static_setup_teardown_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/abstract_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/alternative_registration.cpp \
+    test/igloo-igloo.1.1.1/tests/bdd_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/coloredconsoletestresultsoutput_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/context_error_handling.cpp \
+    test/igloo-igloo.1.1.1/tests/context_metadata.cpp \
+    test/igloo-igloo.1.1.1/tests/defaulttestresultsoutput_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/igloo_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/ignoring_specs_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/main.cpp \
+    test/igloo-igloo.1.1.1/tests/nested_contexts.cpp \
+    test/igloo-igloo.1.1.1/tests/running_subsets_of_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/testfixtures.cpp \
+    test/igloo-igloo.1.1.1/tests/testlistener_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/testresultfactory_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/testresults_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/visualstudiotestresultsoutput_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/xmlwritter_tests.cpp \
+    test/igloo-igloo.1.1.1/tests/xunittestresultsoutput_tests.cpp \
+    test/CustomConstraint.cpp \
+    test/main.cpp \
+    test/test_chunkFactory.cpp \
+    test/test_data_association.cpp \
+    test/test_landmark_extraction.cpp \
+    test/test_slam_common.cpp \
+    misc/odroidIOinterface/main.c \
+    src/serial/src/circular_buffer.c
 
 HEADERS += \
     include/network/CircularBuffer.h \
@@ -48,7 +100,91 @@ HEADERS += \
     include/network/ComPacket.h \
     include/network/APacket.h \
     include/network/NetworkManager.hh \
-    include/network/IConnector.hh
+    include/network/IConnector.hh \
+    example/include/core/Agent.hh \
+    example/include/core/Capture.hh \
+    example/include/network/TCPConnector.h \
+    example/include/network/UDPConnector.hh \
+    include/core/IAgent.hh \
+    include/core/ICapture.hh \
+    include/movement/Movement.h \
+    include/network/ChunkFactory.h \
+    include/slam/test.hh \
+    misc/odroidIOinterface/usb_io.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/coloredconsoletestresultsoutput.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/consoleoutputcolors.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/defaulttestresultsoutput.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/outputters.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/testresultsoutput.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/visualstudiooutput.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/xmlwriter.h \
+    test/igloo-igloo.1.1.1/igloo/core/outputters/xunitoutput.h \
+    test/igloo-igloo.1.1.1/igloo/core/testlisteners/minimalprogresstestlistener.h \
+    test/igloo-igloo.1.1.1/igloo/core/testlisteners/testlisteners.h \
+    test/igloo-igloo.1.1.1/igloo/core/alternativeregistrationaliases.h \
+    test/igloo-igloo.1.1.1/igloo/core/context.h \
+    test/igloo-igloo.1.1.1/igloo/core/contextbase.h \
+    test/igloo-igloo.1.1.1/igloo/core/contextprovider.h \
+    test/igloo-igloo.1.1.1/igloo/core/contextregistry.h \
+    test/igloo-igloo.1.1.1/igloo/core/contextrunner.h \
+    test/igloo-igloo.1.1.1/igloo/core/core.h \
+    test/igloo-igloo.1.1.1/igloo/core/defaultregistrationaliases.h \
+    test/igloo-igloo.1.1.1/igloo/core/registration.h \
+    test/igloo-igloo.1.1.1/igloo/core/testlistener.h \
+    test/igloo-igloo.1.1.1/igloo/core/testlisteneraggregator.h \
+    test/igloo-igloo.1.1.1/igloo/core/testresult.h \
+    test/igloo-igloo.1.1.1/igloo/core/testresultfactory.h \
+    test/igloo-igloo.1.1.1/igloo/core/testresults.h \
+    test/igloo-igloo.1.1.1/igloo/core/testrunner.h \
+    test/igloo-igloo.1.1.1/igloo/external/choices/choices.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/expressions/andexpression.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/expressions/expression.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/expressions/expression_fwd.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/expressions/notexpression.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/expressions/orexpression.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/constraints.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/containsconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/endswithconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/equalsconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/equalscontainerconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/equalswithdeltaconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/fulfillsconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/haslengthconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/isgreaterthanconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/islessthanconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/constraints/startswithconstraint.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/alloperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/atleastoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/atmostoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/collectionconstraintevaluator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/collectionoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/exactlyoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/collections/noneoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/andoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/constraintoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/notoperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/operators/oroperator.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/constraintadapter.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/constraintlist.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/expressionbuilder.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/fluent/fluent.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/assert.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/assertionexception.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/assertmacro.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/exceptions.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/snowhouse.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/stringize.h \
+    test/igloo-igloo.1.1.1/igloo/external/snowhouse/snowhouse/stringizers.h \
+    test/igloo-igloo.1.1.1/igloo/igloo.h \
+    test/igloo-igloo.1.1.1/igloo/igloo_alt.h \
+    test/igloo-igloo.1.1.1/igloo/igloo_framework.h \
+    test/igloo-igloo.1.1.1/tests/fakes/fake_context_runner.h \
+    test/igloo-igloo.1.1.1/tests/fakes/fake_test_listener.h \
+    test/igloo-igloo.1.1.1/tests/fakes/null_test_results_output.h \
+    test/igloo-igloo.1.1.1/tests/igloo_self_test.h \
+    test/CustomConstraint.hh \
+    test/test_slam_common.hh \
+    include/serial/includes/circular_buffer.h
 
 INCLUDEPATH += include \
               include/core \
@@ -56,6 +192,7 @@ INCLUDEPATH += include \
               include/protocol  \
               include/slam    \
               include/utils    \
+              include/serial/includes \
               /usr/include/jsoncpp
 
 OTHER_FILES += \

@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include <poll.h>
+#include "circular_buffer.h"
 
 //# stty -F /dev/YOUR_DEVICE 9600 # set speed on connection
 //# stty -F /dev/YOUR_DEVICE -hupcl # unable auto reset
@@ -67,6 +68,9 @@ private:
     int           speedConnection = 9600; // BAUD
     std::string   serialTTY = "/dev/ttyACM0";
     struct pollfd poll_set;
+
+    t_circular_buffer       _rxBuffer;
+    t_circular_buffer       _txBuffer;
 };
 
 #endif  /* !_MOVEMENT_H_ */

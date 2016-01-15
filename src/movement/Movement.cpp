@@ -1,6 +1,11 @@
 #include "movement/Movement.h"
+#include <stdlib.h>
 
-Movement::Movement() {}
+Movement::Movement()
+{
+    init_circular_buffer(&_rxBuffer);
+    init_circular_buffer(&_txBuffer);
+}
 
 Movement::~Movement(){}
 
@@ -12,8 +17,8 @@ void    Movement::connectArduinoSerial()
     int fdSerial = open (serialTTY.c_str(), O_RDWR); // | O_NOCTTY | O_SYNC
     if (fdSerial < 0)
     {
-            std::cerr << "error " << errno << " opening fdSerial: " << fdSerial << std::endl;
-            return;
+        std::cerr << "error " << errno << " opening fdSerial: " << fdSerial << std::endl;
+        return;
     }
     else
     {
@@ -22,58 +27,52 @@ void    Movement::connectArduinoSerial()
         poll_set.fd = fdSerial;
         poll_set.events = POLLIN;
     }
+}
 
-    std::cout << "Waiting to be ready" << std::endl;
-    sleep(3);
-    std::cout << "Starting Communication" << std::endl;
 
-    int n;
-    int k = 0;
-    bool wannaWriteModaFoka = false;
-    while (true)
+
+void        Movement::processReceivedData(unsigned int size)
+{
+    char    buf[64] = {0};
+    int     parseCursor = 2;
+
+    circular_buffer_read(&_rxBuffer, buf, size);
+
+    float p = atof(buf + parseCursor);
+    while (buf[parseCursor] != ':')
+        ++parseCursor;
+    ++parseCursor;
+    float y = atof(buf + parseCursor);
+    while (buf[parseCursor] != ':')
+        ++parseCursor;
+    float r = atof(buf + parseCursor);
+    printf("bite : %f %f %f\n", p, t, r);
+}
+
+void        Movement::updateSerial()
+{
+    if (poll(&poll_set, 1, 0) > 0) // 1 = numFds
     {
-        if (poll(&poll_set, 1, 0) > 0) // 1 = numFds
+        if (poll_set.revents & POLLIN)
         {
-            if (poll_set.revents & POLLIN)
+            static char tmpbuf[64];
+            int ret = read (fdSerial, tmpbuf, sizeof(char) * 64 );
+            if (ret > 0)
             {
-                int nbRead = 100;
-                char buf [nbRead];
-                memset(buf, '\0', sizeof(char) * nbRead);
-                n = read (fdSerial, buf, sizeof(char) * nbRead );  // read up to 100 characters if ready to read
-                int g;
-                if (n > 0)
-                {
-                    buf[n] = '\n';
-                    g = 0;
-                    //std::cout << "We read : " << n << std::endl;
-                    while (buf[g] != '\n' && g < n)
-                    {
-                        std::cout << buf[g];
-                        ++g;
-                    }
-                    std::cout << " <----- received : " << g << std::endl;
-                }
-                else
-                    std::cout << "nothing recieved" << std::endl;
-            }
+                circular_buffer_write(&_rxBuffer, tmpbuf, ret);
+                while (_rxBuffer.availableData && _rxBuffer.buf[_rxBuffer.readIdx] != 'p')
+                    circular_buffer_read_one(&_txBuffer);
 
-            // ============================================
-
-            if (wannaWriteModaFoka && (poll_set.revents & POLLOUT))
-            {
-                wannaWriteModaFoka = false;
-                int sizeSent = 1;
-                n = write (fdSerial, "g", sizeSent);
-                poll_set.events &= ~POLLOUT;
+                for (int i = 0; i < _rxBuffer.availableData; ++i)
+                    if (_rxBuffer.buf[(_rxBuffer.readIdx + i) & CIRCULAR_BUFFER_SIZE_MASK] == '\n')
+                        processReceivedData(i + 1);
             }
         }
-
-        usleep(100000);
-        ++k;
-        if (k % 10 == 0)
+        if (poll_set.revents & POLLOUT)
         {
-            wannaWriteModaFoka = true;
-            poll_set.events |= POLLOUT;
+            circular_buffer_write_to(&_txBuffer, fdSerial);
+            if (_txBuffer.availableData == 0)
+                poll_set.events &= ~POLLOUT;
         }
     }
 }
