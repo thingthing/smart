@@ -193,7 +193,9 @@ INCLUDEPATH += include \
               include/slam    \
               include/utils    \
               include/serial \
-              /usr/include/jsoncpp
+              /usr/include/jsoncpp \
+              example/include/core \
+              example/include/network \
 
 OTHER_FILES += \
     Makefile \

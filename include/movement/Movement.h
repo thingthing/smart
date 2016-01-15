@@ -22,6 +22,13 @@
 //# stty -F /dev/YOUR_DEVICE 9600 # set speed on connection
 //# stty -F /dev/YOUR_DEVICE -hupcl # unable auto reset
 
+typedef struct  s_vector3f
+{
+    float x;
+    float y;
+    float z;
+}               t_vector3f;
+
 class Movement
 {
 public:
@@ -36,7 +43,6 @@ public:
 
     // ==================== Displacement ====================
     //    void updateStackMovement(pos3d);
-    void updateStackMovement(float x, float y, float z);
 
     void goForward();
     void goBack();
@@ -50,29 +56,19 @@ public:
 
     void processReceivedData(unsigned int size);
     void updateSerial();
+    void updateGyro();
     void    updateMotorsSpeed();
     void sendMotorSpeed(uint motorNo, short speed);
     void increaseMotorSpeed(uint motorNo);
     void decreaseMotorSpeed(uint motorNo);
+
+    t_vector3f      &getPitchRollYaw() { return (__pitchRollYaw); }
 private:
 
-    struct pos3f
-    {
-        float x;
-        float y;
-        float z;
-    };
-
-    struct angle3f
-    {
-        float x;
-        float y;
-        float z;
-    };
-
+    t_vector3f    _pitchRollYaw;
     int           fdSerial;
     int           speedConnection = 9600; // BAUD
-    std::string   serialTTY = "/dev/ttyACM0";
+    std::string   serialTTY = "/dev/ttyACM99";
     struct pollfd poll_set;
 
     t_circular_buffer       _rxBuffer;

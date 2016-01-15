@@ -47,6 +47,9 @@ void        Movement::processReceivedData(unsigned int size)
         ++parseCursor;
     float r = atof(buf + parseCursor);
     printf("b : %f %f %f\n", p, y, r);
+    _pitchRollYaw.x = p;
+    _pitchRollYaw.y = r;
+    _pitchRollYaw.z = y;
 }
 
 void        Movement::updateSerial()
@@ -77,13 +80,20 @@ void        Movement::updateSerial()
     }
 }
 
+void Movement::updateGyro()
+{
+    unsigned char c = 'g';
+    circular_buffer_write(&_txBuffer, &c, 1);
+    poll_set.events |= POLLOUT;
+}
+
 // ================ Movement =======================
 
 
 
 void    Movement::updateMotorsSpeed()
 {
-    unsigned char c = 'g';
+    unsigned char c = 'u';
     circular_buffer_write(&_txBuffer, &c, 1);
     poll_set.events |= POLLOUT;
 }
@@ -103,10 +113,6 @@ void    Movement::decreaseMotorSpeed(uint motorNo)
     poll_set.events |= POLLOUT;
 }
 
-
-void    Movement::updateStackMovement(float x, float y, float z)
-{
-}
 
 void    Movement::goForward()
 {

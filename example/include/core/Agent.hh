@@ -5,6 +5,7 @@
 
 #include "IAgent.hh"
 #include "Capture.hh"
+#include "movement/Movement.h"
 
 class       Agent : public IAgent
 {
@@ -27,8 +28,10 @@ public:
     bool            isAtBase() const;
 
     static const int DEFAULTBATTERY;
+
 private:
     pcl::PointXYZ   _goalPos;
+    Movement        _movement;
 };
 
 
