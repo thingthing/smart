@@ -51,6 +51,8 @@ public:
     void processReceivedData(unsigned int size);
     void updateSerial();
     void sendMotorSpeed(uint motorNo, short speed);
+    void increaseMotorSpeed(uint motorNo);
+    void decreaseMotorSpeed(uint motorNo);
 private:
 
     struct pos3f
