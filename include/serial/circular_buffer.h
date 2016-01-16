@@ -4,6 +4,10 @@
 # define    CIRCULAR_BUFFER_SIZE        (2048) //Should be a power of 2. (here : 2KB)
 # define    CIRCULAR_BUFFER_SIZE_MASK     (CIRCULAR_BUFFER_SIZE - 1)
 
+#ifdef __cplusplus
+extern "C"
+{
+ #endif
 
 typedef struct      s_circular_buffer
 {
@@ -20,4 +24,8 @@ void        circular_buffer_write(t_circular_buffer *self, unsigned  const char 
 void        circular_buffer_write_one(t_circular_buffer *self, const unsigned char buf);
 unsigned int getAvailableData(t_circular_buffer *self);
 unsigned int        circular_buffer_write_to(t_circular_buffer *self, unsigned int fd);
+#ifdef __cplusplus
+}
+ #endif
+
 #endif

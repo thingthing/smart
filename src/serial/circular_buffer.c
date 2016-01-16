@@ -8,6 +8,11 @@
 #include <compiler_settings.h>
 #endif
 
+#ifdef __cplusplus
+extern "C"
+{
+ #endif
+
 
 void        init_circular_buffer(t_circular_buffer *self)
 {
@@ -128,3 +133,7 @@ unsigned int        getAvailableData(t_circular_buffer *self)
 #endif
     return (ret);
 }
+
+#ifdef __cplusplus
+}
+ #endif

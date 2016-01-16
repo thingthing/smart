@@ -63,7 +63,7 @@ void        Movement::updateSerial()
                 while (_rxBuffer.availableData && _rxBuffer.buf[_rxBuffer.readIdx] != 'p')
                     circular_buffer_read_one(&_txBuffer);
 
-                for (int i = 0; i < _rxBuffer.availableData; ++i)
+                for (unsigned int i = 0; i < _rxBuffer.availableData; ++i)
                     if (_rxBuffer.buf[(_rxBuffer.readIdx + i) & CIRCULAR_BUFFER_SIZE_MASK] == '\n')
                         processReceivedData(i + 1);
             }
@@ -83,7 +83,7 @@ void        Movement::updateSerial()
 
 void    Movement::updateMotorsSpeed()
 {
-    char c = 'g';
+    unsigned char c = 'g';
     circular_buffer_write(&_txBuffer, &c, 1);
     poll_set.events |= POLLOUT;
 }
@@ -91,14 +91,14 @@ void    Movement::updateMotorsSpeed()
 
 void    Movement::increaseMotorSpeed(uint motorNo)
 {
-    char c = (motorNo) ? 'q' : 'a';
+    unsigned char c = (motorNo) ? 'q' : 'a';
     circular_buffer_write(&_txBuffer, &c, 1);
     poll_set.events |= POLLOUT;
 }
 
 void    Movement::decreaseMotorSpeed(uint motorNo)
 {
-    char c = (motorNo) ? 's' : 'z';
+    unsigned char c = (motorNo) ? 's' : 'z';
     circular_buffer_write(&_txBuffer, &c, 1);
     poll_set.events |= POLLOUT;
 }
