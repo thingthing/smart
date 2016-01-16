@@ -1,5 +1,11 @@
 #include "movement/Movement.h"
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <termios.h>
+#include <fcntl.h>
 
 Movement::Movement()
 {
@@ -26,6 +32,35 @@ void    Movement::connectArduinoSerial()
         memset(&poll_set, '\0', sizeof(poll_set));
         poll_set.fd = fdSerial;
         poll_set.events = POLLIN;
+
+        std::cout << "Init Connection" << std::endl;
+        struct termios termAttr;
+        if (tcgetattr(fdSerial, &termAttr) < 0)
+          std::cout << "couldn't get term attributes" << std::endl;
+        speed_t brate = B9600;
+        cfsetispeed(&termAttr, brate);
+        cfsetospeed(&termAttr, brate);
+
+        termAttr.c_cflag &= ~PARENB;
+        termAttr.c_cflag &= ~CSTOPB;
+        termAttr.c_cflag &= ~CSIZE;
+        termAttr.c_cflag |= CS8;
+
+        termAttr.c_cflag &= ~CRTSCTS;
+
+        termAttr.c_cflag |= CREAD | CLOCAL;
+
+        termAttr.c_iflag &= ~(IXON | IXOFF | IXANY);
+
+        termAttr.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+        termAttr.c_oflag &= ~OPOST;
+
+        termAttr.c_cc[VMIN] = 0;
+        termAttr.c_cc[VTIME] = 0;
+
+        tcsetattr(fdSerial, TCSANOW, &termAttr);
+        if (tcsetattr(fdSerial, TCSAFLUSH, &termAttr) < 0)
+          std::cout << "problem with tcsetattr" << std::endl;
     }
 }
 
