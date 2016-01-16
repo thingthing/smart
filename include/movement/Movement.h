@@ -62,7 +62,7 @@ public:
     void increaseMotorSpeed(uint motorNo);
     void decreaseMotorSpeed(uint motorNo);
 
-    t_vector3f      &getPitchRollYaw() { return (__pitchRollYaw); }
+    t_vector3f      &getPitchRollYaw() { return (_pitchRollYaw); }
 private:
 
     t_vector3f    _pitchRollYaw;
