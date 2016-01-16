@@ -90,6 +90,19 @@
 
 int     main(int argc, char **argv)
 {
+  /*Movement movement;
+
+     movement.connectArduinoSerial();
+  while(1)
+    {
+      usleep(1000000);
+      movement.updateGyro();
+      movement.updateSerial();
+      movement.increaseMotorSpeed(0);
+      movement.updateMotorsSpeed();
+      }
+
+    return 0;*/
     Network::NetworkManager  networkAdapter;
     AgentProtocol            protocol(networkAdapter);
     Core                     core(protocol);

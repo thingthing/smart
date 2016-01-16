@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include <termios.h>
 #include <fcntl.h>
@@ -20,15 +21,15 @@ Movement::~Movement(){}
 
 void    Movement::connectArduinoSerial()
 {
-    int fdSerial = open (serialTTY.c_str(), O_RDWR); // | O_NOCTTY | O_SYNC
-    if (fdSerial < 0)
+    fdSerial = open (serialTTY.c_str(), O_RDWR | O_NONBLOCK); // | O_NOCTTY | O_SYNC
+    if (fdSerial <= 0)
     {
         std::cerr << "error " << errno << " opening fdSerial: " << fdSerial << std::endl;
-        return;
+        return; 
     }
     else
     {
-        std::cout << "fdSerial Opened!" << std::endl;
+      std::cout << "fdSerial Opened! : " << fdSerial << std::endl;
         memset(&poll_set, '\0', sizeof(poll_set));
         poll_set.fd = fdSerial;
         poll_set.events = POLLIN;
@@ -58,9 +59,10 @@ void    Movement::connectArduinoSerial()
         termAttr.c_cc[VMIN] = 0;
         termAttr.c_cc[VTIME] = 0;
 
-        tcsetattr(fdSerial, TCSANOW, &termAttr);
-        if (tcsetattr(fdSerial, TCSAFLUSH, &termAttr) < 0)
+        if (tcsetattr(fdSerial, TCSANOW, &termAttr) < 0 || 
+	    tcsetattr(fdSerial, TCSAFLUSH, &termAttr) < 0)
           std::cout << "problem with tcsetattr" << std::endl;
+	sleep(2);
     }
 }
 
@@ -80,8 +82,9 @@ void        Movement::processReceivedData(unsigned int size)
     float y = atof(buf + parseCursor);
     while (buf[parseCursor] != ':')
         ++parseCursor;
+    ++parseCursor; 
     float r = atof(buf + parseCursor);
-    printf("b : %f %f %f\n", p, y, r);
+     printf("b : %f %f %f\n", p, y, r); 
     _pitchRollYaw.x = p;
     _pitchRollYaw.y = r;
     _pitchRollYaw.z = y;
@@ -89,22 +92,42 @@ void        Movement::processReceivedData(unsigned int size)
 
 void        Movement::updateSerial()
 {
-    if (poll(&poll_set, 1, 0) > 0) // 1 = numFds
+     if (poll(&poll_set, 1, 0) > 0) // 1 = numFds
     {
+      std::cout << "apres poll" << std::endl;
         if (poll_set.revents & POLLIN)
         {
-            static unsigned char tmpbuf[64];
-            int ret = read (fdSerial, (char*)tmpbuf, sizeof(char) * 64 );
+	  std::cout << "dans pollin" << std::endl;
+	  static unsigned char tmpbuf[64];
+  
+	  int ret = read (fdSerial, (char*)tmpbuf, sizeof(char) * 64 );
+	  //int nbRead = 100;
+	  //char buf[nbRead];
+	  //memset(buf, '\0', sizeof(char) * nbRead);
+	  //int ret = read(fdSerial, buf, sizeof(char) * nbRead); // le fdSerial passe a 65537 par magie une fois sortie de 
             if (ret > 0)
             {
+
+	      
+	      printf("read smth %d available : %d \n", ret, _rxBuffer.availableData );
 	      circular_buffer_write(&_rxBuffer, tmpbuf, ret);
                 while (_rxBuffer.availableData && _rxBuffer.buf[_rxBuffer.readIdx] != 'p')
-                    circular_buffer_read_one(&_txBuffer);
+		  {
+                    circular_buffer_read_one(&_rxBuffer);
+		  }
 
                 for (unsigned int i = 0; i < _rxBuffer.availableData; ++i)
                     if (_rxBuffer.buf[(_rxBuffer.readIdx + i) & CIRCULAR_BUFFER_SIZE_MASK] == '\n')
+		      {
+			printf("nacio \n");
                         processReceivedData(i + 1);
+		      }
+	      
             }
+	    else
+	      {
+
+	      }
         }
         if (poll_set.revents & POLLOUT)
         {
@@ -136,14 +159,14 @@ void    Movement::updateMotorsSpeed()
 
 void    Movement::increaseMotorSpeed(uint motorNo)
 {
-    unsigned char c = (motorNo) ? 'q' : 'a';
+    unsigned char c = (motorNo) ? 'q' : 's';
     circular_buffer_write(&_txBuffer, &c, 1);
     poll_set.events |= POLLOUT;
 }
 
 void    Movement::decreaseMotorSpeed(uint motorNo)
 {
-    unsigned char c = (motorNo) ? 's' : 'z';
+    unsigned char c = (motorNo) ? 'a' : 'z';
     circular_buffer_write(&_txBuffer, &c, 1);
     poll_set.events |= POLLOUT;
 }

@@ -63,12 +63,13 @@ public:
     void decreaseMotorSpeed(uint motorNo);
 
     t_vector3f      &getPitchRollYaw() { return (_pitchRollYaw); }
+    int           fdSerial;
 private:
 
     t_vector3f    _pitchRollYaw;
-    int           fdSerial;
+
     int           speedConnection = 9600; // BAUD
-    std::string   serialTTY = "/dev/ttyACM99";
+    std::string   serialTTY = "/dev/ttyACM0";
     struct pollfd poll_set;
 
     t_circular_buffer       _rxBuffer;
