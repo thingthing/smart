@@ -4,7 +4,7 @@
 
 const double Landmarks::CONVERSION = (M_PI / 180.0); // Convert to radians
 const unsigned int Landmarks::MAXLANDMARKS = 3000; // Max number of landmarks
-const double Landmarks::MAXERROR = 0.05; // If a landmarks is within this distance of another landmarks, its the same landmarks
+const double Landmarks::MAXERROR = 0.001; // If a landmarks is within this distance of another landmarks, its the same landmarks
 const unsigned int Landmarks::MINOBSERVATIONS = 15; // Number of times a landmark must be observed to be recongnized as a landmark
 const unsigned int Landmarks::LIFE = 40; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
 const unsigned int Landmarks::MAXTRIALS = 100; // RANSAC: max times to run algorithm

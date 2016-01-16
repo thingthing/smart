@@ -58,7 +58,7 @@ public:
 		void setOldPosition(pcl::PointXYZ landmark);
 		pcl::PointXYZ getCurrentPosition() const;
 		void setCurrentPosition(pcl::PointXYZ landmark);
-		void setCurrentPosition(float x, float y);
+	  void setCurrentPosition(float x, float y, float z);
 
 	protected:
 		pcl::PointXYZ oldPosition;

@@ -239,6 +239,8 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
         {
             if (status_code != 0)
                 std::cerr << "Status error recieved: [" << status_code << "]: " << status.get("message", "").asString() << std::endl;
+	    if (status_code == 42)
+	      this->disconnectEvent();
             // else
             //     std::cerr << "No data recieved but good status: " << status.get("message", "").asString() << std::endl;
         }

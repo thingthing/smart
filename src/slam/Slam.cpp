@@ -63,10 +63,11 @@ void Slam::Case::setCurrentPosition(pcl::PointXYZ landmark)
 	this->currentPosition = landmark;
 }
 
-void Slam::Case::setCurrentPosition(float x, float y)
+void Slam::Case::setCurrentPosition(float x, float y, float z)
 {
 	this->currentPosition.x = x;
 	this->currentPosition.y = y;
+	this->currentPosition.z = z;
 }
 
 Slam::Slam(IAgent *agent)
@@ -100,13 +101,16 @@ void Slam::updatePositions(int trustPercentageOnRobotMovement)
 {
 float averageLandmarkMovementX = 0;
 float averageLandmarkMovementY = 0;
+float averageLandmarkMovementZ = 0;
 int landmarksMoved = 0;
 
 float supposedRobotDisplacementX = 0;
 float supposedRobotDisplacementY = 0;
+float supposedRobotDisplacementZ = 0;
 
 float actualRobotDisplacementX = 0;
 float actualRobotDisplacementY = 0;
+float actualRobotDisplacementZ = 0;
 
 	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
 	{
@@ -114,6 +118,7 @@ float actualRobotDisplacementY = 0;
 			{
 				averageLandmarkMovementX += it->second.getCurrentPosition().x - it->second.getOldPosition().x;
 				averageLandmarkMovementY += it->second.getCurrentPosition().y - it->second.getOldPosition().y;
+				averageLandmarkMovementZ += it->second.getCurrentPosition().z - it->second.getOldPosition().z;
 
 				landmarksMoved++;
 				it->second.setState(UPDATING);
@@ -124,23 +129,27 @@ float actualRobotDisplacementY = 0;
 	{
 		averageLandmarkMovementX /= landmarksMoved; 
 		averageLandmarkMovementY /= landmarksMoved;
+		averageLandmarkMovementZ /= landmarksMoved;
 	}
 
 	supposedRobotDisplacementX = this->currentRobotPos.x - this->oldRobotPos.x;
 	supposedRobotDisplacementY = this->currentRobotPos.y - this->oldRobotPos.y;
+	supposedRobotDisplacementZ = this->currentRobotPos.z - this->oldRobotPos.z;
 
 	actualRobotDisplacementX = (averageLandmarkMovementX * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementX * trustPercentageOnRobotMovement);
 	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
+	actualRobotDisplacementZ = (averageLandmarkMovementZ * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementZ * trustPercentageOnRobotMovement);
   std::cerr << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << std::endl;
 	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
 	this->currentRobotPos.y = this->oldRobotPos.y + actualRobotDisplacementY;
+	this->currentRobotPos.z = this->oldRobotPos.z + actualRobotDisplacementZ;
   std::cerr << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << std::endl;
 
 	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
 	{
 		if (it->second.getState() == UPDATING)
 		{
-			it->second.setCurrentPosition(it->second.getOldPosition().x + actualRobotDisplacementX, it->second.getOldPosition().y + actualRobotDisplacementY);
+			it->second.setCurrentPosition(it->second.getOldPosition().x + actualRobotDisplacementX, it->second.getOldPosition().y + actualRobotDisplacementY, it->second.getOldPosition().z + actualRobotDisplacementZ);
 			it->second.setState(UPTODATE);
 		}
 	}
@@ -172,9 +181,13 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
 	this->moveAgent(agent);
 
 	this->updatePositions(0.0);
-
+	
+	// Round to 0.001 decimal
+	this->currentRobotPos.x = std::nearbyint(this->currentRobotPos.x * 100) / 100;
+	this->currentRobotPos.y = std::nearbyint(this->currentRobotPos.y * 100) / 100;
+	this->currentRobotPos.z = std::nearbyint(this->currentRobotPos.z * 100) / 100;
   agent->setPos(this->currentRobotPos);
-
+  std::cerr << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << std::endl;
   //After all, remove bad landmarks
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
