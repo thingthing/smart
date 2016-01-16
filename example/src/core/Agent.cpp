@@ -70,7 +70,7 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
   pcl::PointCloud<pcl::PointXYZRGBA> cloud = _capture->getData();
   /// @todo: Move cloud according to rotation of agent
   // Last three parameters are in order: roll, pitch, yaw
-  Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, 0, 0, 0);
+  Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
   pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
   this->dispatch("SendCloudEvent", cloud);
   return (_capture->getData());
@@ -79,7 +79,7 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
 
 void             Agent::goTowardsGoal()
 {
-    std::cerr << "Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
+    std::cout << "Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
     if (_pos.x != _goalPos.x)
         _pos.x += (_goalPos.x < _pos.x) ? -1 : 1;
@@ -87,7 +87,7 @@ void             Agent::goTowardsGoal()
         _pos.y += (_goalPos.y < _pos.y) ? -1 : 1;
     if (_pos.z != _goalPos.z)
         _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
-std::cerr << "After Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
+std::cout << "After Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
 }
 

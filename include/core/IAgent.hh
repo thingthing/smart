@@ -25,18 +25,16 @@ public:
     virtual ~IAgent();
 
     pcl::PointXYZ   const   &getPos() const;
-    double          getBearing() const;
+    double          getRoll() const;
     ICapture const  *getCapture() const;
-    double          getThrust() const;
-    double          getTheta() const;
-    double          getDeltaTheta() const;
+    double          getYaw() const;
+    double          getPitch() const;
     int             getBattery() const;
 
     void            setBattery(int new_battery_value);
-    void            setThrust(double thrust);
-    void            setTheta(double theta);
-    void            setDeltaTheta(double deltaTheta);
-    void            setBearing(double bearing);
+    void            setRoll(double thrust);
+    void            setYaw(double theta);
+    void            setPitch(double deltaTheta);
     void            setPos(pcl::PointXYZ const &pos);
     void            setPos(double x, double y, double z);
     std::string const &status(std::string const &status);
@@ -52,14 +50,13 @@ public:
     double const    cameraProblem;
 
 protected:
-    double          _bearing;
     pcl::PointXYZ   _pos;
+  double    _yaw;
     std::string     _name;
     std::string     _status;
+  double	_roll;
+  double	_pitch;
     ICapture         *_capture;
-    double          _thrust;
-    double          _theta;
-    double          _deltaTheta;
     int             _battery;
 
 public:

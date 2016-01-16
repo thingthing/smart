@@ -12,7 +12,7 @@
  *
  * This class is meant as a entry point to Slam algorithm for an Agent
  *
- * @author Nicolas
+ * @author Nicolas, Martin
  *
  * @version 1.0
  *
@@ -31,11 +31,41 @@
 #include "IAgent.hh"
 #include "event/Dispatcher.h"
 
-#include "test.hh"
+#include <map>
+#include <cmath>
+#include <iostream>
 
 class   Slam : public Utils::Dispatcher
 {
 public:
+  	enum State
+	{
+		UPDATING,
+		MOVED,
+		UPTODATE
+	};
+
+	class Case
+	{
+	public:
+		Case();
+		Case(const pcl::PointXYZ &landmark);
+		Case(float x, float y, float z);
+		virtual ~Case();
+		State getState() const;
+    void setState(State _state);
+		pcl::PointXYZ getOldPosition() const;
+		void setOldPosition(pcl::PointXYZ landmark);
+		pcl::PointXYZ getCurrentPosition() const;
+		void setCurrentPosition(pcl::PointXYZ landmark);
+	  void setCurrentPosition(float x, float y, float z);
+
+	protected:
+		pcl::PointXYZ oldPosition;
+		pcl::PointXYZ currentPosition;
+		State state;
+	};
+
   /**
   * @brief SLAM constructor
   * @details Take an agent wich will be link to the SLAM algorithm and
@@ -74,8 +104,20 @@ private:
   DataAssociation *_data;
 
 public:
+
+	unsigned int addLandmarkToMatrix(const pcl::PointXYZ &position);
+	void moveLandmarks(std::vector<Landmarks::Landmark *> const &reobservedLandmarks);
+	void moveLandmark(Landmarks::Landmark *landmark);
+	void moveAgent(IAgent const *agent);
+	void updatePositions(int trustPercentageOnRobotMovement);
+
   Landmarks   *_landmarkDb;
-	Test *_test;
+
+	pcl::PointXYZ oldRobotPos;
+	pcl::PointXYZ currentRobotPos;
+	std::map<unsigned int, Case> matrix;
+	unsigned int landmarkNumber;
+
 };
 
 

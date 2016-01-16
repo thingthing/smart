@@ -229,14 +229,14 @@ float actualRobotDisplacementY = 0;
 	actualRobotDisplacementX = (averageLandmarkMovementX * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementX * trustPercentageOnRobotMovement);
 	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
 
-	std::cout << "this->currentRobotPos.x " << this->currentRobotPos.x << std::endl;
-	std::cout << "this->currentRobotPos.y " << this->currentRobotPos.y << std::endl;
+	//std::cout << "this->currentRobotPos.x " << this->currentRobotPos.x << std::endl;
+	//std::cout << "this->currentRobotPos.y " << this->currentRobotPos.y << std::endl;
 
 	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
 	this->currentRobotPos.y = this->oldRobotPos.y + actualRobotDisplacementY;
 
-	std::cout << "this->currentRobotPos.x " << this->currentRobotPos.x << std::endl;
-	std::cout << "this->currentRobotPos.y " << this->currentRobotPos.y << std::endl;
+	//std::cout << "this->currentRobotPos.x " << this->currentRobotPos.x << std::endl;
+	//std::cout << "this->currentRobotPos.y " << this->currentRobotPos.y << std::endl;
 
 	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
 	{
