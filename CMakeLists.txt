@@ -1,22 +1,26 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.1 FATAL_ERROR)
 
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
 SET(PROJECT_NAME agent)
 
 PROJECT(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11 -ggdb3")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
 
 add_custom_target(clean-cmake-files
-  COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
+  COMMAND ${CMAKE_COMMAND} -P "${PROJECT_SOURCE_DIR}/clean-all.cmake"
   )
 
 add_custom_target(fclean
   COMMAND ${CMAKE_BUILD_TOOL} clean
-  COMMAND ${CMAKE_COMMAND} -P clean-all.cmake
+  COMMAND ${CMAKE_COMMAND} -P "${PROJECT_SOURCE_DIR}/clean-all.cmake"
   )
 
 add_custom_target(re
@@ -73,6 +77,7 @@ ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PCL_LIBRARIES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${Jsoncpp_LIBRARIES})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} "realsense")
 
 # -- looking for PCL_COMMON
 # -- looking for PCL_KDTREE

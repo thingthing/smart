@@ -1,14 +1,15 @@
-// #include <pcl-1.8/pcl/io/openni_grabber.h>
-// #include <pcl-1.8/pcl/visualization/cloud_viewer.h>
+// #include <pcl/io/openni_grabber.h>
+// #include <pcl/visualization/cloud_viewer.h>
 
-// #include <pcl-1.8/pcl/point_cloud.h>
-// #include <pcl-1.8/pcl/point_types.h>
-// #include <pcl-1.8/pcl/io/openni2_grabber.h>
-// #include <pcl-1.8/pcl/io/pcd_io.h>
-// #include <pcl-1.8/pcl/filters/statistical_outlier_removal.h>
-// #include <pcl-1.8/pcl/filters/voxel_grid.h>
-// #include <pcl-1.8/pcl/common/transforms.h>
+// #include <pcl/point_cloud.h>
+// #include <pcl/point_types.h>
+// #include <pcl/io/openni2_grabber.h>
+// #include <pcl/io/pcd_io.h>
+// #include <pcl/filters/statistical_outlier_removal.h>
+// #include <pcl/filters/voxel_grid.h>
+// #include <pcl/common/transforms.h>
 // #include <vector>
+// #include "capture/real_sense_grabber.h"
 
 // int i = 0;
 // char buf[4096];
@@ -55,7 +56,7 @@
 //     void run ()
 //     {
 //         //"pcdData/test.oni", true, true
-//         pcl::Grabber* interface = new pcl::io::OpenNI2Grabber(); //set for streaming
+//         pcl::Grabber* interface = new RealSenseGrabber(); //set for streaming
 
 //         boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
@@ -106,7 +107,7 @@ int     main(int argc, char **argv)
     Network::NetworkManager  networkAdapter;
     AgentProtocol            protocol(networkAdapter);
     Core                     core(protocol);
-    std::string              server_ip = "54.148.17.11";
+    std::string              server_ip = "37.59.100.252";
 
     if (argc > 1)
         server_ip = argv[1];

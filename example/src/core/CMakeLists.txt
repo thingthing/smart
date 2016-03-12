@@ -7,5 +7,7 @@ SET(SOURCES
   ${MAIN_SOURCE}
   ${CMAKE_CURRENT_SOURCE_DIR}/Agent.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Capture.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/capture/real_sense/real_sense_device_manager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/capture/real_sense_grabber.cpp
   PARENT_SCOPE
   )

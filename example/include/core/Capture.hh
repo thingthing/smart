@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <pcl/io/openni2_grabber.h>
+// #include <pcl/io/openni2_grabber.h>
 #include <pcl/common/common.h>
 #include <pcl/impl/point_types.hpp>
 #include <pcl/io/pcd_io.h>
@@ -13,7 +13,7 @@
 #include <pcl/common/projection_matrix.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
-
+#include "capture/real_sense_grabber.h"
 
 #include "ICapture.hh"
 
