@@ -88,10 +88,86 @@ public:
     pcl::visualization::CloudViewer viewer;
 };
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <vector>
+#include <map>
+
+#include "myahrs_plus.hpp"
+using namespace WithRobot;
+
+static const int BAUDRATE = 115200;
+
+static const char* DIVIDER = "1";  // 100 Hz
+
+
+void handle_error(const char* error_msg)
+{
+    fprintf(stderr, "ERROR: %s\n", error_msg);
+    exit(1);
+}
+
 int main ()
 {
-    SimpleOpenNIViewer v;
-    std::cout << "HEY" << std::endl;
-    v.run ();
+    // SimpleOpenNIViewer v;
+    // std::cout << "HEY" << std::endl;
+    // v.run ();
+
+    MyAhrsPlus sensor;
+    SensorData sensor_data;
+    uint32_t sample_count = 0;
+
+    /*
+     * 	start communication with the myAHRS+.
+     */
+    if(sensor.start("/dev/ttyACM0", BAUDRATE) == false) {
+        handle_error("start() returns false");
+    }
+
+    /*
+     *  set ascii output format
+     *   - select euler angle
+     */
+    if(sensor.cmd_ascii_data_format("RPY") == false) {
+        handle_error("cmd_ascii_data_format() returns false");
+    }
+
+    /*
+     *  set divider
+     *   - output rate(Hz) = max_rate/divider
+     */
+    if(sensor.cmd_divider(DIVIDER) ==false) {
+        handle_error("cmd_divider() returns false");
+    }
+
+    /*
+     *  set transfer mode
+     *   - AC : ASCII Message & Continuous mode
+     */
+    if(sensor.cmd_mode("AC") ==false) {
+        handle_error("cmd_mode() returns false");
+    }
+
+    while(sample_count < 300) {
+        if(sensor.wait_data() == true) { // waiting for new data
+        	// read counter
+            sample_count = sensor.get_sample_count();
+
+            // copy sensor data
+            sensor.get_data(sensor_data);
+
+            // print euler angle
+            EulerAngle& e = sensor_data.euler_angle;
+            printf("%04d) EulerAngle (roll = %.2f, pitch = %.2f, yaw = %.2f)\n", sample_count, e.roll, e.pitch, e.yaw);
+        }
+    }
+
+    /*
+     * 	stop communication
+     */
+    sensor.stop();
+
+    printf("END OF TEST(%s)\n\n", __FUNCTION__);
     return 0;
 }

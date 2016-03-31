@@ -1,8 +1,16 @@
 #include "Agent.hh"
 
+const int Agent::BAUDRATE = 115200;
+const char* Agent::DIVIDER = "1";  // 100 Hz
 const double IAgent::DEGREESPERSCAN = 0.5;
 const double IAgent::CAMERAPROBLEM = 4.1; // meters
 const int    Agent::DEFAULTBATTERY = 1000;
+
+void handle_error(const char* error_msg)
+{
+    std::cerr << "ERROR: " <<  error_msg << std::endl;
+    throw new std::exception();
+}
 
 Agent::Agent(double degreePerScan, double cameraProblem)
     : IAgent(degreePerScan, cameraProblem, "AgentVirtuel", Agent::DEFAULTBATTERY)
@@ -12,6 +20,36 @@ Agent::Agent(double degreePerScan, double cameraProblem)
     this->_pos.y = 0;
     this->_pos.z = 0;
     _capture->registerCallback("takeDataEvent", [this]() {takeData();});
+    /*
+     *  start communication with the myAHRS+.
+     */
+    if(_sensor.start("/dev/ttyACM0", BAUDRATE) == false) {
+        handle_error("start() returns false");
+    }
+
+    /*
+     *  set ascii output format
+     *   - select euler angle
+     */
+    if(_sensor.cmd_ascii_data_format("RPY") == false) {
+        handle_error("cmd_ascii_data_format() returns false");
+    }
+
+    /*
+     *  set divider
+     *   - output rate(Hz) = max_rate/divider
+     */
+    if(_sensor.cmd_divider(DIVIDER) ==false) {
+        handle_error("cmd_divider() returns false");
+    }
+
+    /*
+     *  set transfer mode
+     *   - AC : ASCII Message & Continuous mode
+     */
+    if(_sensor.cmd_mode("AC") ==false) {
+        handle_error("cmd_mode() returns false");
+    }
     //_movement.connectArduinoSerial();
 }
 
@@ -137,6 +175,21 @@ bool            Agent::isAtBase() const
 void            Agent::updateState()
 {
     //_movement.updateGyro();
+  if(_sensor.wait_data() == true) { // waiting for new data
+      // read counter or not?
+      //sample_count = _sensor.get_sample_count();
+
+      // copy sensor data
+      _sensor.get_data(_sensor_data);
+
+       // print euler angle
+      WithRobot::EulerAngle& e = _sensor_data.euler_angle;
+      this->setPitch(e.pitch);
+      this->setRoll(e.roll);
+      this->setYaw(e.yaw);
+      std::cerr << "Roll == " << e.roll << " -- pitch == " << e.pitch << " -- yaw == " << e.yaw << std::endl;
+    }
+
     if (!this->isAtBase())
         this->lowerBattery(1);
     this->dispatch("SendPacketEvent", this);

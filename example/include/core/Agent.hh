@@ -5,7 +5,8 @@
 
 #include "IAgent.hh"
 #include "Capture.hh"
-#include "movement/Movement.h"
+#include "myahrs_plus.hpp"
+//#include "movement/Movement.h"
 
 class       Agent : public IAgent
 {
@@ -28,10 +29,14 @@ public:
     bool            isAtBase() const;
 
     static const int DEFAULTBATTERY;
+    static const int BAUDRATE;
+    static const char* DIVIDER;
 
 private:
-    pcl::PointXYZ   _goalPos;
-    Movement        _movement;
+    pcl::PointXYZ               _goalPos;
+    WithRobot::MyAhrsPlus      _sensor;
+    WithRobot::SensorData      _sensor_data;
+    //Movement        _movement;
 };
 
 
