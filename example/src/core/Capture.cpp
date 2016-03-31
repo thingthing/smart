@@ -5,7 +5,6 @@ Capture::Capture()
 {
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
   _grabber->registerCallback(getData);
-  //this->start();
 }
 
 Capture::~Capture()
@@ -14,14 +13,14 @@ Capture::~Capture()
   delete _grabber;
 }
 
-void Capture::start() const {
+void Capture::startCapture() {
   if (!_grabber->isRunning()) {
     _grabber->start();
     std::cerr << "grabber start" << std::endl;
   }
 }
 
-void Capture::stop() const {
+void Capture::stopCapture() {
   _grabber->stop();
   std::cerr << "grabber stop" << std::endl;
 }
@@ -37,10 +36,12 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   //           << _cloud.width * _cloud.height
   //           << " data points from test_pcd.pcd with the following fields: "
   //           << std::endl;
-  // for (size_t i = 0; i < _cloud.points.size (); ++i)
-  //   std::cerr << "    " << _cloud.points[i].x
-  //             << " "    << _cloud.points[i].y
-  //             << " "    << _cloud.points[i].z << std::endl;
+  // std::cout << "PointCloud is == " << std::endl;
+  // for (size_t i = 0; i < cloud->points.size (); ++i)
+  //   std::cout << "    " << cloud->points[i].x
+  //             << " "    << cloud->points[i].y
+  //             << " "    << cloud->points[i].z << std::endl;
+  // std::cout << "End point cloud" << std::endl;
   // pcl::PointCloud<pcl::PointXYZ>::Ptr cloudClean(new pcl::PointCloud<pcl::PointXYZ>());
   // /// Clean noise
   // pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
@@ -53,29 +54,31 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   // vox.setInputCloud(cloudClean);
   // vox.setLeafSize(0.05f, 0.05f, 0.05f);
   // vox.filter(*cloudClean);
-  std::cerr << "Start capture " << cloud->size() << std::endl;
+  //std::cerr << "Start capture " << cloud->size() << std::endl;
   if (!_cloud->empty())
       _cloud->clear();
   //pcl::copyPointCloud(*cloud, *_cloud);
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud(*cloud, *_cloud, indices);
-  std::cerr << "After removeNaNFromPointCloud " << _cloud->size() << std::endl;
+
+  //std::cerr << "Before  " << _cloud->size() << std::endl;
+  pcl::PassThrough<pcl::PointXYZRGBA> pass;
+  pass.setInputCloud (_cloud);
+  pass.setFilterFieldName ("z");
+  pass.setFilterLimits (1.0, 3.0);
+  //pass.setFilterLimitsNegative (true);
+  pass.filter (*_cloud);
+
+  //std::cerr << "After PassThrough " << _cloud->size() << std::endl;
+
   // pcl::VoxelGrid<pcl::PointXYZRGBA> vox;
   // vox.setInputCloud(_cloud);
-  // vox.setLeafSize(0.01f, 0.01f, 0.01f);
+  // vox.setLeafSize(0.05f, 0.05f, 0.05f);
   // vox.filter(*_cloud);
-  //   std::cerr << "After VoxelGrid " << _cloud->size() << std::endl;
+   //std::cerr << "After VoxelGrid " << _cloud->size() << std::endl;
 
-  // pcl::PointCloud<pcl::PointXYZRGBA>::Ptr::iterator it = _cloud->begin();
-  // while (it != _cloud->end()) {
-  //   if ((*it)->x != (*it)->x) {
-  //    it = _cloud->erase(it);
-  //   } else {
-  // ++it;
-  //  }
-  // }
   this->dispatch("takeDataEvent");
-  boost::this_thread::sleep(boost::posix_time::millisec(10));
+  //boost::this_thread::sleep(boost::posix_time::millisec(10));
 
   // std::cerr << "Loaded "
   //           << _cloud.points.size()

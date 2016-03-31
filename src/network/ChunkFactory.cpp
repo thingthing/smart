@@ -147,7 +147,6 @@ int ChunkFactory::calculateTotalPacketNeeded(const pcl::PointCloud< pcl::PointXY
     unsigned int        totalNbOfPoint = cloud.size();
     unsigned int        nbOfPointInPacket;
 
-    std::cerr << "Size of point is " << SIZE_OF_POINT_XYZ << std::endl;
     nbOfPointInPacket = SIZE_IN_PACKET / SIZE_OF_POINT_XYZ;
     totalPacketNeeded = (totalNbOfPoint / nbOfPointInPacket);
 

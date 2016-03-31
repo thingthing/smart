@@ -25,7 +25,9 @@ public:
     void                sendStatusEvent(std::string const &status);
 
 
-    void         setAgent(IAgent *agent, Slam &slam);
+    void                setAgent(IAgent *agent, Slam &slam);
+
+    void                run(); // From Athread
 
     static const std::string TCP_KEY;
     static const std::string UDP_KEY;
@@ -38,6 +40,7 @@ protected:
 
     Network::ChunkFactory        _factory;
     Network::ComPacket   _outPacket;
+    pcl::PointCloud<pcl::PointXYZRGBA> _cloud;
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "AThread.h"
 #include <unistd.h>
-
+#include <iostream>
 
 AThread::AThread()
 {
@@ -9,10 +9,15 @@ AThread::AThread()
     {
         while (_threadState != STOP_REQUESTED)
         {
-            if (_threadState == PAUSE_REQUESTED)
+            if (_threadState == PAUSE_REQUESTED) {
                 _threadState = PAUSED;
+                //std::cerr << "SETTING STATE TO PAUSED" << std::endl;
+            }
             while (_threadState == PAUSED)
-                usleep(10000);
+                {
+                    usleep(10000);
+                    //std::cerr << "We are PAUSED" << std::endl;
+                }
             run();
         }
         _threadState = STOPPED;
@@ -30,6 +35,7 @@ AThread::~AThread()
 
 void            AThread::start()
 {
+    //std::cerr << "STARTING THREAD" << std::endl;
     _threadState = STARTED;
 }
 
@@ -42,5 +48,6 @@ void            AThread::stop()
 
 void AThread::pause()
 {
+    //std::cerr << "PAUSE_REQUESTED" << std::endl;
     _threadState = PAUSE_REQUESTED;
 }

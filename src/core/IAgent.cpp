@@ -26,7 +26,6 @@ void             IAgent::setBattery(int new_battery_value)
 std::string const &IAgent::status(std::string const &status)
 {
   _status = status;
-  std::cerr << "New status == [" << _status << "]" << std::endl;
   this->dispatch("SendStatusEvent", status);
   return (_status);
 }
@@ -61,7 +60,7 @@ void    IAgent::setRoll(double roll)
   this->_roll = roll;
 }
 
-ICapture const *IAgent::getCapture() const
+ICapture *IAgent::getCapture() const
 {
   return (this->_capture);
 }

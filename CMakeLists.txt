@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-SET(PROJECT_NAME agent)
+SET(PROJECT_NAME "agent" CACHE STRING "Project name (either agent or visu)")
 
 PROJECT(${PROJECT_NAME})
 
@@ -73,7 +73,19 @@ ADD_SUBDIRECTORY(${IMPLEMENT_SRC_DIR})
 
 INCLUDE_DIRECTORIES(${INCLUDE_DIR} ${IMPLEMENT_INCLUDE_DIR})
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
+#for visu
+if(${PROJECT_NAME} STREQUAL "visu")
+  ADD_EXECUTABLE(${PROJECT_NAME}
+    "${PROJECT_SOURCE_DIR}/example/src/core/main_visu.cpp"
+    "${PROJECT_SOURCE_DIR}/example/src/core/capture/real_sense/real_sense_device_manager.cpp"
+    "${PROJECT_SOURCE_DIR}/example/src/core/capture/real_sense_grabber.cpp"
+  )
+endif(${PROJECT_NAME} STREQUAL "visu")
+
+#for agents
+if(${PROJECT_NAME} STREQUAL "agent")
+  ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
+endif(${PROJECT_NAME} STREQUAL "agent")
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PCL_LIBRARIES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${Jsoncpp_LIBRARIES})

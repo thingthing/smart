@@ -26,7 +26,7 @@ public:
 
     pcl::PointXYZ   const   &getPos() const;
     double          getRoll() const;
-    ICapture const  *getCapture() const;
+    ICapture        *getCapture() const;
     double          getYaw() const;
     double          getPitch() const;
     int             getBattery() const;

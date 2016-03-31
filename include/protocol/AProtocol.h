@@ -6,11 +6,12 @@
 #include "NonCopyable.h"
 #include "event/Dispatcher.h"
 #include "NetworkManager.hh"
+#include "AThread.h"
 #include "IAgent.hh"
 
 namespace Network { class NetworkManager; }
 
-class       AProtocol : public Utils::Dispatcher
+class       AProtocol : public AThread, public Utils::Dispatcher
 {
 public:
     AProtocol(Network::NetworkManager &networkAdapter);

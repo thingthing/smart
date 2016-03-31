@@ -58,7 +58,7 @@ convertPoint (const rs::float3& src, T& tgt)
   // }
   // else
   // {
-    tgt.x = -src.x;
+    tgt.x = src.x;
     tgt.y = src.y;
     tgt.z = src.z;
   //}
@@ -135,6 +135,8 @@ RealSenseGrabber::~RealSenseGrabber () throw ()
 void
 RealSenseGrabber::start ()
 {
+  static bool first = true;
+
   if (!is_running_)
   {
     //need_xyz_ = num_slots<sig_cb_real_sense_point_cloud> () > 0;
@@ -144,11 +146,13 @@ RealSenseGrabber::start ()
       // Configure and start our device
       device_->getRSDevice ().enable_stream(rs::stream::depth, rs::preset::largest_image);
       device_->getRSDevice ().enable_stream(rs::stream::color, rs::preset::largest_image);
-      device_->getRSDevice ().enable_stream(rs::stream::infrared, rs::preset::largest_image);
-      try { device_->getRSDevice ().enable_stream(rs::stream::infrared2, rs::preset::largest_image); } catch(...) {}
-      std::cerr << "Device configured" << std::endl;
+      device_->getRSDevice ().set_option(rs::option::r200_emitter_enabled, 1);
+      //rs_apply_depth_control_preset((rs_device *)&device_->getRSDevice (), static_cast<int>(5));
+      // device_->getRSDevice ().enable_stream(rs::stream::infrared, rs::preset::largest_image);
+      // try { device_->getRSDevice ().enable_stream(rs::stream::infrared2, rs::preset::largest_image); } catch(...) {}
+     // std::cerr << "Device configured" << std::endl;
       device_->getRSDevice ().start();
-
+     // std::cerr << "After Device started" << std::endl;
       // selectMode ();
       // PXCCapture::Device::StreamProfileSet profile;
       // memset (&profile, 0, sizeof (profile));
@@ -170,7 +174,14 @@ RealSenseGrabber::start ()
       // device_->getRSDevice ().SetStreamProfileSet (&profile);
       // if (!device_->getRSDevice ().IsStreamProfileSetValid (&profile))
       //   THROW_IO_EXCEPTION ("Invalid stream profile for PXC device");
+      if (first) {
+        fps_mutex_.lock ();
       frequency_.reset ();
+      fps_mutex_.unlock ();
+      first = false;
+      }
+      
+      //std::cerr << "After frequency_ reset" << std::endl;
       is_running_ = true;
       run();
       //thread_ = boost::thread (&RealSenseGrabber::run, this);
@@ -291,20 +302,29 @@ RealSenseGrabber::getDeviceSerialNumber () const
 //     start ();
 //   }
 // }
-struct state { double yaw, pitch, lastX, lastY; bool ml; std::vector<rs::stream> tex_streams; int index; rs::device * dev; };
+// struct state { double yaw, pitch, lastX, lastY; bool ml; std::vector<rs::stream> tex_streams; int index; rs::device * dev; };
 void
 RealSenseGrabber::run ()
 {
-  //std::cerr << "RUNNING" << std::endl;
+  int wait = 0;
+
+  // std::cerr << "RUNNING" << std::endl;
   while (is_running_)
   {
     //pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud;
+    //std::cerr << "RUNNING" << std::endl;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr xyzrgba_cloud;
-    state app_state = {0, 0, 0, 0, false, {rs::stream::color, rs::stream::depth, rs::stream::infrared}, 0, &device_->getRSDevice ()};
-    if(device_->getRSDevice ().is_stream_enabled(rs::stream::infrared2)) app_state.tex_streams.push_back(rs::stream::infrared2);
+    // state app_state = {0, 0, 0, 0, false, {rs::stream::color, rs::stream::depth, rs::stream::infrared}, 0, &device_->getRSDevice ()};
+    // if(device_->getRSDevice ().is_stream_enabled(rs::stream::infrared2)) app_state.tex_streams.push_back(rs::stream::infrared2);
 
     device_->getRSDevice ().wait_for_frames();
-    std::cerr << "NEW FRAME" << std::endl;
+    //std::cerr << "AFTER wait_for_frames" << std::endl;
+    auto depth_image = reinterpret_cast<const uint16_t *>(device_->getRSDevice ().get_frame_data(rs::stream::depth));
+    auto color_image = reinterpret_cast<const uint8_t *>(device_->getRSDevice ().get_frame_data(rs::stream::color));
+    
+    wait++;
+    if (wait < 10) continue;
+    //std::cerr << "NEW FRAME" << std::endl;
     // Retrieve our images
     //const uint16_t * depth_image = (const uint16_t *)device_->getRSDevice ().get_frame_data(rs::stream::depth);
 
@@ -312,9 +332,9 @@ RealSenseGrabber::run ()
     //const float depth_scale = device_->getRSDevice ().get_depth_scale();
     const rs::intrinsics depth_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::depth);
     //rs::intrinsics depth_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::depth);
-    //rs::extrinsics depth_to_color = device_->getRSDevice ().get_extrinsics(rs::stream::depth, rs::stream::color);
-    //rs::intrinsics color_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::color);
-    //float scale = device_->getRSDevice ().get_depth_scale();
+    const rs::extrinsics depth_to_color = device_->getRSDevice ().get_extrinsics(rs::stream::depth, rs::stream::color);
+    const rs::intrinsics color_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::color);
+    const float scale = device_->getRSDevice ().get_depth_scale();
 
 
     const int WIDTH = depth_intrin.width;
@@ -410,8 +430,7 @@ RealSenseGrabber::run ()
           xyzrgba_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (WIDTH, HEIGHT));
           xyzrgba_cloud->header.stamp = timestamp;
           xyzrgba_cloud->is_dense = false;
-          auto points = reinterpret_cast<const rs::float3 *>(device_->getRSDevice ().get_frame_data(rs::stream::points));
-          auto color = reinterpret_cast<const uint32_t *>(device_->getRSDevice ().get_frame_data(rs::stream::color_aligned_to_depth));
+          //int has_one_point = 0;
           // auto color_aligned_to_depth = reinterpret_cast<const rs::float3 *>(device_->getRSDevice ().get_frame_data(rs::stream::color_aligned_to_depth));
           // auto depth_aligned_to_color = reinterpret_cast<const rs::float3 *>(device_->getRSDevice ().get_frame_data(rs::stream::depth_aligned_to_color));
           // auto depth_aligned_to_rectified_color = reinterpret_cast<const rs::float3 *>(device_->getRSDevice ().get_frame_data(rs::stream::depth_aligned_to_rectified_color));
@@ -423,22 +442,41 @@ RealSenseGrabber::run ()
             for (int dx = 0; dx < WIDTH; dx++)
             {
               // Retrieve the 16-bit depth value and map it into a depth in meters
-              // uint16_t depth_value = depth_image[dy * depth_intrin.width + dx];
-              // float depth_in_meters = depth_value * scale;
+              uint16_t depth_value = depth_image[dy * depth_intrin.width + dx];
+              float depth_in_meters = depth_value * scale;
               //std::cerr << "Points z is ==  " << points->z << std::endl;
               // Skip over pixels with a depth value of zero, which is used to indicate no data
-              if (points->z) {
+              if (depth_value == 0) continue;
+              //++has_one_point;
+              //{
+                //std::cout << "FOUND Z POINT" << std::endl;
                 // Map from pixel coordinates in the depth image to pixel coordinates in the color image
-                // rs::float2 depth_pixel = {(float)dx, (float)dy};
-                // rs::float3 depth_point = depth_intrin.deproject(depth_pixel, depth_in_meters);
-                //rs::float3 color_point = depth_to_color.transform(*points);
-                //rs::float2 color = color_intrin.project_to_texcoord(color_point);
-                convertPoint (*points, cloud_row[dx]);
+                rs::float2 depth_pixel = {(float)dx, (float)dy};
+                rs::float3 depth_point = depth_intrin.deproject(depth_pixel, depth_in_meters);
+                rs::float3 color_point = depth_to_color.transform(depth_point);
+                rs::float2 color_pixel = color_intrin.project(color_point);
+
+                convertPoint (depth_point, cloud_row[dx]);
                 //printf("Color is == %016X\n", *color);
-                //std::cout << "Color is == " << std::hex << (int)*color << std::endl;
-                uint8_t r = (*color >> 16);
-                uint8_t g = (*color >> 8);
-                uint8_t b = (*color);
+                uint8_t r = 255;
+                uint8_t g = 255;
+                uint8_t b = 255;
+                // Use the color from the nearest color pixel, or pure white if this point falls outside the color image
+                const int cx = (int)std::round(color_pixel.x), cy = (int)std::round(color_pixel.y);
+                if(cx < 0 || cy < 0 || cx >= color_intrin.width || cy >= color_intrin.height)
+                {
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                }
+                else
+                {
+                    const uint8_t *c = color_image + (cy * color_intrin.width + cx) * 3;
+                    //std::cerr << "Color found == "<< std::hex << (int)c << std::endl;
+                    r = c[0];
+                    g = c[1];
+                    b = c[2];
+                }
                 //std::cerr << "Color point x == " << std::hex << (int)r << " -- y == " << (int)g << " -- z == " << (int)b << std::endl;
                 // std::cerr << "depth_aligned_to_rectified_color point x == " << depth_aligned_to_rectified_color->x << " -- y == " << depth_aligned_to_rectified_color->y << " -- z == " << depth_aligned_to_rectified_color->z << std::endl;
                 // std::cerr << "depth_aligned_to_color point x == " << depth_aligned_to_color->x << " -- y == " << depth_aligned_to_color->y << " -- z == " << depth_aligned_to_color->z << std::endl;
@@ -447,9 +485,9 @@ RealSenseGrabber::run ()
                 cloud_row[dx].g = g;
                 cloud_row[dx].b = b;
                 //std::cerr << "Point cloud got == " << cloud_row[dx] << std::endl;
-              }
-              ++color;
-              ++points;
+              //}
+              //++color;
+              //++points;
               // ++depth_aligned_to_rectified_color;
               // ++depth_aligned_to_color;
               // ++color_aligned_to_depth;
@@ -462,8 +500,19 @@ RealSenseGrabber::run ()
       //}
 
       //if (need_xyzrgba_)
-          std::cerr << "Sending signal" << std::endl;
-        point_cloud_rgba_signal_->operator () (xyzrgba_cloud);
+          //std::cerr << "Sending signal" << std::endl;
+        //   std::cout << "IN REALSENSE PointCloud is == " << std::endl;
+        // for (size_t i = 0; i < xyzrgba_cloud->points.size (); ++i)
+        //   std::cout << "    " << xyzrgba_cloud->points[i].x
+        //             << " "    << xyzrgba_cloud->points[i].y
+        //             << " "    << xyzrgba_cloud->points[i].z << std::endl;
+        //std::cerr << "IN REALSENSE End point cloud empty is " << has_one_point<< std::endl;
+        // if (has_one_point > 10000)
+        //   {
+            //std::cerr << "Sending End point cloud empty is " << has_one_point<< std::endl;
+            point_cloud_rgba_signal_->operator () (xyzrgba_cloud);
+            return;
+          //}
       //if (need_xyz_)
        // point_cloud_signal_->operator () (xyz_cloud);
       //break;

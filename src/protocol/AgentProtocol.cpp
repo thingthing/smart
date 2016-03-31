@@ -21,6 +21,7 @@ AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
 
 AgentProtocol::~AgentProtocol()
 {
+    this->stop();
 }
 
 void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
@@ -30,38 +31,41 @@ void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
     agent->registerCallback("SendPacketEvent", [this](IAgent * agent) {sendPacketEvent(agent);});
     agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     ///@todo: Register in the factory (process data)
-    this->registerCallback("StopCaptureEvent", [agent]() {agent->getCapture()->stop();});
-    this->registerCallback("StartCaptureEvent", [agent]() {agent->getCapture()->start();});
+    this->registerCallback("StopCaptureEvent", [agent]() {agent->getCapture()->stopCapture();});
+    this->registerCallback("StartCaptureEvent", [agent]() {agent->getCapture()->startCapture();});
     agent->registerCallback("SendCloudEvent", [this](pcl::PointCloud<pcl::PointXYZRGBA> const & cloud) {sendCloudEvent(cloud);});
     slam.registerCallback("SendNewLandmarkEvent", [this](std::vector<Landmarks::Landmark *> &nl) {sendNewLandmarkEvent(nl);});
 }
 
-void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud)
-{
+void        AgentProtocol::run() {
     // To decomment to see the cloud to be send
     // for (size_t i = 0; i < cloud.points.size (); ++i)
     //     std::cout << "    " << cloud.points[i].x
     //               << " "    << cloud.points[i].y
     //               << " "    << cloud.points[i].z << std::endl;
-    //Stopping capture before sending
-    this->dispatch("StopCaptureEvent");
-    _factory.processData(cloud);
-    int i = 0;
-    bool is_ready = true;
-    std::string toSend = "";
-    std::cerr << "Start of send pointCloud "<< cloud.points.size() << std::endl;
-    while (_factory.isFullChunkReady())
-    {
-        if (is_ready) {
-            ++i;
-            toSend  = _factory.getChunk();
+    //std::cerr << "RUNINNG WITH CLOUD == " << _cloud.size() << std::endl;
+    if (!_cloud.empty()) {
+        _factory.processData(_cloud);
+        int i = 0;
+        bool is_ready = true;
+        std::string toSend = "";
+        std::cerr << "Start of send pointCloud "<< _cloud.points.size() << std::endl;
+        while (_factory.isFullChunkReady())
+        {
+            if (is_ready) {
+                ++i;
+                toSend  = _factory.getChunk();
+            }
+            //is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+            boost::this_thread::sleep(boost::posix_time::millisec(5));
         }
-        is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
-        boost::this_thread::sleep(boost::posix_time::millisec(5));
+        std::cerr << "SEND CLOUD event " << i << " packets with " << _cloud.points.size() << " points" << std::endl;
+        _cloud.clear();
+        this->pause();
+        //Cloud sent we can now restart capture
+        this->dispatch("StartCaptureEvent");
     }
-    std::cerr << "Send cloud event " << i << " packets with " << cloud.points.size() << " points" << std::endl;
-    //Cloud sent we can now restart capture
-    this->dispatch("StartCaptureEvent");
+    
     //To uncomment if you want to send only one cloud
     // Json::Value     reply;
 
@@ -70,6 +74,17 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
     // reply["status"]["message"] = "ok";
     // this->sendDataTcp(reply);
     // exit(1);
+}
+
+void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud)
+{
+    //Stopping capture before sending
+    this->dispatch("StopCaptureEvent");
+    if (!_cloud.empty())
+      _cloud.clear();
+    pcl::copyPointCloud(cloud, _cloud);
+    //std::cerr << "Trying to send cloud event" << std::endl;
+    this->start();
 }
 
 
@@ -119,7 +134,7 @@ void        AgentProtocol::sendStatusEvent(std::string const &status)
 {
     Json::Value     root;
 
-    std::cout << "Send status event " << std::endl;
+    //std::cout << "Send status event " << std::endl;
     root["status"]["code"] = 0;
     root["status"]["message"] = "ok";
     root["data"]["state"] = status;
@@ -130,7 +145,7 @@ void        AgentProtocol::sendPacketEvent(IAgent *agent)
 {
     Json::Value     root;
 
-    std::cout << "Send movement event " << std::endl;
+    //std::cout << "Send movement event " << std::endl;
     root["data"]["position"]["x"] = agent->getPos().x;
     root["data"]["position"]["y"] = agent->getPos().y;
     root["data"]["position"]["z"] = agent->getPos().z;
@@ -201,7 +216,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
     Json::Value         root;
     std::string         serverReply((const char *)packet->data() + sizeof(Network::s_ComPacketHeader), packet->getPacketSize() - sizeof(Network::s_ComPacketHeader));
 
-    std::cout << "received message from serveur " << serverReply << std::endl;
+    //std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
     {
         // std::cout << "received a data " << serverReply << std::endl;
@@ -219,7 +234,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
                 if (command == "order")
                 {
                     pos = this->getPosFromJson(*it);
-                    std::cout << "Order goal pos got == " << pos << std::endl;
+                    //std::cout << "Order goal pos got == " << pos << std::endl;
 		    if (first_order) {
 		      first_order = false;
 		      this->dispatch("StartCaptureEvent");
@@ -232,7 +247,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
                     this->dispatch("SetPosEvent", pos);
                 }
                 else
-                    std::cout << "Command not known: " << command << std::endl;
+                    std::cerr << "Command not known: " << command << std::endl;
             }
         }
         else

@@ -139,11 +139,11 @@ float actualRobotDisplacementZ = 0;
 	actualRobotDisplacementX = (averageLandmarkMovementX * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementX * trustPercentageOnRobotMovement);
 	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
 	actualRobotDisplacementZ = (averageLandmarkMovementZ * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementZ * trustPercentageOnRobotMovement);
-  std::cerr << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << std::endl;
+  //std::cout << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << std::endl;
 	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
 	this->currentRobotPos.y = this->oldRobotPos.y + actualRobotDisplacementY;
 	this->currentRobotPos.z = this->oldRobotPos.z + actualRobotDisplacementZ;
-  std::cerr << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << std::endl;
+  //std::cout << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << std::endl;
 
 	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
 	{
@@ -187,7 +187,7 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
 	this->currentRobotPos.y = std::nearbyint(this->currentRobotPos.y * 100) / 100;
 	this->currentRobotPos.z = std::nearbyint(this->currentRobotPos.z * 100) / 100;
   agent->setPos(this->currentRobotPos);
-  std::cerr << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << std::endl;
+  //std::cout << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << std::endl;
   //After all, remove bad landmarks
   //this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }

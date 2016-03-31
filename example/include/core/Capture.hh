@@ -13,6 +13,7 @@
 #include <pcl/common/projection_matrix.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/passthrough.h>
 #include "capture/real_sense_grabber.h"
 
 #include "ICapture.hh"
@@ -25,8 +26,8 @@ public:
   virtual ~Capture();
 
   virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
-  virtual void start() const;
-  virtual void stop() const;
+  virtual void startCapture();
+  virtual void stopCapture();
 
 private:
   pcl::Grabber *_grabber;
