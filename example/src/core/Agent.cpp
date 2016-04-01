@@ -106,13 +106,18 @@ pcl::PointXYZ   const   &Agent::getGoalPos() const
 
 pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
 {
+  //Get Cloud data
   pcl::PointCloud<pcl::PointXYZRGBA> cloud = _capture->getData();
+  //Update state to have the state in correspondance with the cloud data
+  this->updateState();
+  //Call to slam to get the real position of agent with new data
+  this->dispatch("getDataEvent", cloud, this);
+
   //std::cerr << "Getting data in takeData == " << cloud.size() << std::endl;
-  /// @todo: Move cloud according to rotation of agent
-  // Last three parameters are in order: roll, pitch, yaw
-  //To test without slam for now
-  //Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
-  //pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
+  //Tranform cloud data with actual position of agent
+  Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
+  pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
+  //Send new cloud data
   this->dispatch("SendCloudEvent", cloud);
   return (_capture->getData());
 }
@@ -121,43 +126,45 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
 void             Agent::goTowardsGoal()
 {
   static unsigned int i = 0;
-  ++i;
-  // std::cout << i << std::endl;
-  //     _movement.sendMotorSpeed(0, 1500);
-  //     _movement.sendMotorSpeed(1, 1500);
-  //     _movement.updateMotorsSpeed();
 
-  // if (i < 3)
-  //   _movement.goForward();
-  // else if (i < 6)
-  //   _movement.goBack();
-  // else if (i <9)
-  //   _movement.goLeft();
-  // else if (i < 12)
-  //   _movement.goRight();
-  // else if (i < 15)
-  //   {
-  //     _movement.sendMotorSpeed(0, 1500);
-  //     _movement.sendMotorSpeed(1, 1500);
-  //   }
-  // else
-  //   i = 0;
-  // if (i < 16)
-  //     _movement.updateMotorsSpeed();
-  
-  // TEST A ALA CON
-    // std::cout << "Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
-    // << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
-    if (_pos.x != _goalPos.x)
-        _pos.x += (_goalPos.x < _pos.x) ? -1 : 1;
-    if (_pos.y != _goalPos.y)
-        _pos.y += (_goalPos.y < _pos.y) ? -1 : 1;
-    if (_pos.z != _goalPos.z)
-        _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
+  if (this->isAtDestination() == false) {
+    ++i;
+    // std::cout << i << std::endl;
+    //     _movement.sendMotorSpeed(0, 1500);
+    //     _movement.sendMotorSpeed(1, 1500);
+    //     _movement.updateMotorsSpeed();
 
-// std::cout << "After Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
-//     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
+    // if (i < 3)
+    //   _movement.goForward();
+    // else if (i < 6)
+    //   _movement.goBack();
+    // else if (i <9)
+    //   _movement.goLeft();
+    // else if (i < 12)
+    //   _movement.goRight();
+    // else if (i < 15)
+    //   {
+    //     _movement.sendMotorSpeed(0, 1500);
+    //     _movement.sendMotorSpeed(1, 1500);
+    //   }
+    // else
+    //   i = 0;
+    // if (i < 16)
+    //     _movement.updateMotorsSpeed();
+    
+    // TEST A ALA CON
+      // std::cout << "Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
+      // << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
+      if (_pos.x != _goalPos.x)
+          _pos.x += (_goalPos.x < _pos.x) ? -1 : 1;
+      if (_pos.y != _goalPos.y)
+          _pos.y += (_goalPos.y < _pos.y) ? -1 : 1;
+      if (_pos.z != _goalPos.z)
+          _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
 
+    // std::cout << "After Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
+    //     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
+  }
 }
 
 bool            Agent::isAtDestination() const
@@ -169,8 +176,6 @@ bool            Agent::isAtBase() const
 {
     return (_pos.x == 0 && _pos.y == 0 && _pos.z == 0);
 }
-
-
 
 void            Agent::updateState()
 {
@@ -190,18 +195,24 @@ void            Agent::updateState()
       std::cerr << "Roll == " << e.roll << " -- pitch == " << e.pitch << " -- yaw == " << e.yaw << std::endl;
     }
 
+    //@Todo: get real battery
     if (!this->isAtBase())
         this->lowerBattery(1);
+    else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
+    {
+         this->chargeBattery(1);
+    }
+    
     this->dispatch("SendPacketEvent", this);
     //std::cout << "GoalPos is " << _goalPos << std::endl;
-       if (this->isAtDestination() == false)
-     {
-        //std::cout << "Going goTowardsGoal" << std::endl;
-        this->goTowardsGoal();
-	 } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
-	 {
-	     this->chargeBattery(1);
-	 }
+  //      if (this->isAtDestination() == false)
+  //    {
+  //       //std::cout << "Going goTowardsGoal" << std::endl;
+  //       this->goTowardsGoal();
+	 // } else if (this->isAtBase() && this->getBattery() < Agent::DEFAULTBATTERY)
+	 // {
+	 //     this->chargeBattery(1);
+	 // }
     // _movement.updateSerial();
     // this->setPitch(_movement.getPitchRollYaw().x);
     // this->setRoll(_movement.getPitchRollYaw().y);

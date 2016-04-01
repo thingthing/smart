@@ -91,8 +91,8 @@ namespace   Network
         {
             if (connector->isConnected())
             {
-                connector->disconnect();
                 this->dispatch("DisconnectEvent");
+                connector->disconnect();
             }
         }
     }

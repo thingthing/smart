@@ -78,6 +78,7 @@ Slam::Slam(IAgent *agent)
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
   this->_data = new DataAssociation(this->_landmarkDb);
 	this->landmarkNumber = 0;
+	_agent->registerCallback("getDataEvent", [this](pcl::PointCloud<pcl::PointXYZRGBA> const & cloud, IAgent *agent) {updateState(cloud, agent);});
 }
 
 Slam::~Slam()

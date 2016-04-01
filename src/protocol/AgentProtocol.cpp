@@ -30,6 +30,7 @@ void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
     this->registerCallback("SetPosEvent", [agent](pcl::PointXYZ pos) {agent->setPos(pos);});
     agent->registerCallback("SendPacketEvent", [this](IAgent * agent) {sendPacketEvent(agent);});
     agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
+    this->registerCallback("moveAgentEvent", [agent]() {agent->goTowardsGoal();});
     ///@todo: Register in the factory (process data)
     this->registerCallback("StopCaptureEvent", [agent]() {agent->getCapture()->stopCapture();});
     this->registerCallback("StartCaptureEvent", [agent]() {agent->getCapture()->startCapture();});
@@ -56,12 +57,13 @@ void        AgentProtocol::run() {
                 ++i;
                 toSend  = _factory.getChunk();
             }
-            //is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+            is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
             boost::this_thread::sleep(boost::posix_time::millisec(5));
         }
         std::cerr << "SEND CLOUD event " << i << " packets with " << _cloud.points.size() << " points" << std::endl;
         _cloud.clear();
         this->pause();
+        this->dispatch("moveAgentEvent");
         //Cloud sent we can now restart capture
         this->dispatch("StartCaptureEvent");
     }
