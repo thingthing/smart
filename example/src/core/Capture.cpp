@@ -1,7 +1,7 @@
 #include "Capture.hh"
 
 Capture::Capture()
-  : _grabber(new RealSenseGrabber())
+  : _grabber(new pcl::io::OpenNI2Grabber())/*RealSenseGrabber())*/
 {
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
   _grabber->registerCallback(getData);

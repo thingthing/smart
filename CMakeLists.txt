@@ -8,7 +8,7 @@ SET(PROJECT_NAME "agent" CACHE STRING "Project name (either agent or visu)")
 
 PROJECT(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11 -ggdb3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -89,7 +89,7 @@ endif(${PROJECT_NAME} STREQUAL "agent")
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PCL_LIBRARIES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${Jsoncpp_LIBRARIES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} "realsense")
+#TARGET_LINK_LIBRARIES(${PROJECT_NAME} "realsense")
 
 # -- looking for PCL_COMMON
 # -- looking for PCL_KDTREE
