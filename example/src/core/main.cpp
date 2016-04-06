@@ -29,5 +29,6 @@ int     main(int argc, char **argv)
     core.run();
     //If code is here, you are exited, so send the disconnect info to server
     networkAdapter.disconnect();
+    std::cout << "EXITING MAIN" << std::endl;
     return (0);
 }

@@ -24,12 +24,12 @@ Core::~Core()
 //Not usefull anymore: all is direct by camera grab
 void        Core::update()
 {
-    pcl::PointCloud<pcl::PointXYZRGBA> cloud = _agent->getCapture()->getData();
-    try {
-      _slam->updateState(cloud, _agent);
-    } catch(...) {
-      std::cerr << "Error during slam update" << std::endl;
-    }
+    // pcl::PointCloud<pcl::PointXYZRGBA> cloud = _agent->getCapture()->getData();
+    // try {
+    //   _slam->updateState(cloud, _agent);
+    // } catch(...) {
+    //   std::cerr << "Error during slam update" << std::endl;
+    // }
     try {
       _agent->updateState();
     } catch(...) {
@@ -43,16 +43,15 @@ void        Core::run()
         while (1)
         {
             //Waiting main thread to let other thread work
-            std::cout << "Write exit to quit" << std::endl;
-            std::string user_input;
-            std::cin >> user_input;
-            std::cout << "Input got is == [" << user_input << "]" << std::endl;
-            if (user_input.compare("exit")) {
-                std::cout << "Quitting" << std::endl;
-                break;
-            }
-            //usleep(2000000);
-            //this->update();
+            // std::cout << "Write exit to quit" << std::endl;
+            // std::string user_input;
+            // std::cin >> user_input;
+            // if (user_input.compare("exit") == 0) {
+            //     std::cout << "Quitting" << std::endl;
+            //     break;
+            // }
+            usleep(2000000);
+            this->update();
         }
     } catch (std::exception &e) {
         std::cout << "Error catch == " << e.what() << std::endl;

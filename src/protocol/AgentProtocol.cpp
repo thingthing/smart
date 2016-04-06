@@ -12,7 +12,7 @@ const std::string AgentProtocol::UDP_KEY = "UDP";
 
 
 AgentProtocol::AgentProtocol(Network::NetworkManager &networkAdapter)
-    : AProtocol(networkAdapter)
+    : AProtocol(networkAdapter), _cloud(new pcl::PointCloud<pcl::PointXYZRGBA>)
 {
     Network::IConnector *connector = new Network::TCPConnector();
     _networkAdapter.setConnector(AgentProtocol::TCP_KEY, connector);
@@ -44,30 +44,34 @@ void        AgentProtocol::run() {
     //     std::cout << "    " << cloud.points[i].x
     //               << " "    << cloud.points[i].y
     //               << " "    << cloud.points[i].z << std::endl;
-    //std::cerr << "RUNINNG WITH CLOUD == " << _cloud.size() << std::endl;
-    if (!_cloud.empty()) {
-        _factory.processData(_cloud);
+    //std::cerr << "RUNINNG WITH CLOUD == " << _cloud->size() << std::endl;
+    if (!_cloud->empty()) {
+        _factory.processData(*_cloud);
         int i = 0;
         bool is_ready = true;
         std::string toSend = "";
-        std::cerr << "Start of send pointCloud "<< _cloud.points.size() << std::endl;
+        std::cerr << "Start of send pointCloud "<< _cloud->points.size() << std::endl;
         while (_factory.isFullChunkReady())
         {
             if (is_ready) {
                 ++i;
                 toSend  = _factory.getChunk();
             }
-            is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+            try {
+                is_ready = _networkAdapter.send(toSend, AgentProtocol::UDP_KEY);
+            } catch (std::exception *e) {
+                std::cerr << "An error occured when trying to send on UDP" << std::endl;
+                return ;
+            }
             boost::this_thread::sleep(boost::posix_time::millisec(5));
         }
-        std::cerr << "SEND CLOUD event " << i << " packets with " << _cloud.points.size() << " points" << std::endl;
-        _cloud.clear();
-        this->pause();
-        this->dispatch("moveAgentEvent");
-        //Cloud sent we can now restart capture
-        this->dispatch("StartCaptureEvent");
+        std::cerr << "SEND CLOUD event " << i << " packets with " << _cloud->points.size() << " points" << std::endl;
     }
-    
+    _cloud->clear();
+    this->pause();
+    this->dispatch("moveAgentEvent");
+    //Cloud sent we can now restart capture
+    this->dispatch("StartCaptureEvent");
     //To uncomment if you want to send only one cloud
     // Json::Value     reply;
 
@@ -82,9 +86,15 @@ void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> con
 {
     //Stopping capture before sending
     this->dispatch("StopCaptureEvent");
-    if (!_cloud.empty())
-      _cloud.clear();
-    pcl::copyPointCloud(cloud, _cloud);
+    if (!_cloud->empty())
+      _cloud->clear();
+      // pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr ptrCloud(&_cloud);
+        //Clean cloud before send
+    pcl::copyPointCloud(cloud, *_cloud);
+    pcl::VoxelGrid<pcl::PointXYZRGBA> vox;
+    vox.setInputCloud(_cloud);
+    vox.setLeafSize(0.02f, 0.02f, 0.02f);
+    vox.filter(*_cloud);
     //std::cerr << "Trying to send cloud event" << std::endl;
     this->start();
 }
@@ -221,14 +231,14 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
     //std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
     {
-        // std::cout << "received a data " << serverReply << std::endl;
+        //std::cout << "received a data " << serverReply << std::endl;
         Json::Value data = root["data"];
         Json::Value status = root["status"];
         int status_code = status.get("code", 0).asInt();
         // std::cout << "Status code == " << status_code << std::endl;
         if (status_code == 0 && data.empty() == false)
         {
-            // std::cout << "Data found == " << data << std::endl;
+            //std::cout << "Data found == " << data << std::endl;
             for (Json::ValueIterator it = data.begin(); it != data.end(); ++it)
             {
                 std::string command = it.memberName();
@@ -236,7 +246,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
                 if (command == "order")
                 {
                     pos = this->getPosFromJson(*it);
-                    //std::cout << "Order goal pos got == " << pos << std::endl;
+                    std::cout << "Order goal pos got == " << pos << std::endl;
 		    if (first_order) {
 		      first_order = false;
 		      this->dispatch("StartCaptureEvent");
@@ -256,8 +266,10 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
         {
             if (status_code != 0)
                 std::cerr << "Status error recieved: [" << status_code << "]: " << status.get("message", "").asString() << std::endl;
-	    if (status_code == 42)
-	      this->disconnectEvent();
+	       if (status_code == 42) {
+                std::cerr << "Disconnecting event found" << std::endl;
+                //this->disconnectEvent();
+            }
             // else
             //     std::cerr << "No data recieved but good status: " << status.get("message", "").asString() << std::endl;
         }

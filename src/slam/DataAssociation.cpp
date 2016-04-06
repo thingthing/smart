@@ -34,35 +34,40 @@ void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZRGBA> const
     std::cerr << "Error during extractlineLandmarks " << this->_landmarkDb->getLandmarkDB().size() << std::endl;
     return;
   }
+  std::cerr << "extractlineLandmarks end" << std::endl;
 
   try {
     for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
       {
-	//First associate landmark
-	this->associateLandmarks(*it);
+	      //First associate landmark
+        this->associateLandmarks(*it);
+        //Can't remove Doubles because not really associated yet
+        ///@todo: Find where we can removeDouble
+        //newLandmarks = this->_landmarkDb->removeDouble(newLandmarks, resultLandmarks);
+
+        //Pass non doubles through gate       
+        if (this->_landmarkDb->getAssociation(*(*it)) == -1)
+        {
+          //Landmark not found, should add it
+          resultLandmarks.push_back(*it);
+          //this->_landmarkDb->addToDB(*(*it));
+        }
+        else
+          reobservedLandmarks.push_back(*it);
+        
       }
   } catch (...) {
     std::cerr << "Error during associatelandmarks" << std::endl;
   }
-  //Can't remove Doubles because not really associated yet
-  ///@todo: Find where we can removeDouble
-  //newLandmarks = this->_landmarkDb->removeDouble(newLandmarks, resultLandmarks);
-  try {
-    //Pass non doubles through gate
-    for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
-      {
-	if (this->_landmarkDb->getAssociation(*(*it)) == -1)
-	  {
-	    //Landmark not found, should add it
-	    resultLandmarks.push_back(*it);
-	    //this->_landmarkDb->addToDB(*(*it));
-	  }
-	else
-	  reobservedLandmarks.push_back(*it);
-      }
-  } catch (...) {
-    std::cerr << "Error during landmarkassociationresult" << std::endl;
-  }
+
+  // try {
+  //   //Pass non doubles through gate
+  //   for (std::vector<Landmarks::Landmark *>::iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
+  //     {
+	
+  // } catch (...) {
+  //   std::cerr << "Error during landmarkassociationresult" << std::endl;
+  // }
 }
 
 bool  DataAssociation::associateLandmarks(Landmarks::Landmark *toAssociate) const

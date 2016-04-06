@@ -40,7 +40,7 @@ protected:
 
     Network::ChunkFactory        _factory;
     Network::ComPacket   _outPacket;
-    pcl::PointCloud<pcl::PointXYZRGBA> _cloud;
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr _cloud;
 };
 
 #endif

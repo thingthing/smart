@@ -136,6 +136,7 @@ namespace   Network
         if (_connectors.at(connector_id)->isConnected() == false)
         {
             std::cerr << "Try to send to " << connector_id << " wich is not connected" << std::endl;
+            throw new std::exception();
             return (false);
         }
         
@@ -171,6 +172,7 @@ namespace   Network
         //std::cout << "IN NetworkManager RUN" << std::endl;
         if (poll(_fdset, _fdsetList.size(), 0) > 0)
         {
+            //std::cout << "Poll change" << std::endl;
             for (std::map<std::string, pollfd &>::iterator it = _fdsetList.begin();
                     it != _fdsetList.end(); ++it)
 

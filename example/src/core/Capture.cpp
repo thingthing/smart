@@ -5,6 +5,7 @@ Capture::Capture()
 {
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> getData = boost::bind (&Capture::captureData, this, _1);
   _grabber->registerCallback(getData);
+
 }
 
 Capture::~Capture()
@@ -42,19 +43,7 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   //             << " "    << cloud->points[i].y
   //             << " "    << cloud->points[i].z << std::endl;
   // std::cout << "End point cloud" << std::endl;
-  // pcl::PointCloud<pcl::PointXYZ>::Ptr cloudClean(new pcl::PointCloud<pcl::PointXYZ>());
-  // /// Clean noise
-  // pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-  // sor.setInputCloud(cloud);
-  // sor.setMeanK(50);
-  // sor.setStddevMulThresh(1.0);
-  // sor.filter(*cloudClean);
-  // /// Reduce cloud to send size to 10% of orignial size more or less
-  // pcl::VoxelGrid<pcl::PointXYZ> vox;
-  // vox.setInputCloud(cloudClean);
-  // vox.setLeafSize(0.05f, 0.05f, 0.05f);
-  // vox.filter(*cloudClean);
-  //std::cerr << "Start capture " << cloud->size() << std::endl;
+  std::cerr << "Start capture " << cloud->size() << std::endl;
   if (!_cloud->empty())
       _cloud->clear();
   //pcl::copyPointCloud(*cloud, *_cloud);
@@ -75,7 +64,7 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   // vox.setInputCloud(_cloud);
   // vox.setLeafSize(0.05f, 0.05f, 0.05f);
   // vox.filter(*_cloud);
-   //std::cerr << "After VoxelGrid " << _cloud->size() << std::endl;
+  std::cerr << "After VoxelGrid " << _cloud->size() << std::endl;
 
   this->dispatch("takeDataEvent");
   //boost::this_thread::sleep(boost::posix_time::millisec(10));

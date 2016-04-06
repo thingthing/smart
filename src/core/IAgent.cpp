@@ -2,7 +2,7 @@
 
 IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _yaw(0),
-    _name(name), _status("OK"), _roll(0), _pitch(0), _battery(battery)
+    _name(name), _status("OK"), _roll(0), _pitch(0), _battery(battery), _send_data(false)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;

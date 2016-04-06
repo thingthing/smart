@@ -23,9 +23,14 @@
 #include <vector>
 #include <map>
 #include <cmath>
+#include <algorithm>
+#include <pcl/sample_consensus/ransac.h>
+#include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/common/common.h>
 #include <pcl/impl/point_types.hpp>
+#include <pcl/filters/filter.h>
 #include <pcl/common/projection_matrix.h>
+#include <pcl/filters/extract_indices.h>
 #include "IAgent.hh"
 
 class Landmarks
@@ -73,7 +78,7 @@ public:
     ///A life counter to determine whether to discard a landmark
     int life;
     ///The number of times we have seen the landmark
-    int totalTimeObserved;
+    unsigned int totalTimeObserved;
     ///Last observed range from agent to landmark
     double range;
     ///Last observed bearing from agent to landmark
@@ -266,6 +271,7 @@ public: // ONLY FOR UNIT TESTS
 
   //Getters
   Landmark *getLandmark(double x_view, double y_view, IAgent const *agent);
+  Landmark *getLandmark(unsigned int landmark_id) const;
   Landmark *getLineLandmark(double a, double b, IAgent const *agent);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();
@@ -279,7 +285,7 @@ public: // ONLY FOR UNIT TESTS
       IAgent const *agent);
 
   //Other
-  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, int selectPoints[], int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, std::vector<int> &selectPoints, int arraySize, double &a, double &b);
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;
@@ -293,7 +299,7 @@ public: // ONLY FOR UNIT TESTS
   std::vector<Landmark *> landmarkDB;
   int DBSize;
   std::vector<std::pair<int, int> > IDtoID;
-  int EKFLandmarks;
+  unsigned int lastID;
 };
 
 #endif

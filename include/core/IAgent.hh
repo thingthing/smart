@@ -31,6 +31,9 @@ public:
     double          getPitch() const;
     int             getBattery() const;
 
+    bool            getSendData() { return _send_data; }
+    void            setSendData(bool data) { _send_data = data; }
+
     void            setBattery(int new_battery_value);
     void            setRoll(double thrust);
     void            setYaw(double theta);
@@ -58,6 +61,8 @@ protected:
   double	_pitch;
     ICapture         *_capture;
     int             _battery;
+    bool                       _send_data;
+
 
 public:
     //Use to align class with pointCloud

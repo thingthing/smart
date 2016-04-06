@@ -109,7 +109,7 @@ public:
 	void moveLandmarks(std::vector<Landmarks::Landmark *> const &reobservedLandmarks);
 	void moveLandmark(Landmarks::Landmark *landmark);
 	void moveAgent(IAgent const *agent);
-	void updatePositions(int trustPercentageOnRobotMovement);
+	bool updatePositions(int trustPercentageOnRobotMovement, std::vector<Landmarks::Landmark *> &reobservedLandmarks);
 
   Landmarks   *_landmarkDb;
 

@@ -98,7 +98,7 @@ void Slam::moveAgent(IAgent const *agent)
 
 //trustPercentageOnRobotMovement must be between 0 and 1.
 //0 means trust the landmarks; 1 means trust the agent's odometry
-void Slam::updatePositions(int trustPercentageOnRobotMovement)
+bool Slam::updatePositions(int trustPercentageOnRobotMovement, std::vector<Landmarks::Landmark *> &reobservedLandmarks)
 {
 float averageLandmarkMovementX = 0;
 float averageLandmarkMovementY = 0;
@@ -112,6 +112,7 @@ float supposedRobotDisplacementZ = 0;
 float actualRobotDisplacementX = 0;
 float actualRobotDisplacementY = 0;
 float actualRobotDisplacementZ = 0;
+bool data_moved = false;
 
 	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
 	{
@@ -123,15 +124,18 @@ float actualRobotDisplacementZ = 0;
 
 				landmarksMoved++;
 				it->second.setState(UPDATING);
+				data_moved = true;
 			}
 	}
-
+std::cout << "landmark moved == " << landmarksMoved << std::endl;
 	if (landmarksMoved > 0)
 	{
 		averageLandmarkMovementX /= landmarksMoved; 
 		averageLandmarkMovementY /= landmarksMoved;
 		averageLandmarkMovementZ /= landmarksMoved;
 	}
+
+	std::cout << "averageLandmarkMovementx  :: " << averageLandmarkMovementX << " -- averageLandmarkMovementY :: " << averageLandmarkMovementY << " -- averageLandmarkMovementZ :: " << averageLandmarkMovementZ << std::endl;
 
 	supposedRobotDisplacementX = this->currentRobotPos.x - this->oldRobotPos.x;
 	supposedRobotDisplacementY = this->currentRobotPos.y - this->oldRobotPos.y;
@@ -140,20 +144,44 @@ float actualRobotDisplacementZ = 0;
 	actualRobotDisplacementX = (averageLandmarkMovementX * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementX * trustPercentageOnRobotMovement);
 	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
 	actualRobotDisplacementZ = (averageLandmarkMovementZ * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementZ * trustPercentageOnRobotMovement);
-  //std::cout << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << std::endl;
+	
+	actualRobotDisplacementX = std::nearbyint(actualRobotDisplacementX * 100) / 100;
+	actualRobotDisplacementY = std::nearbyint(actualRobotDisplacementY * 100) / 100;
+	actualRobotDisplacementZ = std::nearbyint(actualRobotDisplacementZ * 100) / 100;
+  
+  std::cout << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << " -- Old position z :: " << this->currentRobotPos.z << std::endl;
 	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
 	this->currentRobotPos.y = this->oldRobotPos.y + actualRobotDisplacementY;
 	this->currentRobotPos.z = this->oldRobotPos.z + actualRobotDisplacementZ;
-  //std::cout << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << std::endl;
+  std::cout << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << " -- New position z :: " << this->currentRobotPos.z << std::endl;
 
-	for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
+  		// Round to 0.001 decimal
+	this->currentRobotPos.x = std::nearbyint(this->currentRobotPos.x * 100) / 100;
+	this->currentRobotPos.y = std::nearbyint(this->currentRobotPos.y * 100) / 100;
+	this->currentRobotPos.z = std::nearbyint(this->currentRobotPos.z * 100) / 100;
+	std::cout << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << " -- New position after  round  z :: " << this->currentRobotPos.z << std::endl;
+
+  for (std::vector<Landmarks::Landmark *>::const_iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
+  {
+  	int slamId = this->_landmarkDb->getSLamId((*it)->id);
+  	if (this->matrix.at(slamId).getState() == UPDATING)
 	{
-		if (it->second.getState() == UPDATING)
-		{
-			it->second.setCurrentPosition(it->second.getOldPosition().x + actualRobotDisplacementX, it->second.getOldPosition().y + actualRobotDisplacementY, it->second.getOldPosition().z + actualRobotDisplacementZ);
-			it->second.setState(UPTODATE);
-		}
+		this->matrix.at(slamId).setCurrentPosition(this->matrix.at(slamId).getOldPosition().x + actualRobotDisplacementX, this->matrix.at(slamId).getOldPosition().y + actualRobotDisplacementY, this->matrix.at(slamId).getOldPosition().z + actualRobotDisplacementZ);
+		this->matrix.at(slamId).setState(UPTODATE);
+		(*it)->pos.x = this->matrix.at(slamId).getCurrentPosition().x;
+		(*it)->pos.y = this->matrix.at(slamId).getCurrentPosition().y;
+		(*it)->pos.z = this->matrix.at(slamId).getCurrentPosition().z;
 	}
+  }
+	// for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
+	// {
+	// 	if (it->second.getState() == UPDATING)
+	// 	{
+	// 		it->second.setCurrentPosition(it->second.getOldPosition().x + actualRobotDisplacementX, it->second.getOldPosition().y + actualRobotDisplacementY, it->second.getOldPosition().z + actualRobotDisplacementZ);
+	// 		it->second.setState(UPTODATE);
+	// 	}
+	// }
+	return data_moved;
 }
 
 void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
@@ -162,35 +190,38 @@ void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgen
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
 
+  if (cloud.size() == 0)
+  	return;
+  
   try {
     this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
   } catch (...) {
     std::cerr << "Error during dataassociation" << std::endl;
   }
-
   try {
     this->addLandmarks(newLandmarks);
   } catch (...) {
     std::cerr << "Error during addlandmarks" << std::endl;
   }
-
+std::cerr << "total landmarks length is " << this->_landmarkDb->getDBSize() << std::endl;
+newLandmarks.clear();
+  	std::cout << "reobserved landmarks before length is " << reobservedLandmarks.size() << std::endl;
+  reobservedLandmarks = this->_landmarkDb->removeDouble(reobservedLandmarks, newLandmarks);
   try {
+  	std::cout << "reobserved landmarks after length is " << reobservedLandmarks.size() << std::endl;
   	this->moveLandmarks(reobservedLandmarks);
   } catch (std::exception &e) {
     std::cerr << "error during move landmarks " << e.what() << std::endl;
   }
 	this->moveAgent(agent);
 
-	this->updatePositions(0.0);
-	
-	// Round to 0.001 decimal
-	this->currentRobotPos.x = std::nearbyint(this->currentRobotPos.x * 100) / 100;
-	this->currentRobotPos.y = std::nearbyint(this->currentRobotPos.y * 100) / 100;
-	this->currentRobotPos.z = std::nearbyint(this->currentRobotPos.z * 100) / 100;
+	bool data_moved = this->updatePositions(0.0, reobservedLandmarks);
+	if (data_moved && !agent->getSendData()) {
+		agent->setSendData(data_moved);
+	}
   agent->setPos(this->currentRobotPos);
-  //std::cout << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << std::endl;
   //After all, remove bad landmarks
-  //this->_landmarkDb->removeBadLandmarks(cloud, agent);
+  this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
 void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)
@@ -198,8 +229,10 @@ void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmark
   for (std::vector<Landmarks::Landmark *>::const_iterator it = newLandmarks.begin(); it != newLandmarks.end(); ++it)
   {
     int landmarkId = this->_landmarkDb->addToDB(**it);
-    int slamId = (int)this->addLandmarkToMatrix((*it)->pos);
-    this->_landmarkDb->addSlamId(landmarkId, slamId);
+    if (landmarkId != -1) {
+    	int slamId = (int)this->addLandmarkToMatrix((*it)->pos);
+    	this->_landmarkDb->addSlamId(landmarkId, slamId);
+    }
   }
 }
 
@@ -244,8 +277,15 @@ void Slam::moveLandmark(Landmarks::Landmark *landmark)
 
   int slamId = this->_landmarkDb->getSLamId(landmark->id);
 
+  	//std::cerr << "MOVING LANDMAKR " << slamId << " landmark == " << landmark->id << " Roll == " << this->_agent->getRoll() << " -- pitch == " << this->_agent->getPitch() << " -- yaw == " << this->_agent->getYaw() << std::endl;
+  	//std::cerr << "PREV POS == x: " << landmark->pos.x << " -- y: " << landmark->pos.y << " -- z: " << landmark->pos.z << std::endl;
 	this->matrix.at(slamId).setOldPosition(this->matrix.at(slamId).getCurrentPosition());
 	this->matrix.at(slamId).setCurrentPosition(pcl::PointXYZ(tempXX, tempYY, tempZZ));
-
-	this->matrix.at(slamId).setState(MOVED);
+  	//std::cerr << "NEW POS DISPLACEMENT == x: " << tempXX << " -- y: " << tempYY << " -- z: " << tempZZ << std::endl;
+  	if (landmark->totalTimeObserved > Landmarks::MINOBSERVATIONS) {
+  		//std::cerr << "MOVING " << slamId << std::endl;
+		this->matrix.at(slamId).setState(MOVED); // Observed enough so moving agent with it
+  	}
+	else
+		this->matrix.at(slamId).setState(UPDATING); // Not obeserved enough, don't user it to move
 }

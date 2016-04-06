@@ -16,6 +16,7 @@ Agent::Agent(double degreePerScan, double cameraProblem)
     : IAgent(degreePerScan, cameraProblem, "AgentVirtuel", Agent::DEFAULTBATTERY)
 {
     this->_capture = new Capture();
+
     this->_pos.x = 0;
     this->_pos.y = 0;
     this->_pos.z = 0;
@@ -110,15 +111,21 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
   pcl::PointCloud<pcl::PointXYZRGBA> cloud = _capture->getData();
   //Update state to have the state in correspondance with the cloud data
   this->updateState();
+
+  //Tranform cloud data with possible position of agent
+  // Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
+  // pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
   //Call to slam to get the real position of agent with new data
   this->dispatch("getDataEvent", cloud, this);
 
-  //std::cerr << "Getting data in takeData == " << cloud.size() << std::endl;
-  //Tranform cloud data with actual position of agent
-  Eigen::Affine3f   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
-  pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
-  //Send new cloud data
-  this->dispatch("SendCloudEvent", cloud);
+  if (_send_data) {
+    //std::cerr << "Getting data in takeData == " << cloud.size() << std::endl;
+    //Tranform cloud data with actual position of agent
+    Eigen::Affine3f transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
+    pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
+    //Send new cloud data
+    this->dispatch("SendCloudEvent", cloud);
+  }
   return (_capture->getData());
 }
 
@@ -155,12 +162,12 @@ void             Agent::goTowardsGoal()
     // TEST A ALA CON
       // std::cout << "Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
       // << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
-      if (_pos.x != _goalPos.x)
-          _pos.x += (_goalPos.x < _pos.x) ? -1 : 1;
-      if (_pos.y != _goalPos.y)
-          _pos.y += (_goalPos.y < _pos.y) ? -1 : 1;
-      if (_pos.z != _goalPos.z)
-          _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
+      // if (_pos.x != _goalPos.x)
+      //     _pos.x += (_goalPos.x < _pos.x) ? -1 : 1;
+      // if (_pos.y != _goalPos.y)
+      //     _pos.y += (_goalPos.y < _pos.y) ? -1 : 1;
+      // if (_pos.z != _goalPos.z)
+      //     _pos.z += (_goalPos.z < _pos.z) ? -1 : 1;
 
     // std::cout << "After Moving to goal " << _goalPos.x << " " << _goalPos.y << " " << _goalPos.z << " with pos == "
     //     << _pos.x << " " << _pos.y << " " << _pos.z << std::endl;
@@ -189,10 +196,11 @@ void            Agent::updateState()
 
        // print euler angle
       WithRobot::EulerAngle& e = _sensor_data.euler_angle;
-      this->setPitch(e.pitch);
-      this->setRoll(e.roll);
-      this->setYaw(e.yaw);
+      this->setPitch(std::nearbyint(e.pitch));
+      this->setRoll(std::nearbyint(e.roll));
+      this->setYaw(std::nearbyint(e.yaw));
       std::cerr << "Roll == " << e.roll << " -- pitch == " << e.pitch << " -- yaw == " << e.yaw << std::endl;
+      std::cerr << "AGENT Roll == " << _roll << " -- pitch == " << _pitch << " -- yaw == " << _yaw << std::endl;
     }
 
     //@Todo: get real battery
