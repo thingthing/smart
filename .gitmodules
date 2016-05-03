@@ -1,3 +1,0 @@
-[submodule "pcdData/data"]
-	path = pcdData/data
-	url = git@github.com:PointCloudLibrary/data.git
