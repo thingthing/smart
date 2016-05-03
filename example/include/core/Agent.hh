@@ -2,6 +2,7 @@
 # define    _AGENT_HH_
 
 #include <string>
+#include <pcl/io/pcd_io.h>
 
 #include "IAgent.hh"
 #include "Capture.hh"
@@ -23,14 +24,17 @@ public:
     void            setGoalPos(double x, double y, double z);
 
     virtual pcl::PointCloud<pcl::PointXYZRGBA> const &takeData();
-    virtual void            updateState();
+    virtual void            updateState(bool true_update = true);
     virtual void            goTowardsGoal();
     bool            isAtDestination() const;
     bool            isAtBase() const;
+    void            executeDownload();
+
 
     static const int DEFAULTBATTERY;
     static const int BAUDRATE;
     static const char* DIVIDER;
+    static const char* SAVE_FILE_NAME;
 
 private:
     pcl::PointXYZ               _goalPos;

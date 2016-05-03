@@ -41,6 +41,7 @@ protected:
     Network::ChunkFactory        _factory;
     Network::ComPacket   _outPacket;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr _cloud;
+    IAgent::e_mode               _mode;
 };
 
 #endif

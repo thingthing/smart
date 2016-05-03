@@ -31,7 +31,7 @@ void        Core::update()
     //   std::cerr << "Error during slam update" << std::endl;
     // }
     try {
-      _agent->updateState();
+      _agent->updateState(false);
     } catch(...) {
       std::cerr << "Error during agent update" << std::endl;
     }

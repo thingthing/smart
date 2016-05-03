@@ -50,13 +50,18 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud(*cloud, *_cloud, indices);
 
+  pcl::StatisticalOutlierRemoval<pcl::PointXYZRGBA> sor;
+  sor.setInputCloud(_cloud);
+  sor.setMeanK(50);
+  sor.setStddevMulThresh(1.0);
+  sor.filter(*_cloud);
   //std::cerr << "Before  " << _cloud->size() << std::endl;
-  pcl::PassThrough<pcl::PointXYZRGBA> pass;
-  pass.setInputCloud (_cloud);
-  pass.setFilterFieldName ("z");
-  pass.setFilterLimits (1.0, 3.0);
-  //pass.setFilterLimitsNegative (true);
-  pass.filter (*_cloud);
+  // pcl::PassThrough<pcl::PointXYZRGBA> pass;
+  // pass.setInputCloud (_cloud);
+  // pass.setFilterFieldName ("z");
+  // pass.setFilterLimits (1.0, 3.0);
+  // //pass.setFilterLimitsNegative (true);
+  // pass.filter (*_cloud);
 
   //std::cerr << "After PassThrough " << _cloud->size() << std::endl;
 

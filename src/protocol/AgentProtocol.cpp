@@ -26,9 +26,11 @@ AgentProtocol::~AgentProtocol()
 
 void         AgentProtocol::setAgent(IAgent *agent, Slam &slam)
 {
+    this->_mode = agent->getMode();
     this->registerCallback("SetGoalPosEvent", [agent](pcl::PointXYZ pos) {dynamic_cast<Agent *>(agent)->setGoalPos(pos);});
+    this->registerCallback("DownloadEvent", [agent]() {dynamic_cast<Agent *>(agent)->executeDownload();});
     this->registerCallback("SetPosEvent", [agent](pcl::PointXYZ pos) {agent->setPos(pos);});
-    agent->registerCallback("SendPacketEvent", [this](IAgent * agent) {sendPacketEvent(agent);});
+    agent->registerCallback("SendPacketEvent", [this](IAgent *agent) {sendPacketEvent(agent);});
     agent->registerCallback("SendStatusEvent", [this](std::string const & status) {sendStatusEvent(status);});
     this->registerCallback("moveAgentEvent", [agent]() {agent->goTowardsGoal();});
     ///@todo: Register in the factory (process data)
@@ -63,7 +65,10 @@ void        AgentProtocol::run() {
                 std::cerr << "An error occured when trying to send on UDP" << std::endl;
                 return ;
             }
-            boost::this_thread::sleep(boost::posix_time::millisec(5));
+            if (_mode == IAgent::DIRECT)
+                boost::this_thread::sleep(boost::posix_time::millisec(5));
+            else if (_mode == IAgent::DELAYED)
+                boost::this_thread::sleep(boost::posix_time::millisec(10));
         }
         std::cerr << "SEND CLOUD event " << i << " packets with " << _cloud->points.size() << " points" << std::endl;
     }
@@ -221,6 +226,7 @@ pcl::PointXYZ AgentProtocol::getPosFromJson(Json::Value const &root)
     });
 }
 
+///@todo: Faire un tableau associatif de pointeur sur fonction pour les ordres
 void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      // only for test 4 now, will change
 {
   static bool first_order = true;
@@ -247,16 +253,21 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
                 {
                     pos = this->getPosFromJson(*it);
                     std::cout << "Order goal pos got == " << pos << std::endl;
-		    if (first_order) {
-		      first_order = false;
-		      this->dispatch("StartCaptureEvent");
+        		    if (first_order)
+                    {
+        		      first_order = false;
+        		      this->dispatch("StartCaptureEvent");
                     }
-		    this->dispatch("SetGoalPosEvent", pos);
+        		    this->dispatch("SetGoalPosEvent", pos);
                 }
                 else if (command == "position")
                 {
                     pos = this->getPosFromJson(*it);
                     this->dispatch("SetPosEvent", pos);
+                }
+                else if (command == "download")
+                {
+                    this->dispatch("DownloadEvent");
                 }
                 else
                     std::cerr << "Command not known: " << command << std::endl;

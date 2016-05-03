@@ -270,14 +270,14 @@ public: // ONLY FOR UNIT TESTS
 #endif
 
   //Getters
-  Landmark *getLandmark(double x_view, double y_view, IAgent const *agent);
+  Landmark *getLandmark(double x_view, double y_view, double z_view, IAgent const *agent);
   Landmark *getLandmark(unsigned int landmark_id) const;
-  Landmark *getLineLandmark(double a, double b, IAgent const *agent);
+  Landmark *getLineLandmark(double a, double b, double c, IAgent const *agent);
   Landmark *getLine(double a, double b);
   Landmark *getOrigin();
 
   //Update
-  Landmark *updateLandmark(bool matched, int id, double x_view, double y_view, IAgent const *agent);
+  Landmark *updateLandmark(bool matched, int id, double x_view, double y_view, double z_view, IAgent const *agent);
   Landmark *updateLandmark(Landmark *lm);
 
   //Extract
@@ -285,7 +285,7 @@ public: // ONLY FOR UNIT TESTS
       IAgent const *agent);
 
   //Other
-  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, std::vector<int> &selectPoints, int arraySize, double &a, double &b);
+  void leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, std::vector<int> &selectPoints, int arraySize, double &a, double &b, double &c);
   double distanceToLine(double x, double y, double a, double b);
   double distance(double x1, double y1, double x2, double y2) const;
   double distance(const Landmark &lm1, const Landmark &lm2) const;

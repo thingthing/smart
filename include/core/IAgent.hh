@@ -19,9 +19,13 @@ public:
     static const double DEGREESPERSCAN; // meter
     static const double CAMERAPROBLEM; // meter
 
+    enum e_mode {
+        DIRECT,
+        DELAYED
+    };
 
     IAgent(double degreePerScan = DEGREESPERSCAN, double cameraProblem = CAMERAPROBLEM,
-           std::string const &name = "Default", int battery = 0);
+           std::string const &name = "Default", int battery = 0, e_mode mode = DIRECT);
     virtual ~IAgent();
 
     pcl::PointXYZ   const   &getPos() const;
@@ -30,9 +34,12 @@ public:
     double          getYaw() const;
     double          getPitch() const;
     int             getBattery() const;
+    pcl::PointXYZ   getVelocity() const { return _velocity; }
+    pcl::PointXYZ   getAcceleration() const { return _acceleration; }
+    inline e_mode   getMode() const { return _mode; }
 
-    bool            getSendData() { return _send_data; }
-    void            setSendData(bool data) { _send_data = data; }
+    inline bool     getSendData() { return _send_data; }
+    inline void     setSendData(bool data) { _send_data = data; }
 
     void            setBattery(int new_battery_value);
     void            setRoll(double thrust);
@@ -40,10 +47,13 @@ public:
     void            setPitch(double deltaTheta);
     void            setPos(pcl::PointXYZ const &pos);
     void            setPos(double x, double y, double z);
+    inline void     setVelocity(pcl::PointXYZ const &velo) { _velocity = velo; }
+    inline void     setAcceleration(pcl::PointXYZ const &accel) { _acceleration = accel; }
     std::string const &status(std::string const &status);
+    inline void     setMode(e_mode mode) { _mode = mode; }
 
     virtual pcl::PointCloud<pcl::PointXYZRGBA> const &takeData() = 0;
-    virtual void            updateState() = 0;
+    virtual void            updateState(bool true_update = true) = 0;
     virtual void            goTowardsGoal() = 0;
 
     inline std::string const &name() const { return (_name); }
@@ -54,15 +64,17 @@ public:
 
 protected:
     pcl::PointXYZ   _pos;
-  double    _yaw;
+    double          _yaw;
     std::string     _name;
     std::string     _status;
-  double	_roll;
-  double	_pitch;
+    double	         _roll;
+    double	         _pitch;
     ICapture         *_capture;
     int             _battery;
-    bool                       _send_data;
-
+    bool            _send_data;
+    pcl::PointXYZ   _velocity;
+    pcl::PointXYZ   _acceleration;
+    e_mode          _mode;
 
 public:
     //Use to align class with pointCloud

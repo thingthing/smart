@@ -1,12 +1,19 @@
 #include "IAgent.hh"
 
-IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery)
+IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery, IAgent::e_mode mode)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _yaw(0),
-    _name(name), _status("OK"), _roll(0), _pitch(0), _battery(battery), _send_data(false)
+    _name(name), _status("OK"), _roll(0), _pitch(0), _battery(battery),
+    _send_data(false), _mode(mode)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
   this->_pos.z = 0;
+  this->_velocity.x = 0.0;
+  this->_velocity.y = 0.0;
+  this->_velocity.z = 0.0;
+  this->_acceleration.x = 0.0;
+  this->_acceleration.y = 0.0;
+  this->_acceleration.z = 0.0;
 }
 
 IAgent::~IAgent()

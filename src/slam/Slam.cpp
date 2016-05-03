@@ -145,9 +145,9 @@ std::cout << "landmark moved == " << landmarksMoved << std::endl;
 	actualRobotDisplacementY = (averageLandmarkMovementY * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementY * trustPercentageOnRobotMovement);
 	actualRobotDisplacementZ = (averageLandmarkMovementZ * (1 - trustPercentageOnRobotMovement) + supposedRobotDisplacementZ * trustPercentageOnRobotMovement);
 	
-	actualRobotDisplacementX = std::nearbyint(actualRobotDisplacementX * 100) / 100;
-	actualRobotDisplacementY = std::nearbyint(actualRobotDisplacementY * 100) / 100;
-	actualRobotDisplacementZ = std::nearbyint(actualRobotDisplacementZ * 100) / 100;
+	actualRobotDisplacementX = std::nearbyint(actualRobotDisplacementX * 100.0) / 100.0;
+	actualRobotDisplacementY = std::nearbyint(actualRobotDisplacementY * 100.0) / 100.0;
+	actualRobotDisplacementZ = std::nearbyint(actualRobotDisplacementZ * 100.0) / 100.0;
   
   std::cout << "Old position x :: " << this->currentRobotPos.x << " -- Old position y :: " << this->currentRobotPos.y << " -- Old position z :: " << this->currentRobotPos.z << std::endl;
 	this->currentRobotPos.x = this->oldRobotPos.x + actualRobotDisplacementX;
@@ -156,10 +156,10 @@ std::cout << "landmark moved == " << landmarksMoved << std::endl;
   std::cout << "New position x :: " << this->currentRobotPos.x << " -- New position y :: " << this->currentRobotPos.y << " -- New position z :: " << this->currentRobotPos.z << std::endl;
 
   		// Round to 0.001 decimal
-	this->currentRobotPos.x = std::nearbyint(this->currentRobotPos.x * 100) / 100;
-	this->currentRobotPos.y = std::nearbyint(this->currentRobotPos.y * 100) / 100;
-	this->currentRobotPos.z = std::nearbyint(this->currentRobotPos.z * 100) / 100;
-	std::cout << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << " -- New position after  round  z :: " << this->currentRobotPos.z << std::endl;
+	// this->currentRobotPos.x = std::nearbyint(this->currentRobotPos.x * 100) / 100;
+	// this->currentRobotPos.y = std::nearbyint(this->currentRobotPos.y * 100) / 100;
+	// this->currentRobotPos.z = std::nearbyint(this->currentRobotPos.z * 100) / 100;
+	// std::cout << "New position after round x :: " << this->currentRobotPos.x << " -- New position after  round y :: " << this->currentRobotPos.y << " -- New position after  round  z :: " << this->currentRobotPos.z << std::endl;
 
   for (std::vector<Landmarks::Landmark *>::const_iterator it = reobservedLandmarks.begin(); it != reobservedLandmarks.end(); ++it)
   {
@@ -168,9 +168,9 @@ std::cout << "landmark moved == " << landmarksMoved << std::endl;
 	{
 		this->matrix.at(slamId).setCurrentPosition(this->matrix.at(slamId).getOldPosition().x + actualRobotDisplacementX, this->matrix.at(slamId).getOldPosition().y + actualRobotDisplacementY, this->matrix.at(slamId).getOldPosition().z + actualRobotDisplacementZ);
 		this->matrix.at(slamId).setState(UPTODATE);
-		(*it)->pos.x = this->matrix.at(slamId).getCurrentPosition().x;
-		(*it)->pos.y = this->matrix.at(slamId).getCurrentPosition().y;
-		(*it)->pos.z = this->matrix.at(slamId).getCurrentPosition().z;
+		// (*it)->pos.x = this->matrix.at(slamId).getCurrentPosition().x;
+		// (*it)->pos.y = this->matrix.at(slamId).getCurrentPosition().y;
+		// (*it)->pos.z = this->matrix.at(slamId).getCurrentPosition().z;
 	}
   }
 	// for (std::map<unsigned int, Case>::iterator it=matrix.begin(); it!=matrix.end(); ++it)
@@ -215,7 +215,7 @@ newLandmarks.clear();
   }
 	this->moveAgent(agent);
 
-	bool data_moved = this->updatePositions(0.0, reobservedLandmarks);
+	bool data_moved = this->updatePositions(1.0, reobservedLandmarks);
 	if (data_moved && !agent->getSendData()) {
 		agent->setSendData(data_moved);
 	}

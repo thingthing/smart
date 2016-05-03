@@ -14,6 +14,7 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/filters/statistical_outlier_removal.h>
 //#include "capture/real_sense_grabber.h"
 
 #include "ICapture.hh"

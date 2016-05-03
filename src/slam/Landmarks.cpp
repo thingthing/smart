@@ -5,11 +5,11 @@
 const double Landmarks::CONVERSION = (M_PI / 180.0); // Convert to radians
 const unsigned int Landmarks::MAXLANDMARKS = 3000; // Max number of landmarks
 const double Landmarks::MAXERROR = 0.01; // If a landmarks is within this distance of another landmarks, its the same landmarks
-const unsigned int Landmarks::MINOBSERVATIONS = 20; // Number of times a landmark must be observed to be recongnized as a landmark
-const unsigned int Landmarks::LIFE = 40; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
-const unsigned int Landmarks::MAXTRIALS = 50; // RANSAC: max times to run algorithm
+const unsigned int Landmarks::MINOBSERVATIONS = 15; // Number of times a landmark must be observed to be recongnized as a landmark
+const unsigned int Landmarks::LIFE = 15; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
+const unsigned int Landmarks::MAXTRIALS = 200; // RANSAC: max times to run algorithm
 const unsigned int Landmarks::MAXSAMPLE = 250; // RANSAC: randomly select x points
-const unsigned int Landmarks::MINLINEPOINTS = 30; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
+const unsigned int Landmarks::MINLINEPOINTS = 500; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
 const double  Landmarks::RANSAC_TOLERANCE = 0.01; // RANSAC: if point is within x distance of line, its part of the line
 const unsigned int Landmarks::RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
 const double Landmarks::MAX_DIFFERENCE = 0.5; // meter
@@ -117,7 +117,7 @@ double Landmarks::distance(double x1, double y1, double x2, double y2) const
 
 double Landmarks::distance(const Landmark &lm1, const Landmark &lm2) const
 {
-  return (sqrt(pow(lm1.pos.x - lm2.pos.x, 2) + pow(lm1.pos.y - lm2.pos.y, 2)));
+  return (sqrt(pow(lm1.pos.x - lm2.pos.x, 2) + pow(lm1.pos.y - lm2.pos.y, 2) + pow(lm1.pos.z - lm2.pos.z, 2)));
 }
 
 int Landmarks::addToDB(const Landmark &lm)
@@ -131,6 +131,7 @@ int Landmarks::addToDB(const Landmark &lm)
 
     new_elem->pos.x = lm.pos.x;
     new_elem->pos.y = lm.pos.y;
+    new_elem->pos.z = lm.pos.z;
     new_elem->life = Landmarks::LIFE;
     new_elem->id = lastID;
     new_elem->totalTimeObserved = 1;
@@ -199,10 +200,11 @@ void Landmarks::getClosestAssociation(Landmark *lm, int &id, int &totalTimeObser
 // Parametric convert equation:
 // x = (x_view * cos(bearing) - y_view * sin(bearing)) + agentx
 // y = (x_view * sin(bearing) + y_view * cos(bearing)) + agenty
-static void parametricConvert(IAgent const *agent, double x_view, double y_view, double &x, double &y)
+static void parametricConvert(IAgent const *agent, double x_view, double y_view, double &x, double &y, double z_view, double &z)
 {
-  x = (cos(agent->getYaw() * Landmarks::CONVERSION) * x_view - sin(agent->getYaw() * Landmarks::CONVERSION) * y_view) + agent->getPos().x;
-  y = (sin(agent->getYaw() * Landmarks::CONVERSION) * x_view + cos(agent->getYaw() * Landmarks::CONVERSION) * y_view) + agent->getPos().y;
+  x = (cos(agent->getYaw()) * x_view - sin(agent->getYaw()) * y_view) + agent->getPos().x;
+  y = (sin(agent->getYaw()) * x_view + cos(agent->getYaw()) * y_view) + agent->getPos().y;
+  z = x * sin(agent->getPitch()) + z_view * cos(agent->getPitch());
 }
 
 double Landmarks::calculateBearing(double x, double y, IAgent const *agent) const
@@ -210,28 +212,35 @@ double Landmarks::calculateBearing(double x, double y, IAgent const *agent) cons
   return (atan((y - agent->getPos().y) / (x - agent->getPos().x)) - agent->getYaw());
 }
 
-void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, std::vector<int> &selectPoints, int arraySize, double &a, double &b)
+void Landmarks::leastSquaresLineEstimate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent const *agent, std::vector<int> &selectPoints, int arraySize, double &a, double &b, double &c)
 {
   double y; //y coordinate
   double x; //x coordinate
+  double z;
   double sumY = 0; //sum of y coordinates
   double sumYY = 0; //sum of y^2 for each coordinate
   double sumX = 0; //sum of x coordinates
   double sumXX = 0; //sum of x^2 for each coordinate
   double sumYX = 0; //sum of y*x for each point
+  double sumZ = 0;
+  double sumZZ = 0;
 
   for (int i = 0; i < arraySize; ++i)
   {
     //convert ranges and bearing to coordinates
-    parametricConvert(agent, cloud.points[selectPoints[i]].x, cloud.points[selectPoints[i]].y, x, y);
+    parametricConvert(agent, cloud.points[selectPoints[i]].x, cloud.points[selectPoints[i]].y, x, y, cloud.points[selectPoints[i]].z, z);
     sumY += y;
     sumYY += pow(y, 2);
     sumX += x;
     sumXX += pow(x, 2);
     sumYX += y * x;
+    sumZ += z;
+    sumZZ += pow(z, 2);
   }
   b = (sumY * sumXX - sumX * sumYX) / (arraySize * sumXX - pow(sumX, 2));
   a = (arraySize * sumYX - sumX * sumY) / (arraySize * sumXX - pow(sumX, 2));
+  ///@todo: trully calculate z
+  c = sumZ / arraySize;
 }
 
 Landmarks::Landmark *Landmarks::getLandmark(unsigned int landmark_id) const {
@@ -244,23 +253,26 @@ Landmarks::Landmark *Landmarks::getLandmark(unsigned int landmark_id) const {
 /**
  * @todo Do not use range only, use point (maybe)
  */
-Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, IAgent const *agent)
+Landmarks::Landmark *Landmarks::getLandmark(double x_view, double y_view, double z_view, IAgent const *agent)
 {
   Landmarks::Landmark *lm = new Landmarks::Landmark();
   int id = -1;
   int totalTimeObserved = 0;
   double x;
   double y;
+  double z;
 
-  parametricConvert(agent, x_view, y_view, x, y);
+  parametricConvert(agent, x_view, y_view, x, y, z_view, z);
   lm->pos.x = x;
   lm->pos.y = y;
+  lm->pos.z = z;
   lm->range = this->distance(x, y, agent->getPos().x, agent->getPos().y);
   lm->bearing = this->calculateBearing(x, y, agent);
   lm->robotPos = agent->getPos();
   ///@todo: Maybe throw and exception if no landmarks can be associated
   this->getClosestAssociation(lm, id, totalTimeObserved);
   lm->id = id;
+  lm->totalTimeObserved = totalTimeObserved;
   return (lm);
 }
 
@@ -278,11 +290,12 @@ Landmarks::Landmark *Landmarks::updateLandmark(Landmarks::Landmark *lm)
 /**
  * @todo: Same as getLandmark
  **/
-Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, IAgent const *agent)
+Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_view, double y_view, double z_view, IAgent const *agent)
 {
   Landmarks::Landmark *lm = this->getLandmark(id);;
   double x;
   double y;
+  double z;
 
   if (matched && lm != NULL)
   {
@@ -293,9 +306,10 @@ Landmarks::Landmark *Landmarks::updateLandmark(bool matched, int id, double x_vi
   {
     // doesn't exist in the DB/fail to matched, so that, we've to add this sample
     lm = new Landmarks::Landmark();
-    parametricConvert(agent, x_view, y_view, x, y);
+    parametricConvert(agent, x_view, y_view, x, y, z_view, z);
     lm->pos.x = x;
     lm->pos.y = y;
+    lm->pos.z = z;
     lm->range = this->distance(x, y, agent->getPos().x, agent->getPos().y);
     lm->bearing = this->calculateBearing(x, y, agent);
     lm->robotPos = agent->getPos();
@@ -363,7 +377,7 @@ Landmarks::Landmark *Landmarks::getLine(double a, double b)
   return (lm);
 }
 
-Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const *agent)
+Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, double c, IAgent const *agent)
 {
   //our goal is to calculate point on line closest to origin (0,0)
   //calculate line perpendicular to input line. a*ao = -1
@@ -389,6 +403,7 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const
   //convert landmark to map coordinate
   lm->pos.x = x;
   lm->pos.y = y;
+  lm->pos.z = c;
   lm->range = range;
   lm->bearing = bearing;
   lm->a = a;
@@ -396,7 +411,6 @@ Landmarks::Landmark *Landmarks::getLineLandmark(double a, double b, IAgent const
   lm->robotPos = agent->getPos();
   lm->rangeError = rangeError;
   lm->bearingError = bearingError;
-
   //associate landmark to closest landmark.
   this->getClosestAssociation(lm, id, totalTimesObserved);
   lm->id = id;
@@ -423,10 +437,10 @@ std::vector<Landmarks::Landmark *> Landmarks::extractSpikeLandmarks(pcl::PointCl
     if (rangeBefore < agent->cameraProblem && rangeAfter < agent->cameraProblem)
     {
       if ((rangeBefore - range) + (rangeAfter - range) > Landmarks::MAX_DIFFERENCE)
-        tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, agent);
+        tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, cloud.points[i].z, agent);
       else if ((rangeBefore - range) > Landmarks::MIN_DIFFERENCE ||
                (rangeAfter - range) > Landmarks::MIN_DIFFERENCE)
-        tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, agent);
+        tempLandmarks[i] = this->getLandmark(cloud.points[i].x, cloud.points[i].y, cloud.points[i].z, agent);
     }
     rangeBefore = range;
     range = rangeAfter;
@@ -562,6 +576,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
   // lines found
   std::vector<double> la;
   std::vector<double> lb;
+  std::vector<double> lc;
   int totalLines = 0;
   unsigned int numberSample = cloud.points.size();
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_cpy(new pcl::PointCloud<pcl::PointXYZRGBA>);
@@ -628,6 +643,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
 
     double a = 0;
     double b = 0;
+    double c = 0;
     // //std::cerr << "before least square line estimate" << std::endl;
     // // ax + b => ligne
     // // cette fonction modifie les valeurs de 'a' et 'b'
@@ -678,7 +694,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
     if (consensusPoints->size() > Landmarks::RANSAC_CONSENSUS)
     {
       // cette fonction modifie les valeurs de 'a' et 'b'
-      this->leastSquaresLineEstimate(*cloud_cpy, agent, *consensusPoints, consensusPoints->size(), a, b);
+      this->leastSquaresLineEstimate(*cloud_cpy, agent, *consensusPoints, consensusPoints->size(), a, b, c);
       totalLinepoints = cloud_cpy->size() - consensusPoints->size();
       //std::cerr << "totalLinepoints == " << totalLinepoints << std::endl;
 #ifdef DEBUG
@@ -686,7 +702,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
       for (unsigned int i = 0; i < consensusPoints->size(); ++i)
       {
         //Remove points that have now been associated to this line
-        tempLandmarks[(*consensusPoints)[i]] = this->getLandmark(cloud_cpy->points[(*consensusPoints)[i]].x, cloud_cpy->points[(*consensusPoints)[i]].y, agent);
+        tempLandmarks[(*consensusPoints)[i]] = this->getLandmark(cloud_cpy->points[(*consensusPoints)[i]].x, cloud_cpy->points[(*consensusPoints)[i]].y, cloud_cpy->points[(*consensusPoints)[i]].z, agent);
       }
 #endif
       //std::cerr << "before remove already use points" << std::endl;
@@ -715,6 +731,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
       // ajout des lignes trouvées
       la.push_back(a);
       lb.push_back(b);
+      lc.push_back(c);
       ++totalLines;
       noTrials = false;
     }
@@ -737,7 +754,7 @@ std::vector<Landmarks::Landmark *> Landmarks::extractLineLandmarks(pcl::PointClo
   try {
     for (int i = 0; i < totalLines; ++i)
       {
-	foundLandmarks[i] = this->getLineLandmark(la[i], lb[i], agent);
+	foundLandmarks[i] = this->getLineLandmark(la[i], lb[i], lc[i], agent);
       }
   } catch (...) {
     std::cerr << "Error when adding landmark in found landmark" << std::endl;
@@ -827,6 +844,6 @@ std::vector<Landmarks::Landmark *> Landmarks::updateAndAddLandmarkUsingEKFResult
 {
   std::vector<Landmarks::Landmark *> res(numberMatched);
   for (unsigned int i = 0; i < numberMatched; ++i)
-    res[i] = this->updateLandmark(matched[i], id[i], pos[i].x, pos[i].y, agent);
+    res[i] = this->updateLandmark(matched[i], id[i], pos[i].x, pos[i].y, pos[i].z, agent);
   return (res);
 }
