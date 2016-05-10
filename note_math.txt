@@ -1,0 +1,12 @@
+norme = racine(x2 + y2 + z2) = newton = intensité du vecteur
+Position = double intégration de l'accélération
+Appliqué une rotation au vecteur de gravité de base pour avoir le nouveau vecteur:
+         x, y, z chaque angle de rotation est en fonction de l'axe
+         Resultat = produit scalaire de matrice * vecteur en reprennant le vecteur d'avant
+
+
+SLAM:
+        under location tracking
+
+Regression linéaire:
+           équation normal (voir photo)

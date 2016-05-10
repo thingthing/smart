@@ -221,8 +221,8 @@ void            Agent::updateState(bool true_update)
   time_t        delta = 0;
   pcl::PointXYZ new_velocity;
   pcl::PointXYZ new_pos;
-  static pcl::PointXYZ gravity;
-  static bool   first = true;
+  static pcl::PointXYZ gravity = pcl::PointXYZ(0, 0, 1);
+  pcl::PointXYZ current_gravity;
   double        ax, ay, az = 0.0;
 
   //true_update = true;
@@ -245,7 +245,7 @@ void            Agent::updateState(bool true_update)
       ay = roundValue(imu.ay, 10.0);
       az = roundValue(imu.az, 10.0);
        // print euler angle
-      // WithRobot::EulerAngle& e = _sensor_data.euler_angle;
+      //WithRobot::EulerAngle& e = _sensor_data.euler_angle;
       // roll += e.roll;
       // pitch += e.pitch;
       // yaw += e.yaw;
@@ -261,20 +261,31 @@ void            Agent::updateState(bool true_update)
         // _velocity the old speed, new_velocity the new speed,
         // _pos the old position and new_pos the new position,
       // std::cerr << "DELTA TIME IS == " << delta << std::endl;
-        if (first) {
-          gravity.x = ax;
-          gravity.y = ay;
-          gravity.z = az;
-          first = false;
-        }
+        this->setPitch(roundValue(e.pitch, 10.0));
+        this->setRoll(roundValue(e.roll, 10.0));
+        this->setYaw(roundValue(e.yaw, 10.0));
+        
+        Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, _roll, _pitch, 0);
+        std::cerr << "Roll == " << _roll << " -- pitch == " << _pitch << " -- yaw == " << _yaw << std::endl;
+        std::cerr << "Gravity before == " << gravity << std::endl;
+        current_gravity = pcl::transformPoint(gravity, transfo);
+        //transfo = pcl::getTransformation (0, 0, 0, 0, e.pitch, 0);
+        //current_gravity = pcl::transformPoint(current_gravity, transfo);
+        double tmp_y = current_gravity.y;
+        current_gravity.x = roundValue(current_gravity.x, 10.0);
+        current_gravity.y = roundValue(current_gravity.z, 10.0) * -1;
+        current_gravity.z = roundValue(tmp_y, 10.0);
 
+        std::cerr << "Current gravity == " << current_gravity << std::endl;
+        std::cerr << "Current acceleration == " << ax << " -- " << ay << " -- " << az << std::endl;
         if (delta > 0) {
-          //Using simple integration to smooth things over
-          new_velocity.x = _velocity.x + ((ax - gravity.x) + _acceleration.x) / (2 * delta);
+
+          //Using double integration to get position
+          new_velocity.x = _velocity.x + ((ax - current_gravity.x) + _acceleration.x) / (2 * delta);
           new_pos.x = _pos.x + (new_velocity.x + _velocity.x) / (2 * delta);
-          new_velocity.y = _velocity.y + ((ay - gravity.y) + _acceleration.y) / (2 * delta);
+          new_velocity.y = _velocity.y + ((ay - current_gravity.y) + _acceleration.y) / (2 * delta);
           new_pos.y = _pos.y + (new_velocity.y + _velocity.y) / (2 * delta);
-          new_velocity.z = _velocity.z + ((az - gravity.z) + _acceleration.z) / (2 * delta);
+          new_velocity.z = _velocity.z + ((az - current_gravity.z) + _acceleration.z) / (2 * delta);
           new_pos.z = _pos.z + (new_velocity.z + _velocity.z) / (2 * delta);
 
           //Just acceleration
@@ -288,19 +299,16 @@ void            Agent::updateState(bool true_update)
           this->setVelocity(new_velocity);
           this->setPos(roundValue(new_pos.x, 10.0), roundValue(new_pos.y, 10.0), roundValue(new_pos.z, 10.0));
         }
-        _acceleration.x = roundValue(ax - gravity.x, 10.0);
-        _acceleration.y = roundValue(ay - gravity.y, 10.0);
-        _acceleration.z = roundValue(az - gravity.z, 10.0);
-        // this->setPitch(std::nearbyint(e.pitch));
-        // this->setRoll(std::nearbyint(e.roll));
-        // this->setYaw(std::nearbyint(e.yaw));
+        _acceleration.x = roundValue(ax - current_gravity.x, 10.0);
+        _acceleration.y = roundValue(ay - current_gravity.y, 10.0);
+        _acceleration.z = roundValue(az - current_gravity.z, 10.0);
+       
         // roll = 0.0;
         // pitch = 0.0;
         // yaw = 0.0;
         // round_value = 0;
-        // std::cerr << "Roll == " << e.roll << " -- pitch == " << e.pitch << " -- yaw == " << e.yaw << std::endl;
         // std::cerr << "AGENT Roll == " << _roll << " -- pitch == " << _pitch << " -- yaw == " << _yaw << std::endl;
-        // std::cerr << "AGENT posx == " << _pos.x << " -- posy == " << _pos.y << " -- posz == " << _pos.z << std::endl;
+        std::cerr << "AGENT posx == " << _pos.x << " -- posy == " << _pos.y << " -- posz == " << _pos.z << std::endl;
       //}
       
     }
