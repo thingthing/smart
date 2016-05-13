@@ -6,6 +6,7 @@
 
 #include "IAgent.hh"
 #include "Capture.hh"
+#include "AgentAhrs.hh"
 #include "myahrs_plus.hpp"
 //#include "movement/Movement.h"
 
@@ -33,13 +34,11 @@ public:
 
     static const int DEFAULTBATTERY;
     static const int BAUDRATE;
-    static const char* DIVIDER;
     static const char* SAVE_FILE_NAME;
 
 private:
     pcl::PointXYZ               _goalPos;
-    WithRobot::MyAhrsPlus      _sensor;
-    WithRobot::SensorData      _sensor_data;
+    WithRobot::AgentAhrs        *_sensor;
     //Movement        _movement;
 };
 

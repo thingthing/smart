@@ -1,7 +1,6 @@
 #include "Agent.hh"
 
 const int Agent::BAUDRATE = 115200;
-const char* Agent::DIVIDER = "1";  // 100 Hz
 const double IAgent::DEGREESPERSCAN = 0.5;
 const double IAgent::CAMERAPROBLEM = 4.1; // meters
 const int    Agent::DEFAULTBATTERY = 1000;
@@ -23,41 +22,16 @@ Agent::Agent(double degreePerScan, double cameraProblem)
     this->_pos.y = 0;
     this->_pos.z = 0;
     _capture->registerCallback("takeDataEvent", [this]() {takeData();});
-    /*
-     *  start communication with the myAHRS+.
-     */
-    if(_sensor.start("/dev/ttyACM0", BAUDRATE) == false) {
-        handle_error("start() returns false");
-    }
-
-     /*
-     *  set binary output format
-     *   - select Quaternion and IMU data
-     */
-    if(_sensor.cmd_binary_data_format("QUATERNION, IMU") == false) {
-        handle_error("cmd_ascii_data_format() returns false");
-    }
-
-    /*
-     *  set divider
-     *   - output rate(Hz) = max_rate/divider
-     */
-    if(_sensor.cmd_divider(DIVIDER) ==false) {
-        handle_error("cmd_divider() returns false");
-    }
-
-    /*
-     *  set transfer mode
-      *   - BC : Binary Message & Continuous mode
-     */
-    if(_sensor.cmd_mode("BC") ==false) {
-        handle_error("cmd_mode() returns false");
+    _sensor = new WithRobot::AgentAhrs(this, "/dev/ttyACM0", BAUDRATE);
+    if(_sensor->initialize() == false) {
+        handle_error("_sensor.initialize() returns false");
     }
     //_movement.connectArduinoSerial();
 }
 
 Agent::~Agent()
 {
+  delete _sensor;
 }
 
 int             Agent::lowerBattery(int value_to_lower)
@@ -205,10 +179,7 @@ bool            Agent::isAtBase() const
     return (_pos.x == 0 && _pos.y == 0 && _pos.z == 0);
 }
 
-double          roundValue(double value, double limit)
-{
-  return (std::nearbyint(value * limit) / limit);
-}
+
 
 void            Agent::updateState(bool true_update)
 {
@@ -216,102 +187,6 @@ void            Agent::updateState(bool true_update)
   // static float  roll = 0.0;
   // static float  pitch = 0.0;
   // static float  yaw = 0.0;
-  static time_t old_time = time(NULL);
-  static time_t new_time = 0;
-  time_t        delta = 0;
-  pcl::PointXYZ new_velocity;
-  pcl::PointXYZ new_pos;
-  static pcl::PointXYZ gravity = pcl::PointXYZ(0, 0, 1);
-  pcl::PointXYZ current_gravity;
-  double        ax, ay, az = 0.0;
-
-  //true_update = true;
-    //_movement.updateGyro();
-  if(_sensor.wait_data() == true) { // waiting for new data
-      // read counter or not?
-      //sample_count = _sensor.get_sample_count();
-
-      // copy sensor data
-      _sensor.get_data(_sensor_data);
-
-      new_time = time(NULL);
-      delta = new_time - old_time;
-      old_time = new_time;
-
-      WithRobot::Quaternion& q = _sensor_data.quaternion;
-      WithRobot::ImuData<float>& imu = _sensor_data.imu;
-      WithRobot::EulerAngle e = q.to_euler_angle();
-      ax = roundValue(imu.ax, 10.0);
-      ay = roundValue(imu.ay, 10.0);
-      az = roundValue(imu.az, 10.0);
-       // print euler angle
-      //WithRobot::EulerAngle& e = _sensor_data.euler_angle;
-      // roll += e.roll;
-      // pitch += e.pitch;
-      // yaw += e.yaw;
-      // ++round_value;
-
-      //if (true_update) {
-        // roll = roll / round_value;
-        // pitch = pitch / round_value;
-        // yaw = yaw / round_value;
-        
-        // delta is the time elapsed since you last calculated the position (in a loop for instance),
-        // imu.a/q the acceleration you read from the sensor,
-        // _velocity the old speed, new_velocity the new speed,
-        // _pos the old position and new_pos the new position,
-      // std::cerr << "DELTA TIME IS == " << delta << std::endl;
-        this->setPitch(roundValue(e.pitch, 10.0));
-        this->setRoll(roundValue(e.roll, 10.0));
-        this->setYaw(roundValue(e.yaw, 10.0));
-        
-        Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, _roll, _pitch, 0);
-        std::cerr << "Roll == " << _roll << " -- pitch == " << _pitch << " -- yaw == " << _yaw << std::endl;
-        std::cerr << "Gravity before == " << gravity << std::endl;
-        current_gravity = pcl::transformPoint(gravity, transfo);
-        //transfo = pcl::getTransformation (0, 0, 0, 0, e.pitch, 0);
-        //current_gravity = pcl::transformPoint(current_gravity, transfo);
-        double tmp_y = current_gravity.y;
-        current_gravity.x = roundValue(current_gravity.x, 10.0);
-        current_gravity.y = roundValue(current_gravity.z, 10.0) * -1;
-        current_gravity.z = roundValue(tmp_y, 10.0);
-
-        std::cerr << "Current gravity == " << current_gravity << std::endl;
-        std::cerr << "Current acceleration == " << ax << " -- " << ay << " -- " << az << std::endl;
-        if (delta > 0) {
-
-          //Using double integration to get position
-          new_velocity.x = _velocity.x + ((ax - current_gravity.x) + _acceleration.x) / (2 * delta);
-          new_pos.x = _pos.x + (new_velocity.x + _velocity.x) / (2 * delta);
-          new_velocity.y = _velocity.y + ((ay - current_gravity.y) + _acceleration.y) / (2 * delta);
-          new_pos.y = _pos.y + (new_velocity.y + _velocity.y) / (2 * delta);
-          new_velocity.z = _velocity.z + ((az - current_gravity.z) + _acceleration.z) / (2 * delta);
-          new_pos.z = _pos.z + (new_velocity.z + _velocity.z) / (2 * delta);
-
-          //Just acceleration
-          // new_velocity.x = _velocity.x + (imu.ax - gravity.x) * delta;
-          // new_pos.x = _pos.x + new_velocity.x * delta;
-          // new_velocity.y = _velocity.y + (imu.ay - gravity.y) * delta;
-          // new_pos.y = _pos.y + (new_velocity.y * delta);
-          // new_velocity.z = _velocity.z + ((imu.az - gravity.z) * delta);
-          // new_pos.z = _pos.z + (new_velocity.z * delta);
-          
-          this->setVelocity(new_velocity);
-          this->setPos(roundValue(new_pos.x, 10.0), roundValue(new_pos.y, 10.0), roundValue(new_pos.z, 10.0));
-        }
-        _acceleration.x = roundValue(ax - current_gravity.x, 10.0);
-        _acceleration.y = roundValue(ay - current_gravity.y, 10.0);
-        _acceleration.z = roundValue(az - current_gravity.z, 10.0);
-       
-        // roll = 0.0;
-        // pitch = 0.0;
-        // yaw = 0.0;
-        // round_value = 0;
-        // std::cerr << "AGENT Roll == " << _roll << " -- pitch == " << _pitch << " -- yaw == " << _yaw << std::endl;
-        std::cerr << "AGENT posx == " << _pos.x << " -- posy == " << _pos.y << " -- posz == " << _pos.z << std::endl;
-      //}
-      
-    }
 
     //@Todo: get real battery
     if (!this->isAtBase())
