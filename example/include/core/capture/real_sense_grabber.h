@@ -64,6 +64,11 @@
         void (sig_cb_real_sense_point_cloud_rgba)
           (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
+      typedef
+        void(sig_cb_real_sense_image_depth_image)
+          (const boost::shared_ptr< const uint8_t * > &,
+            const boost::shared_ptr< const uint16_t * > &, float constant);
+
       /** A descriptor for capturing mode.
         *
         * Consists of framerate and resolutions of depth and color streams.
@@ -223,6 +228,7 @@
       // Signals to indicate whether new clouds are available
       boost::signals2::signal<sig_cb_real_sense_point_cloud>* point_cloud_signal_;
       boost::signals2::signal<sig_cb_real_sense_point_cloud_rgba>* point_cloud_rgba_signal_;
+      boost::signals2::signal<sig_cb_real_sense_image_depth_image>* image_depth_signal_;
 
       boost::shared_ptr<RealSenseDevice> device_;
 

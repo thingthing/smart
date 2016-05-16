@@ -122,6 +122,7 @@ RealSenseGrabber::RealSenseGrabber (const std::string& device_id, bool strict)
 
   point_cloud_signal_ = createSignal<sig_cb_real_sense_point_cloud> ();
   point_cloud_rgba_signal_ = createSignal<sig_cb_real_sense_point_cloud_rgba> ();
+  image_depth_signal_ = createSignal<sig_cb_real_sense_image_depth_image> ();
 }
 
 RealSenseGrabber::~RealSenseGrabber () throw ()
@@ -130,6 +131,7 @@ RealSenseGrabber::~RealSenseGrabber () throw ()
 
   disconnect_all_slots<sig_cb_real_sense_point_cloud> ();
   disconnect_all_slots<sig_cb_real_sense_point_cloud_rgba> ();
+  disconnect_all_slots<sig_cb_real_sense_image_depth_image>();
 }
 
 void
@@ -511,6 +513,7 @@ RealSenseGrabber::run ()
         //   {
             //std::cerr << "Sending End point cloud empty is " << has_one_point<< std::endl;
             point_cloud_rgba_signal_->operator () (xyzrgba_cloud);
+            image_depth_signal_->operator() (boost::shared_ptr<const uint8_t *>(&color_image), boost::shared_ptr<const uint16_t *>(&depth_image), (float)1.0);
             return;
           //}
       //if (need_xyz_)

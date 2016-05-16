@@ -1,9 +1,9 @@
 #include "ICapture.hh"
 
 ICapture::ICapture()
-  : _cloud(new pcl::PointCloud<pcl::PointXYZRGBA>)
 {
-
+	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
+	_data.cloud = tmp_cloud;
 }
 
 ICapture::~ICapture()
@@ -13,5 +13,5 @@ ICapture::~ICapture()
 
 pcl::PointCloud<pcl::PointXYZRGBA> const &ICapture::getData() const
 {
-  return (*_cloud);
+  return (*_data.cloud);
 }

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "AgentAhrs.hh"
 
-const char* WithRobot::AgentAhrs::DIVIDER = "1";  // 100 Hz
+const char* WithRobot::AgentAhrs::DIVIDER = "100";  // 100 Hz
 
 double          WithRobot::AgentAhrs::roundValue(double value, double limit)
 {
@@ -37,7 +37,7 @@ void		WithRobot::AgentAhrs::updateAgent()
 	double        ax, ay, az = 0.0;
 
 	new_time = time(NULL);
-	delta = 1.0 / 100.0; // 100 HZ
+	delta = 100.0 / (std::stoi(DIVIDER)); // 100 HZ
   old_time = new_time;
 
   WithRobot::Quaternion& q = _sensor_data.quaternion;
@@ -62,14 +62,12 @@ void		WithRobot::AgentAhrs::updateAgent()
   _agent->setRoll(roundValue(e.roll, 10.0));
   _agent->setYaw(roundValue(e.yaw, 10.0));
   
-  Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, 0, 0, 0);
+  // Translation of gravity vector with roll(x) and pitch(y) axis
+  Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, -e.roll, -e.pitch, -e.yaw);
   std::cerr << "Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
-  std::cerr << "gx == " << imu.gx * 180.0 / M_PI << " -- gy == " << imu.gy * 180.0 / M_PI << " -- gz == " << imu.gz * 180.0 / M_PI << std::endl;
+ // std::cerr << "gx == " << imu.gx * 180.0 / M_PI << " -- gy == " << imu.gy * 180.0 / M_PI << " -- gz == " << imu.gz * 180.0 / M_PI << std::endl;
   std::cerr << "Gravity before == " << gravity << std::endl;
   current_gravity = pcl::transformPoint(gravity, transfo);
-  //transfo = pcl::getTransformation (0, 0, 0, 0, e.pitch, 0);
-  //current_gravity = pcl::transformPoint(current_gravity, transfo);
-  double tmp_y = current_gravity.y;
   current_gravity.x = roundValue(current_gravity.x, 10.0);
   current_gravity.y = roundValue(current_gravity.y, 10.0);
   current_gravity.z = roundValue(current_gravity.z, 10.0);

@@ -16,7 +16,7 @@ void handle_error(const char* error_msg)
 Agent::Agent(double degreePerScan, double cameraProblem)
     : IAgent(degreePerScan, cameraProblem, "AgentVirtuel", Agent::DEFAULTBATTERY, IAgent::DELAYED)
 {
-    this->_capture = new Capture();
+    this->_capture = new Capture("OpenNI2Grabber");
 
     this->_pos.x = 0;
     this->_pos.y = 0;
