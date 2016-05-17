@@ -64,22 +64,22 @@ void		WithRobot::AgentAhrs::updateAgent()
   
   // Translation of gravity vector with roll(x) and pitch(y) axis
   Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, -e.roll, -e.pitch, -e.yaw);
-  std::cerr << "Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
+  //std::cerr << "Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
  // std::cerr << "gx == " << imu.gx * 180.0 / M_PI << " -- gy == " << imu.gy * 180.0 / M_PI << " -- gz == " << imu.gz * 180.0 / M_PI << std::endl;
-  std::cerr << "Gravity before == " << gravity << std::endl;
+  //std::cerr << "Gravity before == " << gravity << std::endl;
   current_gravity = pcl::transformPoint(gravity, transfo);
   current_gravity.x = roundValue(current_gravity.x, 10.0);
   current_gravity.y = roundValue(current_gravity.y, 10.0);
   current_gravity.z = roundValue(current_gravity.z, 10.0);
 
-  std::cerr << "Current gravity == " << current_gravity << std::endl;
-  std::cerr << "Current acceleration == " << ax << " -- " << ay << " -- " << az << std::endl;
+  //std::cerr << "Current gravity == " << current_gravity << std::endl;
+  //std::cerr << "Current acceleration == " << ax << " -- " << ay << " -- " << az << std::endl;
   acceleration = _agent->getAcceleration();
-  std::cerr << "delta time is == " << delta << std::endl;
+  //std::cerr << "delta time is == " << delta << std::endl;
   if (delta > 0) {
   	velocity = _agent->getVelocity();
   	new_pos = _agent->getPos();
-    std::cerr << "New pos before == " << _agent->getPos() << std::endl;
+    //std::cerr << "New pos before == " << _agent->getPos() << std::endl;
 
     	//Using double integration to get position
     new_velocity.x = velocity.x + ((ax - current_gravity.x) + acceleration.x) / (2 * delta);
@@ -99,8 +99,8 @@ void		WithRobot::AgentAhrs::updateAgent()
     
     _agent->setVelocity(new_velocity);
     _agent->setPos(roundValue(new_pos.x, 10.0), roundValue(new_pos.y, 10.0), roundValue(new_pos.z, 10.0));
-    std::cerr << "New pos == " << _agent->getPos() << std::endl;
-    std::cerr << "Posx == " << new_pos.x << std::endl;
+    //std::cerr << "New pos == " << _agent->getPos() << std::endl;
+    //std::cerr << "Posx == " << new_pos.x << std::endl;
   }
   acceleration.x = roundValue(ax - current_gravity.x, 10.0);
   acceleration.y = roundValue(ay - current_gravity.y, 10.0);

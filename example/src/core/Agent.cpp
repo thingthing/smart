@@ -16,7 +16,7 @@ void handle_error(const char* error_msg)
 Agent::Agent(double degreePerScan, double cameraProblem)
     : IAgent(degreePerScan, cameraProblem, "AgentVirtuel", Agent::DEFAULTBATTERY, IAgent::DELAYED)
 {
-    this->_capture = new Capture("OpenNI2Grabber");
+    this->_capture = new Capture("RealSenseGrabber");
 
     this->_pos.x = 0;
     this->_pos.y = 0;
@@ -104,7 +104,7 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
   this->dispatch("getDataEvent", cloud, this);
 
   if (_send_data) {
-    //std::cerr << "Getting data in takeData == " << cloud.size() << std::endl;
+    std::cerr << "Getting data in takeData == " << cloud.size() << std::endl;
     //Tranform cloud data with actual position of agent
     Eigen::Affine3f transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
     pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
@@ -112,14 +112,23 @@ pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
       //Send new cloud data
       this->dispatch("SendCloudEvent", cloud);
     } else if (_mode == IAgent::DELAYED) {
+
       std::cerr << "Cloud size before == " << cloud.size() << std::endl;
+      _capture->stopCapture();
       pcl::PointCloud<pcl::PointXYZRGBA> save;
       if (pcl::io::loadPCDFile(Agent::SAVE_FILE_NAME, save) == 0)
         cloud += save;
       std::cerr << "Cloud size after == " << cloud.size() << " with save size == " << save.size() << std::endl;
       //Save cloud in file
       pcl::io::savePCDFile(Agent::SAVE_FILE_NAME, cloud, true);
+      _capture->startCapture();
     }
+  } else {
+    
+    // To reset realsense device, colorintrin doesn't work if i don't do this
+    std::cerr << "Stop and start capture" << std::endl;
+    _capture->stopCapture();
+    _capture->startCapture();
   }
   return (_capture->getData());
 }

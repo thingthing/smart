@@ -14,7 +14,6 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/statistical_outlier_removal.h>
-#include "capture/real_sense_grabber.h"
 
 #include "ICapture.hh"
 
@@ -27,7 +26,7 @@ public:
 
   virtual void captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
   virtual void captureDataImageAndDepthOpenni(const pcl::io::openni2::Image::Ptr  &, const pcl::io::openni2::DepthImage::Ptr &, float constant);
-  virtual void captureDataImageAndDepthRealSense(const boost::shared_ptr< const uint8_t * > &, const boost::shared_ptr< const uint16_t * > &, float focal);
+  virtual void captureDataImageAndDepthRealSense(const boost::shared_ptr< Image > &, const boost::shared_ptr< Depth > &, float focal);
   virtual void startCapture();
   virtual void stopCapture();
 

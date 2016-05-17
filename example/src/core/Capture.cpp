@@ -28,13 +28,14 @@ Capture::Capture(std::string const &grabber_name)
 Capture::~Capture()
 {
   _grabber->stop();
+  std::cerr << "grabber delete" << std::endl;
   delete _grabber;
 }
 
 void Capture::startCapture() {
   if (!_grabber->isRunning()) {
-    _grabber->start();
     std::cerr << "grabber start" << std::endl;
+    _grabber->start();
   }
 }
 
@@ -51,13 +52,17 @@ void  Capture::captureDataImageAndDepthOpenni(const pcl::io::openni2::Image::Ptr
   cv::Mat tempDepth = cv::Mat(depth->getHeight(), depth->getWidth(), CV_16UC1,
      const_cast<unsigned short *>(depth->getData()));
   tempDepth.copyTo(_data.depthMat);
-  std::cerr << "For openni Image data == " << _data.rgbMat << " -- depth == " << _data.depthMat << " -- 1/focal length == " << focal << std::endl;
+//  std::cerr << "For openni Image data == " << _data.rgbMat << " -- depth == " << _data.depthMat << " -- 1/focal length == " << focal << std::endl;
 }
 
-void Capture::captureDataImageAndDepthRealSense(const boost::shared_ptr< const uint8_t * > &image,
-  const boost::shared_ptr< const uint16_t * > &depth, float focal)
+void Capture::captureDataImageAndDepthRealSense(const boost::shared_ptr< Image > &image,
+  const boost::shared_ptr< Depth > &depth, float focal)
 {
-  std::cerr << "For realsense Image data == " << image << " -- depth == " << depth << " -- 1/focal length == " << focal << std::endl;
+  cv::Mat tempImage = cv::Mat(image->_height, image->_width, CV_8UC3, const_cast<uint8_t *>(image->_rgb));
+  cv::cvtColor(tempImage, _data.rgbMat, CV_RGB2BGR);
+  cv::Mat tempDepth = cv::Mat(depth->_height, depth->_width, CV_16UC1, const_cast<uint16_t *>(depth->_depth));
+  tempDepth.copyTo(_data.depthMat);
+  // std::cerr << "                  For realsense Image data == " << _data.rgbMat << " -- depth == " << _data.depthMat << " -- 1/focal length == " << focal << std::endl;
 }
 
 
@@ -85,18 +90,18 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud(*cloud, *_data.cloud, indices);
 
-  pcl::StatisticalOutlierRemoval<pcl::PointXYZRGBA> sor;
-  sor.setInputCloud(_data.cloud);
-  sor.setMeanK(50);
-  sor.setStddevMulThresh(1.0);
-  sor.filter(*_data.cloud);
+  // pcl::StatisticalOutlierRemoval<pcl::PointXYZRGBA> sor;
+  // sor.setInputCloud(_data.cloud);
+  // sor.setMeanK(50);
+  // sor.setStddevMulThresh(1.0);
+  // sor.filter(*_data.cloud);
   //std::cerr << "Before  " << _cloud->size() << std::endl;
-  // pcl::PassThrough<pcl::PointXYZRGBA> pass;
-  // pass.setInputCloud (_cloud);
-  // pass.setFilterFieldName ("z");
-  // pass.setFilterLimits (1.0, 3.0);
-  // //pass.setFilterLimitsNegative (true);
-  // pass.filter (*_cloud);
+  pcl::PassThrough<pcl::PointXYZRGBA> pass;
+  pass.setInputCloud (_data.cloud);
+  pass.setFilterFieldName ("z");
+  pass.setFilterLimits (1.0, 3.0);
+  //pass.setFilterLimitsNegative (true);
+  pass.filter (*_data.cloud);
 
   //std::cerr << "After PassThrough " << _cloud->size() << std::endl;
 

@@ -139,6 +139,7 @@ RealSenseGrabber::start ()
 {
   static bool first = true;
 
+  //std::cerr << "Grabber starting" << std::endl;
   if (!is_running_)
   {
     //need_xyz_ = num_slots<sig_cb_real_sense_point_cloud> () > 0;
@@ -310,11 +311,11 @@ RealSenseGrabber::run ()
 {
   int wait = 0;
 
-  // std::cerr << "RUNNING" << std::endl;
+  //std::cerr << "RUNNING" << std::endl;
   while (is_running_)
   {
     //pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud;
-    //std::cerr << "RUNNING" << std::endl;
+    //std::cerr << "RUNNING 2" << std::endl;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr xyzrgba_cloud;
     // state app_state = {0, 0, 0, 0, false, {rs::stream::color, rs::stream::depth, rs::stream::infrared}, 0, &device_->getRSDevice ()};
     // if(device_->getRSDevice ().is_stream_enabled(rs::stream::infrared2)) app_state.tex_streams.push_back(rs::stream::infrared2);
@@ -333,7 +334,6 @@ RealSenseGrabber::run ()
     // Retrieve camera parameters for mapping between depth and color
     //const float depth_scale = device_->getRSDevice ().get_depth_scale();
     const rs::intrinsics depth_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::depth);
-    //rs::intrinsics depth_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::depth);
     const rs::extrinsics depth_to_color = device_->getRSDevice ().get_extrinsics(rs::stream::depth, rs::stream::color);
     const rs::intrinsics color_intrin = device_->getRSDevice ().get_stream_intrinsics(rs::stream::color);
     const float scale = device_->getRSDevice ().get_depth_scale();
@@ -342,8 +342,9 @@ RealSenseGrabber::run ()
     const int WIDTH = depth_intrin.width;
     const int HEIGHT = depth_intrin.height;
     //const int SIZE = WIDTH * HEIGHT;
-
-    // std::cerr << "width == " << WIDTH << " -- height == " << HEIGHT << std::endl;
+    //std::cerr << "scale is == " << scale << std::endl;
+    //std::cerr << "depth width == " << WIDTH << " -- height == " << HEIGHT << std::endl;
+    //std::cerr << "color width == " << color_intrin.width << " -- height == " << color_intrin.height << std::endl;
     // for (int i = 0; i < SIZE; ++i) {
     //       std::cout << "depth_image[" << i << "] is == " << depth_image[i] << std::endl;
     // }
@@ -511,10 +512,17 @@ RealSenseGrabber::run ()
         //std::cerr << "IN REALSENSE End point cloud empty is " << has_one_point<< std::endl;
         // if (has_one_point > 10000)
         //   {
-            //std::cerr << "Sending End point cloud empty is " << has_one_point<< std::endl;
+            //std::cerr << "Sending End point cloud  " << std::endl;
+            Image *rgb_data = new Image(color_image, color_intrin.height, color_intrin.width);
+            Depth *depth_data = new Depth(depth_image, HEIGHT, WIDTH);
+            std::cerr << "-----------------------------------------------------------------------SENDING IMAGEDEPTH SIGNAL" << std::endl;
+            image_depth_signal_->operator() (boost::shared_ptr<Image>(rgb_data), boost::shared_ptr<Depth>(depth_data), scale);
+            std::cerr << "-----------------------------------------------------------------------------SENDING RGBA SIGNAL" << std::endl;
             point_cloud_rgba_signal_->operator () (xyzrgba_cloud);
-            image_depth_signal_->operator() (boost::shared_ptr<const uint8_t *>(&color_image), boost::shared_ptr<const uint16_t *>(&depth_image), (float)1.0);
-            return;
+            delete rgb_data;
+            delete depth_data;
+            //std::cerr << "END LOOP" << std::endl;
+            break;
           //}
       //if (need_xyz_)
        // point_cloud_signal_->operator () (xyz_cloud);
@@ -528,6 +536,7 @@ RealSenseGrabber::run ()
     // sample.ReleaseImages ();
   }
   //projection->Release ();
+  //std::cerr << "Exiting run" << std::endl;
   RealSenseDevice::reset (device_);
 }
 
