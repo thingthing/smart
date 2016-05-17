@@ -63,7 +63,7 @@ void		WithRobot::AgentAhrs::updateAgent()
   _agent->setYaw(roundValue(e.yaw, 10.0));
   
   // Translation of gravity vector with roll(x) and pitch(y) axis
-  Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, -e.roll, -e.pitch, -e.yaw);
+  Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, e.roll, e.pitch, e.yaw);
   //std::cerr << "Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
  // std::cerr << "gx == " << imu.gx * 180.0 / M_PI << " -- gy == " << imu.gy * 180.0 / M_PI << " -- gz == " << imu.gz * 180.0 / M_PI << std::endl;
   //std::cerr << "Gravity before == " << gravity << std::endl;
