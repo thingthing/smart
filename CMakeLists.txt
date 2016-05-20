@@ -8,7 +8,7 @@ SET(PROJECT_NAME "agent" CACHE STRING "Project name (either agent or visu)")
 
 PROJECT(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pthread -std=c++11 -fsanitize=address")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
