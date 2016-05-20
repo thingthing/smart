@@ -4,6 +4,8 @@
 
  * PointClouds (PCL)  [Download Pointclouds](http://pointclouds.org/downloads/)
  * Jsoncpp [How to install on unix](http://ask.xmodulo.com/fix-fatal-error-jsoncpp.html)
+ * OpenCV [OpenCV:Installation in Linux](http://docs.opencv.org/3.1.0/d7/d9f/tutorial_linux_install.html)
+ * Addition modules for OpenCV [OpenCV modules](https://github.com/Itseez/opencv_contrib)
  * We are using [Igloo](http://igloo-testing.org/) for the Tests.
  * And [Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) for the documentation.
 
