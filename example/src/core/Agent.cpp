@@ -14,9 +14,9 @@ void handle_error(const char* error_msg)
 }
 
 Agent::Agent(double degreePerScan, double cameraProblem)
-    : IAgent(degreePerScan, cameraProblem, "AgentVirtuel", Agent::DEFAULTBATTERY, IAgent::DELAYED)
+    : IAgent(degreePerScan, cameraProblem, "AgentVirtuel", Agent::DEFAULTBATTERY, IAgent::DIRECT)
 {
-    this->_capture = new Capture("RealSenseGrabber");
+    this->_capture = new Capture("OpenNI2Grabber");
 
     this->_pos.x = 0;
     this->_pos.y = 0;
@@ -26,6 +26,8 @@ Agent::Agent(double degreePerScan, double cameraProblem)
     if(_sensor->initialize() == false) {
         handle_error("_sensor.initialize() returns false");
     }
+    // Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, _roll, _pitch, _yaw);
+    // _pos = pcl::transformPoint(_pos, transfo);
     //_movement.connectArduinoSerial();
 }
 
@@ -93,44 +95,39 @@ void             Agent::executeDownload()
 pcl::PointCloud<pcl::PointXYZRGBA> const &Agent::takeData()
 {
   //Get Cloud data
-  pcl::PointCloud<pcl::PointXYZRGBA> cloud = _capture->getData();
+  _capture->stopCapture();
+  std::cerr << "TAKING DATA" << std::endl;
+  ICapture::DATA data = _capture->getData();
   //Update state to have the state in correspondance with the cloud data
   this->updateState();
 
   //Tranform cloud data with possible position of agent
-  //   transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
-  // pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
+  //Eigen::Affine3f transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
+  //pcl::transformPointCloud<pcl::PointXYZRGBA>(*data.cloud, *data.cloud, transfo);
   //Call to slam to get the real position of agent with new data
-  this->dispatch("getDataEvent", cloud, this);
+  this->dispatch("getDataEvent", data, this);
 
-  if (_send_data) {
-    std::cerr << "Getting data in takeData == " << cloud.size() << std::endl;
+//  if (_send_data) {
+    std::cerr << "Getting data in takeData == " << (*data.cloud).size() << std::endl;
     //Tranform cloud data with actual position of agent
     Eigen::Affine3f transfo = pcl::getTransformation (_pos.x, _pos.y, _pos.z, _roll, _pitch, _yaw);
-    pcl::transformPointCloud<pcl::PointXYZRGBA>(cloud, cloud, transfo);
+    pcl::transformPointCloud<pcl::PointXYZRGBA>(*data.cloud, *data.cloud, transfo);
     if (_mode == IAgent::DIRECT) {
       //Send new cloud data
-      this->dispatch("SendCloudEvent", cloud);
+      this->dispatch("SendCloudEvent", *data.cloud);
     } else if (_mode == IAgent::DELAYED) {
 
-      std::cerr << "Cloud size before == " << cloud.size() << std::endl;
-      _capture->stopCapture();
+      std::cerr << "Cloud size before == " << (*data.cloud).size() << std::endl;
       pcl::PointCloud<pcl::PointXYZRGBA> save;
       if (pcl::io::loadPCDFile(Agent::SAVE_FILE_NAME, save) == 0)
-        cloud += save;
-      std::cerr << "Cloud size after == " << cloud.size() << " with save size == " << save.size() << std::endl;
+        *data.cloud += save;
+      std::cerr << "Cloud size after == " << (*data.cloud).size() << " with save size == " << save.size() << std::endl;
       //Save cloud in file
-      pcl::io::savePCDFile(Agent::SAVE_FILE_NAME, cloud, true);
+      pcl::io::savePCDFile(Agent::SAVE_FILE_NAME, *data.cloud, true);
       _capture->startCapture();
     }
-  } else {
-    
-    // To reset realsense device, colorintrin doesn't work if i don't do this
-    std::cerr << "Stop and start capture" << std::endl;
-    _capture->stopCapture();
-    _capture->startCapture();
-  }
-  return (_capture->getData());
+  //}
+  return (*data.cloud);
 }
 
 
@@ -206,7 +203,7 @@ void            Agent::updateState(bool true_update)
     }
     
     this->dispatch("SendPacketEvent", this);
-    //std::cout << "GoalPos is " << _goalPos << std::endl;
+    std::cout << "GoalPos is " << _goalPos << std::endl;
   //      if (this->isAtDestination() == false)
   //    {
   //       //std::cout << "Going goTowardsGoal" << std::endl;

@@ -86,7 +86,7 @@ public:
    * @param cloud Current mapping
    * @param agent Agent we want the state updated
    */
-  void    updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent);
+  void    updateState(ICapture::DATA &data, IAgent *agent);
 
   /**
   * @brief Add a landmark

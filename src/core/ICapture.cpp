@@ -11,7 +11,7 @@ ICapture::~ICapture()
 
 }
 
-pcl::PointCloud<pcl::PointXYZRGBA> const &ICapture::getData() const
+pcl::PointCloud<pcl::PointXYZRGBA> const &ICapture::getDataCloud() const
 {
   return (*_data.cloud);
 }

@@ -9,11 +9,218 @@ const unsigned int Landmarks::MINOBSERVATIONS = 15; // Number of times a landmar
 const unsigned int Landmarks::LIFE = 15; // Use to reset life counter (counter use to determine whether to discard a landmark or not)
 const unsigned int Landmarks::MAXTRIALS = 200; // RANSAC: max times to run algorithm
 const unsigned int Landmarks::MAXSAMPLE = 250; // RANSAC: randomly select x points
-const unsigned int Landmarks::MINLINEPOINTS = 500; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
-const double  Landmarks::RANSAC_TOLERANCE = 0.01; // RANSAC: if point is within x distance of line, its part of the line
-const unsigned int Landmarks::RANSAC_CONSENSUS = 30; // RANSAC: at leat x votes required to determine if its a line
+const unsigned int Landmarks::MINLINEPOINTS = 50; // RANSAC: if less than x points left, don't bother trying to find a consensus (stop algorithm)
+const double  Landmarks::RANSAC_TOLERANCE = 8.0; // RANSAC: if point is within x distance of line, its part of the line
+const unsigned int Landmarks::RANSAC_CONSENSUS = 10; // RANSAC: at leat x votes required to determine if its a line
 const double Landmarks::MAX_DIFFERENCE = 0.5; // meter
 const double Landmarks::MIN_DIFFERENCE = 0.3; // meter
+
+Landmarks::Detect::Detect()
+{
+  _detector = cv::xfeatures2d::SURF::create(100, 4, 3, true, false);
+  _frame = NULL;
+  _lastFrame = NULL;
+}
+
+Landmarks::Detect::~Detect()
+{
+}
+
+std::vector<cv::KeyPoint> Landmarks::Detect::kp_extract(cv::Ptr<cv::xfeatures2d::SURF> det,
+  cv::Mat img)
+{
+  std::vector<cv::KeyPoint> tmp;
+  
+  det->detect(img, tmp);
+  
+  return(tmp);
+}
+
+cv::Mat Landmarks::Detect::descriptor_compute(cv::Ptr<cv::xfeatures2d::SURF> det,
+  cv::Mat img, std::vector<cv::KeyPoint> kp)
+{
+  cv::Mat tmp;
+  
+  det->compute(img, kp, tmp);
+  
+  return(tmp);
+}
+
+std::vector<cv::DMatch> Landmarks::Detect::img_match(cv::BFMatcher matcher, cv::Mat last,
+  cv::Mat recent)
+{
+  std::vector<cv::DMatch> tmp, goodMatches;
+  
+  matcher.match(last, recent, tmp);
+  this->getGoodMatches(tmp, last ,recent, goodMatches);
+  
+  return(goodMatches);
+}
+
+double Landmarks::Detect::normofTransform(cv::Mat nmt_rvec, cv::Mat nmt_tvec)
+{
+  return (std::fabs(std::min(cv::norm(nmt_rvec),
+    2 * M_PI - cv::norm(nmt_rvec))) + std::fabs(cv::norm(nmt_tvec)));
+}
+
+bool Landmarks::Detect::getGoodMatches(std::vector<cv::DMatch>& in_matches, cv::Mat& in_lastKeypoints,
+  cv::Mat& in_keypoints, std::vector<cv::DMatch>& in_goodMatches)
+{
+  double goodMatchMinValue = Landmarks::MAXERROR;
+  double goodMatchDistanceTimes = 3;
+
+  //Calcmm_lastkp_lastkpulate closest match
+  double minMatchDis = 9999;
+  //size_t minMatchIndex = 0;
+
+  if(in_matches.size() == 0)
+  {
+    std::cerr << "in_matches is empty" << std::endl;
+    return false;
+  }
+
+  for (size_t i = 0; i < in_matches.size(); ++i)
+  {
+    if (in_matches[i].distance < minMatchDis)
+    {
+      minMatchDis = in_matches[i].distance;
+      //minMatchIndex = i;
+    }
+  }
+
+  double maxDistance = std::max(goodMatchDistanceTimes * minMatchDis, goodMatchMinValue);
+  for (size_t i=0; i < in_matches.size(); i++)
+  {
+    if(in_matches[i].distance <= maxDistance)
+    {
+      in_goodMatches.push_back(in_matches[i]);
+    }
+  }
+
+  if(in_goodMatches.size() == 0)
+  {
+    std::cerr << "in_goodMatches is empty" << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
+bool Landmarks::Detect::match_process()
+{
+  _frame->keyPoints = this->kp_extract(_detector, _frame->rgbMat);
+  _frame->descriptions = this->descriptor_compute(_detector, _frame->rgbMat, _frame->keyPoints);
+  
+  _matchpoint = this->img_match(_matcher, _lastFrame->descriptions, _frame->descriptions);
+  
+  //surf_show(m_lastFrame->rgbImage, m_frame->rgbImage, m_lastFrame->keyPoints, m_frame->keyPoints, m_matchpoint);
+  std::cerr << "MatchPoints size == " << _matchpoint.size() << std::endl;
+  if(_matchpoint.size() > Landmarks::RANSAC_CONSENSUS)
+  {
+    std::cerr << "_lastFrame == " << _lastFrame << " -- frame == " << _frame << std::endl;
+    return ransac_detect(_matchpoint, _lastFrame, _frame);
+  }
+  std::cerr << "Not enough point to do ransac" << std::endl;
+  return false;
+}
+
+unsigned int    getScale(double nb)
+{
+  unsigned int  scale = 1;
+
+  while (nb * scale < 1)
+    scale *= 10;
+  return (scale);
+}
+
+bool Landmarks::Detect::ransac_detect(std::vector<cv::DMatch>& in_match, ICapture::DATA* in_frame,
+              ICapture::DATA* in_lastFrame)
+{
+  double norm;
+  std::vector<cv::Point2f> pointCloud;
+  std::vector<cv::Point3f> pointCloud2;
+  std::vector<cv::Point3f> lastPointCloud;
+
+  cv::Point2f tmpPoint2d;
+  double pointDepth;
+  cv::Point3f tmpLastPoint3d, tmpPoint2d2;
+
+  ushort tmpx, tmpy, tmpDepth;
+
+  double cx = _cameraMatrix.at<double>(0, 2);
+  double cy = _cameraMatrix.at<double>(1, 2);
+  double fx = _cameraMatrix.at<double>(0, 0);
+  double fy = _cameraMatrix.at<double>(1, 1);
+  double scale = getScale(in_frame->focal);
+
+  std::cout << "SCALE IS == " << scale << std::endl;
+  for (uint16_t i = 0; i < in_match.size(); ++i)
+  {
+    tmpx = in_frame->keyPoints[in_match[i].queryIdx].pt.x;
+    tmpy = in_frame->keyPoints[in_match[i].queryIdx].pt.y;
+    tmpDepth = in_frame->depthMat.ptr<ushort>(tmpy)[tmpx];
+
+    pointDepth = double(tmpDepth) / scale;
+    tmpPoint2d.x  = tmpx; //= (tmpx - cx) * pointDepth / fx;
+    tmpPoint2d.y =  tmpy; //(tmpy - cy) * pointDepth / fy;
+
+    pointCloud.push_back(tmpPoint2d);
+  }
+
+  for (uint16_t i = 0; i < in_match.size(); ++i)
+  {
+    tmpx = in_lastFrame->keyPoints[in_match[i].trainIdx].pt.x;
+    tmpy = in_lastFrame->keyPoints[in_match[i].trainIdx].pt.y;
+    tmpDepth = in_lastFrame->depthMat.ptr<ushort>(tmpy)[tmpx];
+
+    tmpLastPoint3d.z = double(tmpDepth) / scale;
+    tmpLastPoint3d.x = (tmpx - cx) * tmpLastPoint3d.z / fx;
+    tmpLastPoint3d.y = (tmpy - cy) * tmpLastPoint3d.z / fy;
+    tmpPoint2d2.x = tmpx;
+    tmpPoint2d2.y = tmpy;
+    tmpPoint2d2.z = tmpLastPoint3d.z;
+
+    pointCloud2.push_back(tmpPoint2d2);
+    lastPointCloud.push_back(tmpLastPoint3d);
+  }
+
+  //std::cout << "Sovling ransac with pointcloud == " << pointCloud << " -- test pointCloud2 == " << pointCloud2 << " -- _lastPointcloud == " << lastPointCloud << std::endl;
+  //Ransacpnp
+  solvePnPRansac(lastPointCloud, pointCloud, _cameraMatrix,
+    in_frame->distCoefDepth, rvec, tvec, false, Landmarks::MAXTRIALS, Landmarks::RANSAC_TOLERANCE,
+    0.99, inliners);
+
+  if (inliners.rows < 5)
+  {
+    std::cerr << "Not enough point to Match: " << inliners.rows << std::endl;
+    return false;
+  }
+
+  norm = this->normofTransform(rvec, tvec);
+
+  std::cout << "norm: " << norm << std::endl;
+  std::cout << "rvec: " << rvec << std::endl;
+  std::cout << "tvec: " << tvec << std::endl;
+
+  // if (norm >= 0.3) //0.3
+  // {
+  //   std::cerr << "Too Far Away: " << norm  << std::endl;
+  //   return false;
+  // }
+
+  if(norm >= 5) //5
+  {
+    std::cerr << "Loop Too Far Away: " << norm << std::endl;
+    return false;
+  }
+
+  if (norm <= Landmarks::MAXERROR)
+  {
+    std::cerr << "Too Close: " << norm << std::endl;
+    return false;
+  }
+  return true;
+}
 
 Landmarks::Landmark::Landmark()
 {

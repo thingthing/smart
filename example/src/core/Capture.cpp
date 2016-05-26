@@ -46,12 +46,30 @@ void Capture::stopCapture() {
 
 void  Capture::captureDataImageAndDepthOpenni(const pcl::io::openni2::Image::Ptr &image, const pcl::io::openni2::DepthImage::Ptr &depth, float focal)
 {
+    std::cerr << "depth info == " << depth->getFocalLength() << " -- " << depth->getBaseline() << " -- " << depth->getHeight() << " -- " << depth->getWidth() << std::endl;
+    std::cerr << "image info == " << image->getHeight() << " -- " << image->getWidth() << std::endl;
   cv::Mat tempImage = cv::Mat(image->getHeight(), image->getWidth(), CV_8UC3,
      const_cast<void *>(image->getData()));
   cv::cvtColor(tempImage, _data.rgbMat, CV_RGB2BGR);
   cv::Mat tempDepth = cv::Mat(depth->getHeight(), depth->getWidth(), CV_16UC1,
      const_cast<unsigned short *>(depth->getData()));
   tempDepth.copyTo(_data.depthMat);
+  _data.depthCameraMat = cv::Mat(3, 3, CV_64F);
+  _data.depthCameraMat.setTo(0);
+  _data.depthCameraMat.at<double>(0,0) = depth->getFocalLength();
+  _data.depthCameraMat.at<double>(0,2) = depth->getHeight() / 2;
+  _data.depthCameraMat.at<double>(1,1) = depth->getFocalLength();
+  _data.depthCameraMat.at<double>(1,2) = depth->getWidth() / 2;
+  _data.depthCameraMat.at<double>(2,2) = 1;
+  _data.distCoefDepth = cv::Mat();
+  _data.distCoefImage = cv::Mat();
+  _data.focal = focal;
+  std::cerr << "Matrice == " << _data.depthCameraMat << std::endl;
+  std::cerr << "FOCAL IS == " << focal << std::endl;
+  this->dispatch("takeDataEvent");
+  std::cerr << "LAUNCH DONE ========================================================" << std::endl;
+  //Restart capture if stoped
+  //this->startCapture();
 //  std::cerr << "For openni Image data == " << _data.rgbMat << " -- depth == " << _data.depthMat << " -- 1/focal length == " << focal << std::endl;
 }
 
@@ -62,6 +80,29 @@ void Capture::captureDataImageAndDepthRealSense(const boost::shared_ptr< Image >
   cv::cvtColor(tempImage, _data.rgbMat, CV_RGB2BGR);
   cv::Mat tempDepth = cv::Mat(depth->_height, depth->_width, CV_16UC1, const_cast<uint16_t *>(depth->_depth));
   tempDepth.copyTo(_data.depthMat);
+  // Intrinsinc parameters matrice: https://en.wikipedia.org/wiki/Camera_resectioning#Intrinsic_parameters
+  _data.depthCameraMat = cv::Mat(3, 3, CV_64F);
+  _data.depthCameraMat.setTo(0);
+  _data.depthCameraMat.at<double>(0,0) = depth->_fx;
+  _data.depthCameraMat.at<double>(0,2) = depth->_cx;
+  _data.depthCameraMat.at<double>(1,1) = depth->_fy;
+  _data.depthCameraMat.at<double>(1,2) = depth->_cy;
+  _data.depthCameraMat.at<double>(2,2) = 1;
+
+  _data.distCoefDepth = cv::Mat();
+  _data.distCoefImage = cv::Mat(1, 5, CV_64F);
+  _data.distCoefImage.at<double>(0,0) = image->_disto[0];
+  _data.distCoefImage.at<double>(0,1) = image->_disto[1];
+  _data.distCoefImage.at<double>(0,2) = image->_disto[2];
+  _data.distCoefImage.at<double>(0,3) = image->_disto[3];
+  _data.distCoefImage.at<double>(0,4) = image->_disto[4];
+  _data.focal = focal;
+  std::cerr << "Matrice camera == " << _data.depthCameraMat << std::endl;
+  std::cerr << "Matrice disto == " << _data.distCoefImage << std::endl;
+  this->dispatch("takeDataEvent");
+  std::cerr << "LAUNCH DONE ========================================================" << std::endl;
+  //Restart capture if stoped
+  this->startCapture();
   // std::cerr << "                  For realsense Image data == " << _data.rgbMat << " -- depth == " << _data.depthMat << " -- 1/focal length == " << focal << std::endl;
 }
 
@@ -99,8 +140,8 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   pcl::PassThrough<pcl::PointXYZRGBA> pass;
   pass.setInputCloud (_data.cloud);
   pass.setFilterFieldName ("z");
-  pass.setFilterLimits (1.0, 3.0);
-  //pass.setFilterLimitsNegative (true);
+  pass.setFilterLimits (1.0, 4.0);
+  pass.setFilterLimitsNegative (true);
   pass.filter (*_data.cloud);
 
   //std::cerr << "After PassThrough " << _cloud->size() << std::endl;
@@ -111,8 +152,7 @@ void Capture::captureData(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cl
   // vox.filter(*_cloud);
   std::cerr << "After VoxelGrid " << _data.cloud->size() << std::endl;
 
-  this->dispatch("takeDataEvent");
-  //boost::this_thread::sleep(boost::posix_time::millisec(10));
+  boost::this_thread::sleep(boost::posix_time::millisec(100));
 
   // std::cerr << "Loaded "
   //           << _cloud.points.size()

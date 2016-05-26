@@ -20,13 +20,14 @@ Landmarks *DataAssociation::getLandmarkDb() const
   return (this->_landmarkDb);
 }
 
-void    DataAssociation::validationGate(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud,
+void    DataAssociation::validationGate(ICapture::DATA &data,
                                         IAgent const *agent,
                                         std::vector<Landmarks::Landmark *> &resultLandmarks,
                                         std::vector<Landmarks::Landmark *> &reobservedLandmarks)
 {
   std::vector<Landmarks::Landmark *>  newLandmarks;
 
+  pcl::PointCloud<pcl::PointXYZRGBA> cloud = *data.cloud;
   try {
     if (!cloud.empty())
       newLandmarks = this->_landmarkDb->extractLineLandmarks(cloud, agent);

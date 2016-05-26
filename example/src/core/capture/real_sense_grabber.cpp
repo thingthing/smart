@@ -342,6 +342,7 @@ RealSenseGrabber::run ()
     const int WIDTH = depth_intrin.width;
     const int HEIGHT = depth_intrin.height;
     //const int SIZE = WIDTH * HEIGHT;
+
     //std::cerr << "scale is == " << scale << std::endl;
     //std::cerr << "depth width == " << WIDTH << " -- height == " << HEIGHT << std::endl;
     //std::cerr << "color width == " << color_intrin.width << " -- height == " << color_intrin.height << std::endl;
@@ -513,12 +514,21 @@ RealSenseGrabber::run ()
         // if (has_one_point > 10000)
         //   {
             //std::cerr << "Sending End point cloud  " << std::endl;
-            Image *rgb_data = new Image(color_image, color_intrin.height, color_intrin.width);
-            Depth *depth_data = new Depth(depth_image, HEIGHT, WIDTH);
-            std::cerr << "-----------------------------------------------------------------------SENDING IMAGEDEPTH SIGNAL" << std::endl;
-            image_depth_signal_->operator() (boost::shared_ptr<Image>(rgb_data), boost::shared_ptr<Depth>(depth_data), scale);
+      //FOCAL == fx and fy
+    //CENTER point == cx and cy
+    std::cerr << "DEPTH intrinsics FOV == " << depth_intrin.fx << " -- " << depth_intrin.fy << std::endl;
+    std::cerr << "DEPTH intrinsics COP == " << depth_intrin.ppx << " -- " << depth_intrin.ppy << std::endl;
+    std::cerr << "DEPTH intrinsics DISTORTION == " << depth_intrin.coeffs[0] << " -- " << depth_intrin.coeffs[1] << " -- " << depth_intrin.coeffs[2] << " -- " << depth_intrin.coeffs[3] << " -- " << depth_intrin.coeffs[4] << " | " << std::endl;
+    std::cerr << "COLOR intrinsics FOV == " << color_intrin.fx << " -- " << color_intrin.fy << std::endl;
+    std::cerr << "COLOR intrinsics COP == " << color_intrin.ppx << " -- " << color_intrin.ppy << std::endl;
+    std::cerr << "COLOR intrinsics DISTORTION == " << color_intrin.coeffs[0] << " -- " << color_intrin.coeffs[1] << " -- " << color_intrin.coeffs[2] << " -- " << color_intrin.coeffs[3] << " -- " << color_intrin.coeffs[4] << " -- " << std::endl;
+
+            Image *rgb_data = new Image(color_image, color_intrin.height, color_intrin.width, color_intrin.fx, color_intrin.fy, color_intrin.ppx, color_intrin.ppy, color_intrin.coeffs);
+            Depth *depth_data = new Depth(depth_image, HEIGHT, WIDTH, depth_intrin.fx, depth_intrin.fy, depth_intrin.ppx, depth_intrin.ppy, depth_intrin.coeffs);
             std::cerr << "-----------------------------------------------------------------------------SENDING RGBA SIGNAL" << std::endl;
             point_cloud_rgba_signal_->operator () (xyzrgba_cloud);
+            std::cerr << "-----------------------------------------------------------------------SENDING IMAGEDEPTH SIGNAL" << std::endl;
+            image_depth_signal_->operator() (boost::shared_ptr<Image>(rgb_data), boost::shared_ptr<Depth>(depth_data), scale);
             delete rgb_data;
             delete depth_data;
             //std::cerr << "END LOOP" << std::endl;

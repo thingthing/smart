@@ -31,6 +31,8 @@
 #include <pcl/filters/filter.h>
 #include <pcl/common/projection_matrix.h>
 #include <pcl/filters/extract_indices.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/xfeatures2d.hpp>
 #include "IAgent.hh"
 
 class Landmarks
@@ -100,6 +102,36 @@ public:
     ~Landmark();
   };
 
+
+  class Detect
+  {
+  public:
+    //Datas
+    ICapture::DATA                  *_frame;
+    ICapture::DATA                  *_lastFrame;
+
+    //Features detection
+    cv::BFMatcher                   _matcher;
+    cv::Ptr<cv::xfeatures2d::SURF>  _detector;
+    std::vector<cv::DMatch>         _matchpoint;
+
+    //Output data from ransac
+    cv::Mat rvec, tvec, inliners;
+    cv::Mat                         _cameraMatrix;
+
+  public:
+    Detect();
+    ~Detect();
+    std::vector<cv::KeyPoint> kp_extract(cv::Ptr<cv::xfeatures2d::SURF> det, cv::Mat img);
+    cv::Mat descriptor_compute(cv::Ptr<cv::xfeatures2d::SURF> det, cv::Mat img, std::vector<cv::KeyPoint> kp);
+    std::vector<cv::DMatch> img_match(cv::BFMatcher match, cv::Mat last, cv::Mat recent);
+    double normofTransform(cv::Mat nmt_rvec, cv::Mat nmt_tvec );
+    bool getGoodMatches(std::vector<cv::DMatch>& in_matches, cv::Mat& in_lastKeypoints, cv::Mat& in_keypoints,
+                  std::vector<cv::DMatch>& in_goodMatches);
+    bool match_process();
+    bool ransac_detect(std::vector<cv::DMatch>& in_match, ICapture::DATA* in_frame,
+                  ICapture::DATA* in_lastFrame);
+  };
 
 public:
   ~Landmarks();
@@ -300,6 +332,8 @@ public: // ONLY FOR UNIT TESTS
   int DBSize;
   std::vector<std::pair<int, int> > IDtoID;
   unsigned int lastID;
+public:
+  Detect    detect;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "Slam.hh"
+#include "AgentAhrs.hh"
 
 Slam::Case::Case() :
 	state(UPTODATE)
@@ -78,7 +79,7 @@ Slam::Slam(IAgent *agent)
   this->_landmarkDb = new Landmarks(agent->degreePerScan);
   this->_data = new DataAssociation(this->_landmarkDb);
 	this->landmarkNumber = 0;
-	_agent->registerCallback("getDataEvent", [this](pcl::PointCloud<pcl::PointXYZRGBA> const & cloud, IAgent *agent) {updateState(cloud, agent);});
+	_agent->registerCallback("getDataEvent", [this](ICapture::DATA& data, IAgent *agent) {updateState(data, agent);});
 }
 
 Slam::~Slam()
@@ -184,44 +185,121 @@ std::cout << "landmark moved == " << landmarksMoved << std::endl;
 	return data_moved;
 }
 
-void    Slam::updateState(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud, IAgent *agent)
+void getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles) {
+
+    cv::Mat cameraMatrix,rotMatrix,transVect,rotMatrixX,rotMatrixY,rotMatrixZ;
+    double* _r = rotCamerMatrix.ptr<double>();
+    double projMatrix[12] = {_r[0],_r[1],_r[2],0,
+                          _r[3],_r[4],_r[5],0,
+                          _r[6],_r[7],_r[8],0};
+
+    cv::decomposeProjectionMatrix(cv::Mat(3,4,CV_64FC1,projMatrix),
+                               cameraMatrix,
+                               rotMatrix,
+                               transVect,
+                               rotMatrixX,
+                               rotMatrixY,
+                               rotMatrixZ,
+                               eulerAngles);
+    std::cout << "cameraMatrix == " << cameraMatrix << " -- transVect == " << transVect << " -- rotMatrix == " << rotMatrix << std::endl;
+    std::cout << "rotMatrix == " << rotMatrixX << " -- rotMatrixY == " << rotMatrixY << " -- rotMatrixZ == " << rotMatrixZ  << std::endl;
+}
+
+void    Slam::updateState(ICapture::DATA &data, IAgent *agent)
 {
   //Update state using reobserved landmark
   std::vector<Landmarks::Landmark *> newLandmarks;
   std::vector<Landmarks::Landmark *> reobservedLandmarks;
 
-  if (cloud.size() == 0)
-  	return;
-  
-  try {
-    this->_data->validationGate(cloud, agent, newLandmarks, reobservedLandmarks);
-  } catch (...) {
-    std::cerr << "Error during dataassociation" << std::endl;
-  }
-  try {
-    this->addLandmarks(newLandmarks);
-  } catch (...) {
-    std::cerr << "Error during addlandmarks" << std::endl;
-  }
-std::cerr << "total landmarks length is " << this->_landmarkDb->getDBSize() << std::endl;
-newLandmarks.clear();
-  	std::cout << "reobserved landmarks before length is " << reobservedLandmarks.size() << std::endl;
-  reobservedLandmarks = this->_landmarkDb->removeDouble(reobservedLandmarks, newLandmarks);
-  try {
-  	std::cout << "reobserved landmarks after length is " << reobservedLandmarks.size() << std::endl;
-  	this->moveLandmarks(reobservedLandmarks);
-  } catch (std::exception &e) {
-    std::cerr << "error during move landmarks " << e.what() << std::endl;
-  }
-	this->moveAgent(agent);
+  //pcl::PointCloud<pcl::PointXYZRGBA> cloud = *data.cloud;
 
-	bool data_moved = this->updatePositions(1.0, reobservedLandmarks);
-	if (data_moved && !agent->getSendData()) {
-		agent->setSendData(data_moved);
-	}
-  agent->setPos(this->currentRobotPos);
-  //After all, remove bad landmarks
-  this->_landmarkDb->removeBadLandmarks(cloud, agent);
+  if (data.cloud->size() == 0)
+  	return;
+
+  data.depthCameraMat.copyTo(_landmarkDb->detect._cameraMatrix);
+
+  ICapture::DATA *tmpFrame = new ICapture::DATA();
+
+  data.rgbMat.copyTo(tmpFrame->rgbMat);
+  data.depthMat.copyTo(tmpFrame->depthMat);
+  tmpFrame->focal = data.focal;
+
+  //Initialize first frame
+  if (_landmarkDb->detect._frame == NULL) {
+    tmpFrame->keyPoints = _landmarkDb->detect.kp_extract(_landmarkDb->detect._detector, tmpFrame->rgbMat);
+    tmpFrame->descriptions = _landmarkDb->detect.descriptor_compute(_landmarkDb->detect._detector, tmpFrame->rgbMat, tmpFrame->keyPoints);
+  } else {
+    _landmarkDb->detect._lastFrame = _landmarkDb->detect._frame;
+  }
+
+  tmpFrame->cloud = data.cloud;
+  _landmarkDb->detect._frame = tmpFrame;
+
+  // Got at least two frames, can compare the two
+  if (_landmarkDb->detect._lastFrame != NULL) {
+    if (_landmarkDb->detect.match_process()) {
+    	cv::Mat rvec = cv::Mat();
+		cv::Rodrigues(_landmarkDb->detect.rvec, rvec);
+		cv::Vec3d eulerAngles;
+		getEulerAngles(rvec, eulerAngles);		
+		//yaw   = eulerAngles[1]; 
+		//pitch = eulerAngles[0];
+		//roll  = eulerAngles[2];
+		std::cout << "new rvec == " << rvec << std::endl;
+		std::cout << "euleurangles got are == " << eulerAngles << std::endl;
+		std::cout << "Translation matrice got is == " << _landmarkDb->detect.tvec.at<double>(0, 0) << ", " << _landmarkDb->detect.tvec.at<double>(0, 1) << ", " << _landmarkDb->detect.tvec.at<double>(0, 2) << std::endl;
+		std::cout << "previous pos is == " << agent->getPos() << std::endl;
+		Eigen::Affine3f transfo = pcl::getTransformation (_landmarkDb->detect.tvec.at<double>(0, 0),
+			_landmarkDb->detect.tvec.at<double>(0, 1), _landmarkDb->detect.tvec.at<double>(0, 2),
+			agent->getRoll(), agent->getPitch(), agent->getYaw());
+		
+		pcl::PointXYZ newPos = pcl::transformPoint(agent->getPos(), transfo);
+		newPos.x = WithRobot::AgentAhrs::roundValue(newPos.x, 10);
+		newPos.y = WithRobot::AgentAhrs::roundValue(newPos.y, 10);
+		newPos.z = WithRobot::AgentAhrs::roundValue(newPos.z, 10);		
+		std::cerr << "New pos is == " << newPos << std::endl;
+		agent->setPos(newPos);
+    } else {
+    	//Reset frame status
+    	std::cerr << "Reset frame." << std::endl;
+    	_landmarkDb->detect._frame = _landmarkDb->detect._lastFrame;
+    }
+  }
+
+  //_landmarkDb->detect.rvec == rotation matrice done
+  //_landmarkDb->detect.tvec == translation matrice done
+
+  //@todo: Apply rvec and tvec to agent pos to get new pos and true roll, pitch, yaw
+
+//   try {
+//     this->_data->validationGate(data, agent, newLandmarks, reobservedLandmarks);
+//   } catch (...) {
+//     std::cerr << "Error during dataassociation" << std::endl;
+//   }
+//   try {
+//     this->addLandmarks(newLandmarks);
+//   } catch (...) {
+//     std::cerr << "Error during addlandmarks" << std::endl;
+//   }
+// std::cerr << "total landmarks length is " << this->_landmarkDb->getDBSize() << std::endl;
+// newLandmarks.clear();
+//   	std::cout << "reobserved landmarks before length is " << reobservedLandmarks.size() << std::endl;
+//   reobservedLandmarks = this->_landmarkDb->removeDouble(reobservedLandmarks, newLandmarks);
+//   try {
+//   	std::cout << "reobserved landmarks after length is " << reobservedLandmarks.size() << std::endl;
+//   	this->moveLandmarks(reobservedLandmarks);
+//   } catch (std::exception &e) {
+//     std::cerr << "error during move landmarks " << e.what() << std::endl;
+//   }
+// 	this->moveAgent(agent);
+
+// 	bool data_moved = this->updatePositions(1.0, reobservedLandmarks);
+// 	if (data_moved && !agent->getSendData()) {
+// 		agent->setSendData(data_moved);
+// 	}
+//   agent->setPos(this->currentRobotPos);
+//   //After all, remove bad landmarks
+//   this->_landmarkDb->removeBadLandmarks(cloud, agent);
 }
 
 void    Slam::addLandmarks(std::vector<Landmarks::Landmark *> const &newLandmarks)

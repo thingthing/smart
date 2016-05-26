@@ -66,9 +66,9 @@ void        AgentProtocol::run() {
                 return ;
             }
             if (_mode == IAgent::DIRECT)
-                boost::this_thread::sleep(boost::posix_time::millisec(5));
-            else if (_mode == IAgent::DELAYED)
                 boost::this_thread::sleep(boost::posix_time::millisec(10));
+            else if (_mode == IAgent::DELAYED)
+                boost::this_thread::sleep(boost::posix_time::millisec(5));
         }
         std::cerr << "SEND CLOUD event " << i << " packets with " << _cloud->points.size() << " points" << std::endl;
     }
@@ -77,6 +77,7 @@ void        AgentProtocol::run() {
     this->dispatch("moveAgentEvent");
     //Cloud sent we can now restart capture
     this->dispatch("StartCaptureEvent");
+    std::cerr << "END SEND POINT CLOUD =======================" << std::endl;
     //To uncomment if you want to send only one cloud
     // Json::Value     reply;
 
@@ -90,7 +91,7 @@ void        AgentProtocol::run() {
 void        AgentProtocol::sendCloudEvent(pcl::PointCloud<pcl::PointXYZRGBA> const &cloud)
 {
     //Stopping capture before sending
-    this->dispatch("StopCaptureEvent");
+    //this->dispatch("StopCaptureEvent");
     if (!_cloud->empty())
       _cloud->clear();
       // pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr ptrCloud(&_cloud);
@@ -237,7 +238,7 @@ void        AgentProtocol::receivePacketEvent(Network::ComPacket *packet)      /
     //std::cout << "received message from serveur " << serverReply << std::endl;
     if (reader.parse(serverReply, root, false) == true)
     {
-        //std::cout << "received a data " << serverReply << std::endl;
+        std::cout << "received a data " << serverReply << std::endl;
         Json::Value data = root["data"];
         Json::Value status = root["status"];
         int status_code = status.get("code", 0).asInt();

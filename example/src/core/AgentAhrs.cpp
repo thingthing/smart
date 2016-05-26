@@ -58,10 +58,14 @@ void		WithRobot::AgentAhrs::updateAgent()
   ay = roundValue(imu.ay, 10.0);
   az = roundValue(imu.az, 10.0);
 
- 	_agent->setPitch(roundValue(e.pitch, 10.0));
-  _agent->setRoll(roundValue(e.roll, 10.0));
-  _agent->setYaw(roundValue(e.yaw, 10.0));
-  
+  std::cout << "Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
+ 	_agent->setPitch(roundValue(e.pitch, 10.0) - _agent->getPrevPitch());
+  _agent->setRoll(roundValue(e.roll, 10.0) - _agent->getPrevRoll());
+  _agent->setYaw(roundValue(e.yaw, 10.0) - _agent->getPrevYaw());
+  _agent->setPrevPitch(roundValue(e.pitch, 10.0));
+  _agent->setPrevRoll(roundValue(e.roll, 10.0));
+  _agent->setPrevYaw(roundValue(e.yaw, 10.0));
+  std::cout << "After Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
   // Translation of gravity vector with roll(x) and pitch(y) axis
   Eigen::Affine3f transfo = pcl::getTransformation (0, 0, 0, e.roll, e.pitch, e.yaw);
   //std::cerr << "Roll == " << _agent->getRoll() << " -- pitch == " << _agent->getPitch() << " -- yaw == " << _agent->getYaw() << std::endl;
@@ -98,7 +102,8 @@ void		WithRobot::AgentAhrs::updateAgent()
     // new_pos.z = _pos.z + (new_velocity.z * delta);
     
     _agent->setVelocity(new_velocity);
-    _agent->setPos(roundValue(new_pos.x, 10.0), roundValue(new_pos.y, 10.0), roundValue(new_pos.z, 10.0));
+    //_agent->setPos(roundValue(new_pos.x, 10.0), roundValue(new_pos.y, 10.0), roundValue(new_pos.z, 10.0));
+    
     //std::cerr << "New pos == " << _agent->getPos() << std::endl;
     //std::cerr << "Posx == " << new_pos.x << std::endl;
   }

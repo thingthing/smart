@@ -2,8 +2,8 @@
 
 IAgent::IAgent(double degreePerScan, double cameraProblem, std::string const &name, int battery, IAgent::e_mode mode)
   : degreePerScan(degreePerScan), cameraProblem(cameraProblem), _yaw(0),
-    _name(name), _status("OK"), _roll(0), _pitch(0), _battery(battery),
-    _send_data(false), _mode(mode)
+    _name(name), _status("OK"), _roll(0), _pitch(0), _prev_roll(0), _prev_pitch(0), _prev_yaw(0),
+     _battery(battery), _send_data(false), _mode(mode)
 {
   this->_pos.x = 0;
   this->_pos.y = 0;
@@ -48,6 +48,11 @@ double    IAgent::getRoll() const
   return (this->_roll);
 }
 
+double    IAgent::getPrevRoll() const
+{
+  return (this->_prev_roll);
+}
+
 void    IAgent::setPos(pcl::PointXYZ const &pos)
 {
   this->_pos.x = pos.x;
@@ -65,6 +70,11 @@ void    IAgent::setPos(double x, double y , double z)
 void    IAgent::setRoll(double roll)
 {
   this->_roll = roll;
+}
+
+void    IAgent::setPrevRoll(double roll)
+{
+  this->_prev_roll = roll;
 }
 
 ICapture *IAgent::getCapture() const
@@ -90,4 +100,24 @@ void            IAgent::setYaw(double yaw)
 void            IAgent::setPitch(double pitch)
 {
   this->_pitch = pitch;
+}
+
+double          IAgent::getPrevYaw() const
+{
+  return (this->_prev_yaw);
+}
+
+double          IAgent::getPrevPitch() const
+{
+  return (this->_prev_pitch);
+}
+
+void            IAgent::setPrevYaw(double yaw)
+{
+  this->_prev_yaw = yaw;
+}
+
+void            IAgent::setPrevPitch(double pitch)
+{
+  this->_prev_pitch = pitch;
 }

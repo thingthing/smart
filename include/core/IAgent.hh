@@ -33,6 +33,9 @@ public:
     ICapture        *getCapture() const;
     double          getYaw() const;
     double          getPitch() const;
+    double          getPrevYaw() const;
+    double          getPrevPitch() const;
+    double          getPrevRoll() const;
     int             getBattery() const;
     pcl::PointXYZ   getVelocity() const { return _velocity; }
     pcl::PointXYZ   getAcceleration() const { return _acceleration; }
@@ -45,6 +48,9 @@ public:
     void            setRoll(double thrust);
     void            setYaw(double theta);
     void            setPitch(double deltaTheta);
+    void            setPrevRoll(double deltaTheta);
+    void            setPrevPitch(double deltaTheta);
+    void            setPrevYaw(double deltaTheta);
     void            setPos(pcl::PointXYZ const &pos);
     void            setPos(double x, double y, double z);
     inline void     setVelocity(pcl::PointXYZ const &velo) { _velocity = velo; }
@@ -69,6 +75,9 @@ protected:
     std::string     _status;
     double	         _roll;
     double	         _pitch;
+    double           _prev_roll;
+    double           _prev_pitch;
+    double           _prev_yaw;
     ICapture         *_capture;
     int             _battery;
     bool            _send_data;
